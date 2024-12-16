@@ -57,7 +57,7 @@ export function Home() {
             </div>
 
             {/* Gerenciar Bandejas div */}
-            <div className="cursor-pointer border-2 border-gray-300 rounded-lg p-4 flex-grow min-h-[150px]  hover:bg-gray-100 hover:border-blue-500 hover:shadow-lg transform transition-all duration-200">
+            <div className="cursor-pointer border-2 border-gray-300 rounded-lg p-4 flex-grow min-h-[150px]  hover:bg-gray-100 hover:border-blue-500 hover:shadow-lg transform transition-all duration-200" onClick={()=> navigate("/gerenciarBandeja")}>
               <CardTitle className="text-2xl font-bold">Gerenciar Bandeja</CardTitle>
               <CardDescription>
                 <p>Totais Cadastrados: 5</p>
