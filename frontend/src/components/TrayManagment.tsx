@@ -28,7 +28,7 @@ export function TrayManagment() {
       const { status } = await api.post("/tray-managment", data);
 
       if (status === 201) {
-        setTray([...trays, { id: uuidv4().toString() }]);
+        setTray([...trays, data]);
       }
     } catch (error) {
       alert(error);
@@ -40,7 +40,7 @@ export function TrayManagment() {
       const { status } = await api.delete(`/tray-managment/${id}`);
 
       if (status === 201) {
-        setTray(trays.filter((tray) => tray.id === id));
+        setTray(trays.filter(({ id }) => id));
       }
     } catch (error) {
       alert(error);
@@ -71,7 +71,7 @@ export function TrayManagment() {
             Gerar Bandeja
           </Button>
         </div>
-        <Table className="">
+        <Table>
           <TableCaption>Total: {trays.length}</TableCaption>
           <TableHeader>
             <TableRow className="child:font-bold bg-slate-600 child:text-slate-200">
