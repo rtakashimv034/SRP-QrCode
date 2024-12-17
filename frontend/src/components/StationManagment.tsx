@@ -1,6 +1,7 @@
 import { api } from "@/api";
 import { Label } from "@radix-ui/react-label";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "./ui/button";
@@ -33,6 +34,9 @@ export function StationManagment() {
   const [stations, setStations] = useState<Props[]>([]);
   const [sector, setSector] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQROpen, setIsQROpen] = useState<string | null>(null);
+
+  const svgRefs = useRef<{ [key: string]: SVGSVGElement | null }>({});
 
   async function handleCreateStation(sector: string) {
     const data: Props = { id: uuidv4().toString(), sector };
@@ -41,12 +45,24 @@ export function StationManagment() {
       const { status } = await api.post("/station-managment", data);
 
       if (status === 201) {
-        setStations([...stations, { id: uuidv4().toString(), sector }]);
+        setStations([...stations, data]);
       }
     } catch (error) {
       alert(error);
     } finally {
       setIsModalOpen(false);
+    }
+  }
+
+  async function handleDeleteStation(id: string) {
+    try {
+      const { status } = await api.delete(`/station-managment/${id}`);
+
+      if (status === 201) {
+        setStations(stations.filter(({ id }) => id));
+      }
+    } catch (error) {
+      alert(error);
     }
   }
 
@@ -62,6 +78,38 @@ export function StationManagment() {
   useEffect(() => {
     getAllStations();
   }, [stations]);
+
+  async function downloadQRCode(id: string) {
+    const qrCodeElement = svgRefs.current[id];
+
+    if (qrCodeElement) {
+      const svgData = new XMLSerializer().serializeToString(qrCodeElement);
+      const img = new Image();
+      const svgBlob = new Blob([svgData], {
+        type: "image/svg+xml;charset=utf-8",
+      });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 256;
+        canvas.height = 256;
+
+        ctx!.drawImage(img, 0, 0);
+        const pngUrl = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = pngUrl;
+        link.download = `qrcode-${id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      };
+
+      img.src = url;
+    }
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4 bg-slate-100">
@@ -83,11 +131,16 @@ export function StationManagment() {
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="username" className="text-right">
-                    Sector
+                    Setor
                   </Label>
                   <Input
                     id="name"
                     onChange={(e) => setSector(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleCreateStation(sector);
+                      }
+                    }}
                     className="col-span-3"
                   />
                 </div>
@@ -103,8 +156,8 @@ export function StationManagment() {
             </DialogContent>
           </Dialog>
         </div>
-        <Table className="">
-          <TableCaption>Total: 5</TableCaption>
+        <Table>
+          <TableCaption>Total: {stations.length}</TableCaption>
           <TableHeader>
             <TableRow className="child:w-1/3 child:justify-center child:font-bold child:text-slate-800">
               <TableHead>Id</TableHead>
@@ -118,8 +171,53 @@ export function StationManagment() {
                 <TableCell className="font-medium">{id}</TableCell>
                 <TableCell>{sector}</TableCell>
                 <TableCell className="flex gap-2">
-                  <Button variant={"secondary"}>Desassociar Estação</Button>
-                  <Button variant={"destructive"}>Excluir</Button>
+                  <Dialog
+                    open={isQROpen === id}
+                    onOpenChange={() => setIsQROpen(isQROpen ? null : id)}
+                  >
+                    <DialogTrigger>
+                      <Button variant={"generate"}>Gerar QRcode</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px] gap-5 flex-row justify-center">
+                      <DialogHeader>
+                        <DialogTitle className="flex justify-center">
+                          QRcode (
+                          <span className="font-bold">
+                            {id.substring(0, 5).trimEnd()}
+                          </span>
+                          ) - {sector}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="flex-row justify-center">
+                        <QRCode
+                          id={`qrcode-${id}`}
+                          value={id + sector}
+                          viewBox="0 0 256 256"
+                          ref={(el: never) => (svgRefs.current[id] = el)}
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button
+                          variant={"destructive"}
+                          onClick={() => setIsQROpen(null)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          variant={"submit"}
+                          onClick={() => downloadQRCode(id)}
+                        >
+                          Download
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  <Button
+                    variant={"destructive"}
+                    onClick={() => handleDeleteStation(id)}
+                  >
+                    Excluir
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

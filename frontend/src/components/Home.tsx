@@ -2,6 +2,7 @@ import { api } from "@/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CardHome } from "./CardHome";
+import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
 
 type Props = {
@@ -35,17 +36,14 @@ export function Home() {
   }, [registered]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 bg-slate-100">
+    <div className="flex items-center justify-center min-h-screen px-4 bg-gradient-to-r from-green-200 to-cyan-200">
       <Card className="w-full max-w-4xl">
         <CardHeader className="flex-row gap-3 items-center">
           {/*Fazer lógica para mudar o nome de acordo com o usuário */}
           <p className="text-lg font-medium">Welcome, nome!</p>
-          <button
-            className="bg-white border-2 text-sm border-red-600 text-red-600 px-3 py-1 rounded-md hover:bg-red-700 hover:border-red-700 hover:text-white transition"
-            onClick={() => navigate("/login")}
-          >
+          <Button variant={"destructive"} onClick={() => navigate("/login")}>
             Logout
-          </button>
+          </Button>
         </CardHeader>
 
         <CardContent className="grid grid-cols-2 gap-6">

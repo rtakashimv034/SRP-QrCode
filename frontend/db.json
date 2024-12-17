@@ -1,48 +1,38 @@
 {
   "camera-managment": [
     {
-      "id": "1",
-      "station": "2"
+      "id": "cd0487dd-6814-47b0-9389-4a58272d1ff9",
+      "type": "Logitech StreamCam"
+    },
+    {
+      "id": "160cb557-309c-4ea8-baa4-a7dfad76d361",
+      "type": "Microsoft LifeCam HD-3000"
+    },
+    {
+      "id": "6e2e0015-39ec-4ba5-bcd0-03195fc2ac90",
+      "type": "Logitech StreamCam"
     }
   ],
   "station-managment": [
     {
-      "id": "1",
-      "sector": "2"
+      "id": "8b2aa44a-0f2e-49e8-829c-02f7208ddf0d",
+      "sector": "estati"
     },
     {
-      "id": "65b676c4-ac23-4d82-838f-0ffc5bd3be65",
-      "sector": "estacao 1"
+      "id": "9a79f2fb-39c4-4d64-9148-7966d618a0ea",
+      "sector": "setor dahora"
     },
     {
-      "id": "8c52d035-bc2c-440b-8e64-0d47b113251f",
-      "sector": "owo"
-    },
-    {
-      "id": "8e786d7a-1b55-44e4-80cd-bc2e43d524da",
-      "sector": "benicio_sex"
-    },
-    {
-      "id": "02c5fd63-8be6-4fb5-84ff-d3fddff4e054",
+      "id": "e4af1368-2098-40b8-9399-487f5f215e7e",
       "sector": "legal"
-    },
-    {
-      "id": "be15a337-f744-4724-8b1f-099636e3d39a",
-      "sector": "penis"
     }
   ],
   "tray-managment": [
     {
-      "id": "61407cd0-2cfe-4ea4-af06-b88ce9ab8253"
+      "id": "9b9a9baf-2e42-40d2-ac55-72f933d39f43"
     },
     {
-      "id": "9ce8a3cc-1b5e-4ef0-b221-ac3fc8f33512"
-    },
-    {
-      "id": "589c468f-78f4-4f37-b60b-588cad5632a0"
-    },
-    {
-      "id": "01d2e170-a9a3-4875-a519-b8c260845620"
+      "id": "fd016736-2014-4061-abda-83ee3393b9db"
     }
   ]
 }
