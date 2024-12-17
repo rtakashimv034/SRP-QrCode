@@ -1,0 +1,48 @@
+{
+  "camera-managment": [
+    {
+      "id": "1",
+      "station": "2"
+    }
+  ],
+  "station-managment": [
+    {
+      "id": "1",
+      "sector": "2"
+    },
+    {
+      "id": "65b676c4-ac23-4d82-838f-0ffc5bd3be65",
+      "sector": "estacao 1"
+    },
+    {
+      "id": "8c52d035-bc2c-440b-8e64-0d47b113251f",
+      "sector": "owo"
+    },
+    {
+      "id": "8e786d7a-1b55-44e4-80cd-bc2e43d524da",
+      "sector": "benicio_sex"
+    },
+    {
+      "id": "02c5fd63-8be6-4fb5-84ff-d3fddff4e054",
+      "sector": "legal"
+    },
+    {
+      "id": "be15a337-f744-4724-8b1f-099636e3d39a",
+      "sector": "penis"
+    }
+  ],
+  "tray-managment": [
+    {
+      "id": "61407cd0-2cfe-4ea4-af06-b88ce9ab8253"
+    },
+    {
+      "id": "9ce8a3cc-1b5e-4ef0-b221-ac3fc8f33512"
+    },
+    {
+      "id": "589c468f-78f4-4f37-b60b-588cad5632a0"
+    },
+    {
+      "id": "01d2e170-a9a3-4875-a519-b8c260845620"
+    }
+  ]
+}

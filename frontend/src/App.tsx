@@ -1,10 +1,10 @@
 import { Route, Routes } from "react-router";
+import { CameraManagment } from "./components/CameraManagment";
 import { Home } from "./components/Home";
 import { Login } from "./components/Login";
 import { Presentation } from "./components/Presentation";
-import {GerenciarCamera} from "./components/GerenciarCamera";
-import { GerenciarEstacao } from "./components/GerenciarEstacao";
-import { GerenciarBandeja } from "./components/GerenciarBandeja";
+import { StationManagment } from "./components/StationManagment";
+import { TrayManagment } from "./components/TrayManagment";
 
 function App() {
   return (
@@ -12,9 +12,9 @@ function App() {
       <Route index element={<Presentation />} />
       <Route path="/login" element={<Login />} />
       <Route path="/home" element={<Home />} />
-      <Route path="/gerenciarCamera" element={<GerenciarCamera/>} />
-      <Route path="/gerenciarEstacao" element={<GerenciarEstacao/>} />
-      <Route path="/gerenciarBandeja" element={<GerenciarBandeja/>} />
+      <Route path="/camera-managment" element={<CameraManagment />} />
+      <Route path="/station-managment" element={<StationManagment />} />
+      <Route path="/tray-managment" element={<TrayManagment />} />
     </Routes>
   );
 }
