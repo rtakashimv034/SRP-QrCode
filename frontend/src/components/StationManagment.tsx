@@ -1,6 +1,7 @@
 import { api } from "@/api";
+import { useDownloadQRCode } from "@/hooks/useDownloadQRCode";
 import { Label } from "@radix-ui/react-label";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -35,8 +36,7 @@ export function StationManagment() {
   const [sector, setSector] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQROpen, setIsQROpen] = useState<string | null>(null);
-
-  const svgRefs = useRef<{ [key: string]: SVGSVGElement | null }>({});
+  const { downloadQRCode, svgRefs } = useDownloadQRCode();
 
   async function handleCreateStation(sector: string) {
     const data: Props = { id: uuidv4().toString(), sector };
@@ -78,38 +78,6 @@ export function StationManagment() {
   useEffect(() => {
     getAllStations();
   }, [stations]);
-
-  async function downloadQRCode(id: string) {
-    const qrCodeElement = svgRefs.current[id];
-
-    if (qrCodeElement) {
-      const svgData = new XMLSerializer().serializeToString(qrCodeElement);
-      const img = new Image();
-      const svgBlob = new Blob([svgData], {
-        type: "image/svg+xml;charset=utf-8",
-      });
-      const url = URL.createObjectURL(svgBlob);
-
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = 256;
-        canvas.height = 256;
-
-        ctx!.drawImage(img, 0, 0);
-        const pngUrl = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = pngUrl;
-        link.download = `qrcode-${id}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      };
-
-      img.src = url;
-    }
-  }
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4 bg-slate-100">
