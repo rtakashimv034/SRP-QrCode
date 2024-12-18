@@ -13,7 +13,11 @@ type Props = {
 
 export function Home() {
   const navigate = useNavigate();
-  const [registered, setRegistered] = useState<Props>();
+  const [registered, setRegistered] = useState<Props>({
+    tray: 0,
+    stations: 0,
+    cameras: 0,
+  });
 
   async function fetchQuantity() {
     try {
@@ -51,7 +55,6 @@ export function Home() {
             <CardHome
               title="Gerenciar Câmera"
               path="/camera-managment"
-              hasAssociation
               associateds={0}
               registereds={registered?.cameras}
             />
@@ -60,7 +63,6 @@ export function Home() {
               title="Gerenciar Estação"
               path="/station-managment"
               associateds={0}
-              hasAssociation
               registereds={registered?.stations}
             />
 
@@ -69,11 +71,7 @@ export function Home() {
 
           {/* Coluna 2 */}
           <div className="flex flex-col gap-6">
-            <CardHome
-              title="Gerenciar Produtos"
-              path="/product-managment"
-              registereds={0}
-            />
+            <CardHome title="Gerenciar Produtos" path="/product-managment" />
 
             <CardHome
               title="Gerenciar Bandejas"
@@ -81,7 +79,11 @@ export function Home() {
               registereds={registered?.tray}
             />
 
-            <CardHome title="Gerenciar Usuários" path="/user-managment" />
+            <CardHome
+              title="Gerenciar Usuários"
+              path="/user-managment"
+              registereds={0}
+            />
           </div>
         </CardContent>
       </Card>

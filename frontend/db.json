@@ -1,12 +1,8 @@
 {
   "camera-managment": [
     {
-      "id": "8806d8ac-2555-44b2-9d78-ed35f45bffe7",
-      "type": "Logitech C920"
-    },
-    {
-      "id": "4ab3ea9c-cc6b-4f8d-9d8b-1a27965c37aa",
-      "type": "Logitech C920"
+      "id": "27733ca2-b81d-4076-9648-43f00003c825",
+      "type": "Logitech StreamCam"
     }
   ],
   "station-managment": [
@@ -29,13 +25,10 @@
   ],
   "tray-managment": [
     {
-      "id": "7fb4c897-4efe-400f-ba25-42b733d2c196"
+      "id": "f124d124-1019-42fb-9bf0-40994342c4a8"
     },
     {
-      "id": "7fc5c553-9c9a-49c4-b299-0c0b0fbe21f7"
-    },
-    {
-      "id": "96f42b07-2bb4-4e0e-8ba9-5b6e9fa21845"
+      "id": "3b1b99c9-b632-4a9a-ac80-27312f855f39"
     }
   ]
 }
