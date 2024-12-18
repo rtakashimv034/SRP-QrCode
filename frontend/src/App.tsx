@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router";
 import { CameraManagment } from "./components/CameraManagment";
 import { Home } from "./components/Home";
 import { Login } from "./components/Login";
+import { NotFound } from "./components/NotFound";
 import { Presentation } from "./components/Presentation";
 import { StationManagment } from "./components/StationManagment";
 import { TrayManagment } from "./components/TrayManagment";
@@ -15,6 +16,7 @@ function App() {
       <Route path="/camera-managment" element={<CameraManagment />} />
       <Route path="/station-managment" element={<StationManagment />} />
       <Route path="/tray-managment" element={<TrayManagment />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
