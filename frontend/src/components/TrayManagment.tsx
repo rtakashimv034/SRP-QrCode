@@ -1,8 +1,18 @@
 import { api } from "@/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "./ui/button";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import {
   Table,
   TableBody,
@@ -20,6 +30,9 @@ type Props = {
 export function TrayManagment() {
   const navigate = useNavigate();
   const [trays, setTray] = useState<Props[]>([]);
+  const [isQROpen, setIsQROpen] = useState<string | null>(null);
+
+  const svgRefs = useRef<{ [key: string]: SVGSVGElement | null }>({});
 
   async function handleCreateTray() {
     const data: Props = { id: uuidv4().toString() };
@@ -56,6 +69,38 @@ export function TrayManagment() {
     }
   }
 
+  async function downloadQRCode(id: string) {
+    const qrCodeElement = svgRefs.current[id];
+
+    if (qrCodeElement) {
+      const svgData = new XMLSerializer().serializeToString(qrCodeElement);
+      const img = new Image();
+      const svgBlob = new Blob([svgData], {
+        type: "image/svg+xml;charset=utf-8",
+      });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 256;
+        canvas.height = 256;
+
+        ctx!.drawImage(img, 0, 0);
+        const pngUrl = canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = pngUrl;
+        link.download = `qrcode-${id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      };
+
+      img.src = url;
+    }
+  }
+
   useEffect(() => {
     getAlltrays();
   }, [trays]);
@@ -84,6 +129,47 @@ export function TrayManagment() {
               <TableRow className={`${i % 2 === 0 && "bg-slate-300"}`} key={id}>
                 <TableCell className="font-medium">{id}</TableCell>
                 <TableCell className="flex gap-2">
+                  <Dialog
+                    open={isQROpen === id}
+                    onOpenChange={() => setIsQROpen(isQROpen ? null : id)}
+                  >
+                    <DialogTrigger>
+                      <Button variant={"generate"}>Gerar QRcode</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px] gap-5 flex-row justify-center">
+                      <DialogHeader>
+                        <DialogTitle className="flex justify-center">
+                          QRcode (
+                          <span className="font-bold">
+                            {id.substring(0, 5).trimEnd()}
+                          </span>
+                          )
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="flex-row justify-center">
+                        <QRCode
+                          id={`qrcode-${id}`}
+                          value={id}
+                          viewBox="0 0 256 256"
+                          ref={(el: never) => (svgRefs.current[id] = el)}
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button
+                          variant={"destructive"}
+                          onClick={() => setIsQROpen(null)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          variant={"submit"}
+                          onClick={() => downloadQRCode(id)}
+                        >
+                          Download
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                   <Button
                     variant={"destructive"}
                     onClick={() => handleDeleteTray(id)}

@@ -6,9 +6,16 @@ type Props = {
   path: string;
   registereds?: number;
   associateds?: number;
+  hasAssociation?: boolean;
 };
 
-export function CardHome({ path, associateds, registereds, title }: Props) {
+export function CardHome({
+  path,
+  associateds,
+  registereds,
+  title,
+  hasAssociation = false,
+}: Props) {
   const navigate = useNavigate();
 
   return (
@@ -18,8 +25,8 @@ export function CardHome({ path, associateds, registereds, title }: Props) {
     >
       <CardTitle className="text-2xl font-bold">{title}</CardTitle>
       <CardDescription>
-        {associateds && <p>Totais Associados: {associateds}</p>}
-        {registereds && <p>Totais Cadastrados: {registereds}</p>}
+        <p>Totais Cadastrados: {registereds}</p>
+        {hasAssociation && <p>Totais Associados: {associateds}</p>}
       </CardDescription>
     </div>
   );
