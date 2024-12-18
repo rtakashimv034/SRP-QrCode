@@ -109,7 +109,9 @@ export function CameraManagment() {
               </DialogHeader>
               <Select onValueChange={(type) => setCameraType(type)}>
                 <SelectTrigger className="w-[300px] bg-slate-100">
-                  <SelectValue placeholder="Select camera..." />
+                  <SelectValue
+                    placeholder={cameraType ? cameraType : "Select camera..."}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {CAMERAS.map((type, i) => (
@@ -121,6 +123,7 @@ export function CameraManagment() {
               </Select>
               <DialogFooter className="flex-row justify-center">
                 <Button
+                  disabled={!cameraType}
                   type="submit"
                   variant={"submit"}
                   onClick={() => handleCreateCamera(cameraType)}

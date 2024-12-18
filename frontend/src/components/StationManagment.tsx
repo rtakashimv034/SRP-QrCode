@@ -120,7 +120,13 @@ export function StationManagment() {
           </Button>
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogTrigger>
-              <Button variant={"submit"} onClick={() => setIsModalOpen(true)}>
+              <Button
+                variant={"submit"}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSector("");
+                }}
+              >
                 Cadastrar Estação
               </Button>
             </DialogTrigger>
@@ -137,17 +143,30 @@ export function StationManagment() {
                     id="name"
                     onChange={(e) => setSector(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                      if (
+                        e.key === "Enter" &&
+                        sector
+                          .split("")
+                          .filter((e) => e.trim().length)
+                          .join("").length >= 3
+                      ) {
                         handleCreateStation(sector);
                       }
                     }}
                     className="col-span-3"
+                    placeholder="Station name must have at least 3 characters"
                   />
                 </div>
               </div>
               <DialogFooter>
                 <Button
                   type="submit"
+                  disabled={
+                    sector
+                      .split("")
+                      .filter((e) => e.trim().length)
+                      .join("").length < 3
+                  }
                   onClick={() => handleCreateStation(sector)}
                 >
                   Create

@@ -51,14 +51,16 @@ export function Home() {
             <CardHome
               title="Gerenciar Câmera"
               path="/camera-managment"
-              associateds={3}
+              hasAssociation
+              associateds={0}
               registereds={registered?.cameras}
             />
 
             <CardHome
               title="Gerenciar Estação"
               path="/station-managment"
-              associateds={5}
+              associateds={0}
+              hasAssociation
               registereds={registered?.stations}
             />
 
