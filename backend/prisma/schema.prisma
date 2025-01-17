@@ -20,8 +20,8 @@ model WorkStations {
   qrcode         String
   description    String?
   createdAt      DateTime         @default(now()) @updatedAt
-  Paths          Paths[]
-  DefectivePaths DefectivePaths[]
+  Paths          Paths[]          @ignore
+  DefectivePaths DefectivePaths[] @ignore
 
   @@map("workstations")
 }
@@ -40,7 +40,7 @@ model Users {
 model Products {
   SN        String   @id
   createdAt DateTime @default(now()) @updatedAt
-  Paths     Paths[]
+  Paths     Paths[]  @ignore
 
   @@map("products")
 }
@@ -48,7 +48,7 @@ model Products {
 model DefectiveProducts {
   id             Int              @id @default(autoincrement())
   createdAt      DateTime         @default(now()) @updatedAt
-  DefectivePaths DefectivePaths[]
+  DefectivePaths DefectivePaths[] @ignore
 
   @@map("defective_products")
 }
@@ -66,8 +66,8 @@ model Paths {
   prodSN    String
   createdAt DateTime @default(now()) @updatedAt
 
-  workStation WorkStations @relation(fields: [stationId], references: [id])
-  product     Products     @relation(fields: [prodSN], references: [SN])
+  workStation WorkStations @relation(fields: [stationId], references: [id]) @ignore
+  product     Products     @relation(fields: [prodSN], references: [SN]) @ignore
 
   @@id([stationId, prodSN])
   @@map("paths")
@@ -78,8 +78,8 @@ model DefectivePaths {
   defProdId Int
   createdAt DateTime @default(now()) @updatedAt
 
-  workStation      WorkStations      @relation(fields: [stationId], references: [id])
-  defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
+  workStation      WorkStations      @relation(fields: [stationId], references: [id]) @ignore
+  defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id]) @ignore
 
   @@id([stationId, defProdId])
   @@map("defective_paths")
