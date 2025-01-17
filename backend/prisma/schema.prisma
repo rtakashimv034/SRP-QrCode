@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WorkStations {
+  id             Int              @id @default(autoincrement())
+  sector         String
+  isDisposal     Boolean          @default(false)
+  qrcode         String
+  description    String?
+  createdAt      DateTime         @default(now()) @updatedAt
+  Paths          Paths[]
+  DefectivePaths DefectivePaths[]
+
+  @@map("workstations")
+}
+
+model Users {
+  id           String   @id @default(uuid())
+  name         String
+  password     String
+  email        String   @unique
+  isSupervisor Boolean  @default(false)
+  createdAt    DateTime @default(now()) @updatedAt
+
+  @@map("users")
+}
+
+model Products {
+  SN        String   @id
+  createdAt DateTime @default(now()) @updatedAt
+  Paths     Paths[]
+
+  @@map("products")
+}
+
+model DefectiveProducts {
+  id             Int              @id @default(autoincrement())
+  createdAt      DateTime         @default(now()) @updatedAt
+  DefectivePaths DefectivePaths[]
+
+  @@map("defective_products")
+}
+
+model Trays {
+  id        Int      @id @default(autoincrement())
+  qrcode    String
+  createdAt DateTime @default(now()) @updatedAt
+
+  @@map("trays")
+}
+
+model Paths {
+  stationId Int
+  prodSN    String
+  createdAt DateTime @default(now()) @updatedAt
+
+  workStation WorkStations @relation(fields: [stationId], references: [id])
+  product     Products     @relation(fields: [prodSN], references: [SN])
+
+  @@id([stationId, prodSN])
+  @@map("paths")
+}
+
+model DefectivePaths {
+  stationId Int
+  defProdId Int
+  createdAt DateTime @default(now()) @updatedAt
+
+  workStation      WorkStations      @relation(fields: [stationId], references: [id])
+  defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
+
+  @@id([stationId, defProdId])
+  @@map("defective_paths")
+}
