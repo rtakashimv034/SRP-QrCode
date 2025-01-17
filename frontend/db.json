@@ -1,34 +1,26 @@
 {
   "camera-managment": [
     {
-      "id": "27733ca2-b81d-4076-9648-43f00003c825",
-      "type": "Logitech StreamCam"
+      "id": "81aa5d61-74b5-4887-a1c4-40f5c5233527",
+      "type": "Razer Kiyo"
     }
   ],
   "station-managment": [
-    {
-      "id": "a75ccdc8-0949-43a5-9cf7-171b6d6d9f7c",
-      "sector": "panda"
-    },
-    {
-      "id": "58a48403-7e3e-4cb4-8535-9e45b4493159",
-      "sector": "      d s s"
-    },
     {
       "id": "6c0acb0a-ae28-4825-9282-bbee8ac2acf2",
       "sector": "ddd"
     },
     {
-      "id": "e34c0a1e-cc21-4e57-8c72-f7d0050e43d8",
-      "sector": "l o l"
+      "id": "39661a9d-3cef-4737-84e4-21fe1e27963e",
+      "sector": "setor legal uau"
     }
   ],
   "tray-managment": [
     {
-      "id": "f124d124-1019-42fb-9bf0-40994342c4a8"
+      "id": "3b1b99c9-b632-4a9a-ac80-27312f855f39"
     },
     {
-      "id": "3b1b99c9-b632-4a9a-ac80-27312f855f39"
+      "id": "03b48ba1-7e1d-415b-b290-9e049b4fcafd"
     }
   ]
 }
