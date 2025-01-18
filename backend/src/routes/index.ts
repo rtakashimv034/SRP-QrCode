@@ -1,26 +1,39 @@
 import express from "express";
-import { createPath } from "./create-path";
-import { createProduct } from "./create-product";
-import { createWorkStation } from "./create-workStation";
-import { getAllDefectivePaths } from "./get-all-defectivePaths";
-import { getAllPaths } from "./get-all-paths";
-import { getAllTrays } from "./get-all-trays";
-import { getAllUsers } from "./get-all-users";
-import { getAllWorkstations } from "./get-all-workstations";
-import { getAllDefectiveProducts } from "./get-all-defectiveProducts";
-import { getAllProducts } from "./get-all-products";
+import {
+  createDefectivePath,
+  getAllDefectivePaths,
+} from "./defectivePaths-routes";
+import {
+  createDefectiveProduct,
+  getAllDefectiveProducts,
+} from "./defectiveProducts-routes";
+import { createPath, getAllPaths } from "./paths-routes";
+import { createProduct, getAllProducts } from "./products-routes";
+import { createTray, getAllTrays } from "./trays-routes";
+import { getAllUsers } from "./users-routes";
+import { createWorkStation, getAllWorkstations } from "./workstations-routes";
 
 const routes = express.Router();
-
+// user routes
 routes.get("/users", getAllUsers);
-routes.get("/workStations", getAllWorkstations);
-routes.get("/defectiveProducts", getAllDefectiveProducts);
-routes.get("/products", getAllProducts);
+// workstations routes
+routes.get("/workstations", getAllWorkstations);
+routes.post("/workstations", createWorkStation);
+// trays routes
 routes.get("/trays", getAllTrays);
+routes.post("/trays", createTray);
+// products routes
+routes.get("/products", getAllProducts);
+routes.post("/products", createProduct);
+// paths routes
 routes.get("/paths", getAllPaths);
 routes.post("/paths", createPath);
-routes.post("/products", createProduct);
-routes.post("/workStations", createWorkStation);
+// defective products routes
+routes.get("/defective-products", getAllDefectiveProducts);
+routes.post("/defective-products", createDefectiveProduct);
+
+// defective paths routes
 routes.get("/defective-paths", getAllDefectivePaths);
+routes.post("/defective-paths", createDefectivePath);
 
 export { routes };
