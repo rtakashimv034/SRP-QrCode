@@ -6,7 +6,7 @@ const productSchema = z.object({
   SN: z.string().regex(/^[A-Z0-9-]+$/, "Invalid serial number format"),
 });
 
-export async function createProduct(req: Request, res: Response) {
+async function createProduct(req: Request, res: Response) {
   const data = productSchema.parse(req.body);
 
   try {
@@ -18,3 +18,20 @@ export async function createProduct(req: Request, res: Response) {
     return;
   }
 }
+
+async function getAllProducts(req: Request, res: Response) {
+  try {
+    const products = await prisma.products.findMany({
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: `Server error: ${error}` });
+    console.error(error);
+    return;
+  }
+}
+
+export { createProduct, getAllProducts };
