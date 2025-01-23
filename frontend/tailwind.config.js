@@ -13,7 +13,7 @@ export default {
     },
   },
   plugins: [
-    require("tailwindcss-animate"),
+    import("tailwindcss-animate"),
     function ({ addVariant }) {
       addVariant("child", "& > *");
       addVariant("child-hover", "& > *:hover");
