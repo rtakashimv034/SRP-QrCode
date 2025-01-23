@@ -44,4 +44,16 @@ async function getAllWorkstations(req: Request, res: Response) {
   }
 }
 
-export { createWorkStation, getAllWorkstations };
+async function deleteWorkstation(req: Request, res: Response) {
+  try {
+    const id = Number(req.params.id);
+    await prisma.workStations.delete({ where: { id } });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ message: `Server error: ${error}` });
+    console.error(error);
+    return;
+  }
+}
+
+export { createWorkStation, deleteWorkstation, getAllWorkstations };

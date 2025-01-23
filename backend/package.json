@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch --env-file .env src/server.ts"
+    "dev": "tsx watch --env-file .env src/server.ts",
+    "pool": "tsx watch --env-file .env src/middleware/postgres.ts"
   },
   "author": "",
   "license": "ISC",
@@ -12,12 +13,15 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
     "prisma": "^6.2.1",
+    "prisma-erd-generator": "^1.11.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
+    "@types/pg-pool": "^2.0.6",
     "express": "^4.21.2",
+    "pg": "^8.13.1",
     "zod": "^3.24.1"
   }
 }
