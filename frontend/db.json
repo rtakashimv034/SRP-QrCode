@@ -1,10 +1,5 @@
 {
-  "camera-managment": [
-    {
-      "id": "81aa5d61-74b5-4887-a1c4-40f5c5233527",
-      "type": "Razer Kiyo"
-    }
-  ],
+  "camera-managment": [],
   "station-managment": [
     {
       "id": "6c0acb0a-ae28-4825-9282-bbee8ac2acf2",
@@ -13,6 +8,14 @@
     {
       "id": "39661a9d-3cef-4737-84e4-21fe1e27963e",
       "sector": "setor legal uau"
+    },
+    {
+      "id": "3305305d-e8f7-4148-a088-a9e44ffcf104",
+      "sector": "setor legal"
+    },
+    {
+      "id": "d9a12773-1f1b-4cba-8289-c98aa3135d3e",
+      "sector": "adm"
     }
   ],
   "tray-managment": [
@@ -21,6 +24,9 @@
     },
     {
       "id": "03b48ba1-7e1d-415b-b290-9e049b4fcafd"
+    },
+    {
+      "id": "8dfda36d-5ee1-464f-8178-359767b20886"
     }
   ]
 }

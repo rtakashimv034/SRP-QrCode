@@ -8,6 +8,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -20,8 +24,8 @@ model WorkStations {
   qrcode         String
   description    String?
   createdAt      DateTime         @default(now()) @updatedAt
-  Paths          Paths[]          @ignore
-  DefectivePaths DefectivePaths[] @ignore
+  Paths          Paths[]
+  DefectivePaths DefectivePaths[]
 
   @@map("workstations")
 }
@@ -40,7 +44,7 @@ model Users {
 model Products {
   SN        String   @id
   createdAt DateTime @default(now()) @updatedAt
-  Paths     Paths[]  @ignore
+  Paths     Paths[]
 
   @@map("products")
 }
@@ -48,7 +52,7 @@ model Products {
 model DefectiveProducts {
   id             Int              @id @default(autoincrement())
   createdAt      DateTime         @default(now()) @updatedAt
-  DefectivePaths DefectivePaths[] @ignore
+  DefectivePaths DefectivePaths[]
 
   @@map("defective_products")
 }
@@ -66,8 +70,8 @@ model Paths {
   prodSN    String
   createdAt DateTime @default(now()) @updatedAt
 
-  workStation WorkStations @relation(fields: [stationId], references: [id]) @ignore
-  product     Products     @relation(fields: [prodSN], references: [SN]) @ignore
+  workStation WorkStations @relation(fields: [stationId], references: [id])
+  product     Products     @relation(fields: [prodSN], references: [SN])
 
   @@id([stationId, prodSN])
   @@map("paths")
@@ -78,8 +82,8 @@ model DefectivePaths {
   defProdId Int
   createdAt DateTime @default(now()) @updatedAt
 
-  workStation      WorkStations      @relation(fields: [stationId], references: [id]) @ignore
-  defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id]) @ignore
+  workStation      WorkStations      @relation(fields: [stationId], references: [id])
+  defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
 
   @@id([stationId, defProdId])
   @@map("defective_paths")

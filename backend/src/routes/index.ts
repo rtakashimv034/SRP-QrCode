@@ -11,7 +11,11 @@ import { createPath, getAllPaths } from "./paths-routes";
 import { createProduct, getAllProducts } from "./products-routes";
 import { createTray, getAllTrays } from "./trays-routes";
 import { getAllUsers } from "./users-routes";
-import { createWorkStation, getAllWorkstations } from "./workstations-routes";
+import {
+  createWorkStation,
+  deleteWorkstation,
+  getAllWorkstations,
+} from "./workstations-routes";
 
 const routes = express.Router();
 // user routes
@@ -19,6 +23,7 @@ routes.get("/users", getAllUsers);
 // workstations routes
 routes.get("/workstations", getAllWorkstations);
 routes.post("/workstations", createWorkStation);
+routes.delete("/workstations/:id", deleteWorkstation);
 // trays routes
 routes.get("/trays", getAllTrays);
 routes.post("/trays", createTray);
