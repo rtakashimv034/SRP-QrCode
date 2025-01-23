@@ -10,18 +10,18 @@ interface QueryParams {
 export async function getAllUsers(req: Request, res: Response) {
   try {
     const { isSupervisor, order }: QueryParams = req.query;
-
+    const condition =
+      isSupervisor === "true"
+        ? true
+        : isSupervisor === "false"
+        ? false
+        : undefined;
     const users = await prisma.users.findMany({
       orderBy: {
         name: order || "asc",
       },
       where: {
-        isSupervisor:
-          isSupervisor === "true"
-            ? true
-            : isSupervisor === "false"
-            ? false
-            : undefined,
+        isSupervisor: condition,
       },
     });
     res.status(200).json(users);
