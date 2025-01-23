@@ -45,8 +45,9 @@ async function getAllWorkstations(req: Request, res: Response) {
 }
 
 async function deleteWorkstation(req: Request, res: Response) {
+  const id = Number(req.params.id);
+
   try {
-    const id = Number(req.params.id);
     await prisma.workStations.delete({ where: { id } });
     res.status(204).send();
   } catch (error) {
@@ -56,4 +57,35 @@ async function deleteWorkstation(req: Request, res: Response) {
   }
 }
 
-export { createWorkStation, deleteWorkstation, getAllWorkstations };
+async function updateWorkstation(req: Request, res: Response) {
+  const data = workStationSchema.parse(req.body);
+  const id = Number(req.params.id);
+
+  try {
+    // checks if workStation has the same qrcode
+    const existingWorkStation = await prisma.workStations.findMany({
+      where: { qrcode: data.qrcode },
+    });
+    if (existingWorkStation.length > 1) {
+      res.status(409).json({ message: "Workstation qrocde already exists" });
+      return;
+    }
+    // update workstation
+    await prisma.workStations.update({
+      where: { id },
+      data,
+    });
+    res.status(204).json({ message: "workstation updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: `Server error: ${error}` });
+    console.error(error);
+    return;
+  }
+}
+
+export {
+  createWorkStation,
+  deleteWorkstation,
+  getAllWorkstations,
+  updateWorkstation,
+};

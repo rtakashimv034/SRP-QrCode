@@ -15,6 +15,7 @@ import {
   createWorkStation,
   deleteWorkstation,
   getAllWorkstations,
+  updateWorkstation,
 } from "./workstations-routes";
 
 const routes = express.Router();
@@ -24,6 +25,7 @@ routes.get("/users", getAllUsers);
 routes.get("/workstations", getAllWorkstations);
 routes.post("/workstations", createWorkStation);
 routes.delete("/workstations/:id", deleteWorkstation);
+routes.patch("/workstations/:id", updateWorkstation);
 // trays routes
 routes.get("/trays", getAllTrays);
 routes.post("/trays", createTray);
