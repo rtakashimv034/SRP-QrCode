@@ -10,7 +10,7 @@ import {
 import { createPath, getAllPaths } from "./paths-routes";
 import { createProduct, getAllProducts } from "./products-routes";
 import { createTray, getAllTrays } from "./trays-routes";
-import { getAllUsers } from "./users-routes";
+import { createUser, getAllUsers } from "./users-routes";
 import {
   createWorkStation,
   deleteWorkstation,
@@ -21,6 +21,7 @@ import {
 const routes = express.Router();
 // user routes
 routes.get("/users", getAllUsers);
+routes.post("/users", createUser)
 // workstations routes
 routes.get("/workstations", getAllWorkstations);
 routes.post("/workstations", createWorkStation);
