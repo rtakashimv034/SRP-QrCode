@@ -8,7 +8,7 @@ import {
 import { getAllPaths } from "./paths";
 import { createProduct, getAllProducts } from "./products";
 import { createTray, getAllTrays } from "./trays";
-import { createUser, getAllUsers } from "./users";
+import { createUser, getAllUsers, login } from "./users";
 import {
   createWorkStation,
   deleteWorkstation,
@@ -20,6 +20,7 @@ const routes = express.Router();
 // user routes
 routes.get("/users", getAllUsers);
 routes.post("/users", createUser);
+routes.post("/users/login", login)
 // workstations routes
 routes.get("/workstations", getAllWorkstations);
 routes.post("/workstations", createWorkStation);
