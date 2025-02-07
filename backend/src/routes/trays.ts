@@ -9,17 +9,6 @@ const traySchema = z.object({
 async function createTray(req: Request, res: Response) {
   const data = traySchema.parse(req.body);
   try {
-    const existingTray = await prisma.trays.findFirst({
-      where: {
-        qrcode: data.qrcode,
-      },
-    });
-    if (existingTray) {
-      res
-        .status(409)
-        .json({ message: "Tray with the same QR code already exists" });
-      return;
-    }
     await prisma.trays.create({
       data: {
         qrcode: data.qrcode,

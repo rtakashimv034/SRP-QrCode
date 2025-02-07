@@ -13,15 +13,7 @@ async function createWorkStation(req: Request, res: Response) {
   const data = workStationSchema.parse(req.body);
 
   try {
-    // checks if workStation has the same qrcode
-    const existingWorkStation = await prisma.workStations.findFirst({
-      where: { qrcode: data.qrcode },
-    });
-    if (existingWorkStation) {
-      res.status(409).json({ message: "Workstation already exists" });
-      return;
-    }
-    await prisma.workStations.create({ data });
+    await prisma.workstations.create({ data });
     res.status(201).json({ message: "Workstation created successfully" });
   } catch (error) {
     res.status(500).json({ message: `Server error: ${error}` });
@@ -31,7 +23,7 @@ async function createWorkStation(req: Request, res: Response) {
 }
 async function getAllWorkstations(req: Request, res: Response) {
   try {
-    const workstations = await prisma.workStations.findMany({
+    const workstations = await prisma.workstations.findMany({
       orderBy: {
         id: "asc",
       },
@@ -48,7 +40,7 @@ async function deleteWorkstation(req: Request, res: Response) {
   const id = Number(req.params.id);
 
   try {
-    await prisma.workStations.delete({ where: { id } });
+    await prisma.workstations.delete({ where: { id } });
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ message: `Server error: ${error}` });
@@ -62,16 +54,7 @@ async function updateWorkstation(req: Request, res: Response) {
   const id = Number(req.params.id);
 
   try {
-    // checks if workStation has the same qrcode
-    const existingWorkStation = await prisma.workStations.findMany({
-      where: { qrcode: data.qrcode },
-    });
-    if (existingWorkStation.length > 1) {
-      res.status(409).json({ message: "Workstation qrocde already exists" });
-      return;
-    }
-    // update workstation
-    await prisma.workStations.update({
+    await prisma.workstations.update({
       where: { id },
       data,
     });
