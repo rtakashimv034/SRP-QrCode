@@ -17,11 +17,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model WorkStations {
+model Workstations {
   id             Int              @id @default(autoincrement())
   sector         String
   isDisposal     Boolean          @default(false)
-  qrcode         String
+  qrcode         String           @unique
   description    String?
   createdAt      DateTime         @default(now()) @updatedAt
   Paths          Paths[]
@@ -59,7 +59,7 @@ model DefectiveProducts {
 
 model Trays {
   id        Int      @id @default(autoincrement())
-  qrcode    String
+  qrcode    String   @unique
   createdAt DateTime @default(now()) @updatedAt
 
   @@map("trays")
@@ -68,9 +68,9 @@ model Trays {
 model Paths {
   stationId Int
   prodSN    String
-  createdAt DateTime @default(now()) @updatedAt
+  createdAt DateTime? @default(now()) @updatedAt
 
-  workStation WorkStations @relation(fields: [stationId], references: [id])
+  workStation Workstations @relation(fields: [stationId], references: [id])
   product     Products     @relation(fields: [prodSN], references: [SN])
 
   @@id([stationId, prodSN])
@@ -80,9 +80,9 @@ model Paths {
 model DefectivePaths {
   stationId Int
   defProdId Int
-  createdAt DateTime @default(now()) @updatedAt
+  createdAt DateTime? @default(now()) @updatedAt
 
-  workStation      WorkStations      @relation(fields: [stationId], references: [id])
+  workStation      Workstations      @relation(fields: [stationId], references: [id])
   defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
 
   @@id([stationId, defProdId])

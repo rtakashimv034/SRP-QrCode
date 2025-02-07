@@ -1,27 +1,25 @@
 import express from "express";
-import {
-  createDefectivePath,
-  getAllDefectivePaths,
-} from "./defectivePaths-routes";
+import { generateStep } from "./camera-route";
+import { createDefectivePath, getAllDefectivePaths } from "./defectivePaths";
 import {
   createDefectiveProduct,
   getAllDefectiveProducts,
-} from "./defectiveProducts-routes";
-import { createPath, getAllPaths } from "./paths-routes";
-import { createProduct, getAllProducts } from "./products-routes";
-import { createTray, getAllTrays } from "./trays-routes";
-import { createUser, getAllUsers } from "./users-routes";
+} from "./defectiveProducts";
+import { getAllPaths } from "./paths";
+import { createProduct, getAllProducts } from "./products";
+import { createTray, getAllTrays } from "./trays";
+import { createUser, getAllUsers } from "./users";
 import {
   createWorkStation,
   deleteWorkstation,
   getAllWorkstations,
   updateWorkstation,
-} from "./workstations-routes";
+} from "./workstations";
 
 const routes = express.Router();
 // user routes
 routes.get("/users", getAllUsers);
-routes.post("/users", createUser)
+routes.post("/users", createUser);
 // workstations routes
 routes.get("/workstations", getAllWorkstations);
 routes.post("/workstations", createWorkStation);
@@ -35,7 +33,8 @@ routes.get("/products", getAllProducts);
 routes.post("/products", createProduct);
 // paths routes
 routes.get("/paths", getAllPaths);
-routes.post("/paths", createPath);
+// camera routes
+routes.post("/camera", generateStep);
 // defective products routes
 routes.get("/defective-products", getAllDefectiveProducts);
 routes.post("/defective-products", createDefectiveProduct);
