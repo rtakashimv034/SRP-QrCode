@@ -1,11 +1,13 @@
+import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Input } from "./ui/input";
 
+import { PasswordField } from "./ui/passwordfield";
 export function Login() {
-  const [cpf, setCpf] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigate();
 
@@ -14,54 +16,62 @@ export function Login() {
   // - fix Styles
   // - implements logic
   const handleLogin = () => {
-    console.log("CPF:", cpf);
+    console.log("email:", email);
     console.log("Password:", password);
     navigation("/home");
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-slate-100">
-      <Card className="w-96">
-        <CardHeader className="text-center">
-          <h1 className="text-2xl font-semibold text-slate-800">Login</h1>
+    <div className="flex overflow-hidden items-center justify-center h-screen bg-[url(@/assets/bg.png)] bg-transparent bg-[100%] bg-cover bg-no-repeat">
+      <Card className="flex p-32 flex-col justify-center items-center w-2/3 md:w-[40%] h-[90%] bg-white/25 bg-no-repeat backdrop-blur-[11px] border-none">
+        <CardHeader className="w-full">
+          <div className="bg-white w-fill h-36 text-4xl italic flex justify-center items-center">
+            LOGO
+          </div>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="cpf"
-                className="block text-sm font-medium text-slate-700"
-              >
-                CPF
-              </label>
-              <Input
-                id="cpf"
-                type="text"
-                value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
-                placeholder="Digite seu CPF"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-slate-700"
-              >
-                Senha
-              </label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Digite sua senha"
-              />
-            </div>
+        <CardContent className="w-full mt-8">
+          <div className="w-full space-y-4">
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Login"
+              required
+              className="bg-white text-black"
+            />
+            <PasswordField
+              id="password"
+              value={password}
+              placeholder="Senha"
+              className="bg-white"
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
         </CardContent>
-        <CardFooter className="pt-4">
-          <Button className="w-full" variant={"submit"} onClick={handleLogin}>
-            Logar
+        <CardFooter className="flex-col w-full space-y-6 items-end">
+          <div className="flex items-center w-full justify-between">
+            <div className="flex items-center gap-2">
+              <Checkbox className="border-none bg-white " />
+              <span className="text-white opacity-75 text-xs">
+                Manter-me conectado
+              </span>
+            </div>
+            <span
+              onClick={() => navigation("/retrive-password")}
+              className="text-white opacity-70 underline text-xs cursor-pointer hover:opacity-90"
+            >
+              Esqueceu a senha?
+            </span>
+          </div>
+          <Button
+            className="rounded-full px-6"
+            variant={"submit"}
+            disabled={!email || !password}
+            onClick={handleLogin}
+            type="submit"
+          >
+            Entrar
           </Button>
         </CardFooter>
       </Card>
