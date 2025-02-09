@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router";
 import { CameraManagment } from "./components/CameraManagment";
+import { ForgotPassword } from "./components/ForgotPassword";
 import { Home } from "./components/Home";
 import { Login } from "./components/Login";
 import { NotFound } from "./components/NotFound";
@@ -16,6 +17,7 @@ function App() {
       <Route path="/camera-managment" element={<CameraManagment />} />
       <Route path="/station-managment" element={<StationManagment />} />
       <Route path="/tray-managment" element={<TrayManagment />} />
+      <Route path="/retrive-password" element={<ForgotPassword />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
