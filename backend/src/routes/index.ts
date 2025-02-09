@@ -5,6 +5,7 @@ import {
   createDefectiveProduct,
   getAllDefectiveProducts,
 } from "./defectiveProducts";
+import { login } from "./login";
 import { getAllPaths } from "./paths";
 import { createProduct, getAllProducts } from "./products";
 import { createTray, getAllTrays } from "./trays";
@@ -20,7 +21,8 @@ const routes = express.Router();
 // user routes
 routes.get("/users", getAllUsers);
 routes.post("/users", createUser);
-routes.post("/users/login", login)
+// login route
+routes.post("/login", login);
 // workstations routes
 routes.get("/workstations", getAllWorkstations);
 routes.post("/workstations", createWorkStation);
@@ -39,7 +41,6 @@ routes.post("/camera", generateStep);
 // defective products routes
 routes.get("/defective-products", getAllDefectiveProducts);
 routes.post("/defective-products", createDefectiveProduct);
-
 // defective paths routes
 routes.get("/defective-paths", getAllDefectivePaths);
 routes.post("/defective-paths", createDefectivePath);
