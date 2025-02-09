@@ -2,6 +2,10 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
 import { Request, Response } from "express";
+import { error } from "console";
+
+const bcrypt = require('bcryptjs');
+
 
 interface QueryParams {
   order?: "asc" | "desc";
@@ -24,13 +28,21 @@ async function createUser(req: Request, res: Response) {
       },
     });
     if (existingUser) {
-      res.status(409).json({ message: "user with same email already exists" });
+      res
+      .status(409)
+      .json({ errors: "user with same email already exists"})
       return;
     }
-    await prisma.users.create({ data });
-    res.status(201).json({ message: "User registered successfully" });
+    const newUser = await prisma.users.create({data});
+    res.status(201).json({
+      name: newUser.name,
+      email: newUser.email,
+    });
+    
+    
+
   } catch (error) {
-    res.status(500).json({ message: ` Server error: ${error} ` });
+    res.status(500).json({ errors: ` Server error: ${error} `})
     console.log(error);
     return;
   }
@@ -61,4 +73,36 @@ async function getAllUsers(req: Request, res: Response) {
   }
 }
 
-export { createUser, getAllUsers };
+async function login(req: Request, res: Response) {
+  
+  const data = userSchema.parse(req.body)
+
+  const user = await prisma.users.findFirst({
+    where: {
+      email: data.email
+    }
+  })
+  
+  // Check if user exists
+
+  if(!user) {
+    res.status(404).json({errors : "Usuário não encontrado!"})
+    return
+  }
+
+  // Check if password matches
+  if(!(await bcrypt.compare(data.password, user.password))) {
+    res.status(422).json({errors: "Senha inválida!"})
+    return
+  }
+
+  // login ok
+  res.status(201).json({
+    name: user.name,
+    email: user.email,
+    supervisor: user.isSupervisor,
+  })
+}
+
+export {createUser, getAllUsers, login};
+

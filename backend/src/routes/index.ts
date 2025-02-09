@@ -9,7 +9,7 @@ import { login } from "./login";
 import { getAllPaths } from "./paths";
 import { createProduct, getAllProducts } from "./products";
 import { createTray, getAllTrays } from "./trays";
-import { createUser, getAllUsers } from "./users";
+import { createUser, getAllUsers, login } from "./users";
 import {
   createWorkStation,
   deleteWorkstation,
