@@ -1,24 +1,43 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { api } from "@/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
-import { Input } from "./ui/input";
-
+import * as z from "zod";
+import { Checkbox } from "./ui/checkbox";
 import { PasswordField } from "./ui/passwordfield";
-export function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const navigation = useNavigate();
 
-  // TODO:
-  // - fields validation
-  // - fix Styles
-  // - implements logic
-  const handleLogin = () => {
-    console.log("email:", email);
-    console.log("Password:", password);
-    navigation("/home");
+const loginSchema = z.object({
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(8, "A senha deve ter pelo menos 6 caracteres"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+
+export function Login() {
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    mode: "onSubmit",
+  });
+
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      const response = await api.post("/login", data);
+      const token = response.data.token;
+      localStorage.setItem("authToken", token);
+      alert("Login realizado com sucesso!");
+      navigate("/home");
+    } catch (error) {
+      console.error("Erro ao realizar login", error);
+      alert("Falha ao fazer login. Tente novamente.");
+    }
   };
 
   return (
@@ -30,50 +49,52 @@ export function Login() {
           </div>
         </CardHeader>
         <CardContent className="w-full mt-8">
-          <div className="w-full space-y-4">
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Login"
-              required
-              className="bg-white text-black"
-            />
-            <PasswordField
-              id="password"
-              value={password}
-              placeholder="Senha"
-              className="bg-white"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex-col w-full space-y-6 items-end">
-          <div className="flex items-center w-full justify-between">
-            <div className="flex items-center gap-2">
-              <Checkbox className="border-none bg-white " />
-              <span className="text-white opacity-75 text-xs">
-                Manter-me conectado
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-4 w-full flex flex-col items-end"
+          >
+            <div className="w-full space-y-4">
+              <Input
+                type="email"
+                {...register("email", { required: "E-mail é obrigatório" })}
+                placeholder="Digite seu e-mail"
+                className="bg-white text-black"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
+              <PasswordField
+                {...register("password", { required: "Senha é obrigatória" })}
+                placeholder="Digite sua senha"
+                className="bg-white text-black"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center w-full justify-between">
+              <div className="flex items-center gap-2">
+                <Checkbox className="border-none bg-white" />
+                <span className="text-white opacity-75 text-xs">
+                  Manter-me conectado
+                </span>
+              </div>
+              <span className="text-white opacity-70 underline text-xs cursor-pointer hover:opacity-90">
+                Esqueceu a senha?
               </span>
             </div>
-            <span
-              onClick={() => navigation("/retrive-password")}
-              className="text-white opacity-70 underline text-xs cursor-pointer hover:opacity-90"
+            <Button
+              type="submit"
+              variant={"submit"}
+              className="rounded-full px-6"
+              disabled={isSubmitting}
             >
-              Esqueceu a senha?
-            </span>
-          </div>
-          <Button
-            className="rounded-full px-6"
-            variant={"submit"}
-            disabled={!email || !password}
-            onClick={handleLogin}
-            type="submit"
-          >
-            Entrar
-          </Button>
-        </CardFooter>
+              Entrar
+            </Button>
+          </form>
+        </CardContent>
       </Card>
     </div>
   );
