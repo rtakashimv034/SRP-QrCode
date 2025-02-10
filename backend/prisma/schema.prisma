@@ -8,18 +8,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+model Sectors {
+  name         String         @id
+  createdAt    DateTime       @default(now()) @updatedAt
+  workstations Workstations[]
+
+  @@map("sectors")
+}
+
 model Workstations {
   id             Int              @id @default(autoincrement())
-  sector         String
+  sectorName     String
   isDisposal     Boolean          @default(false)
   qrcode         String           @unique
   description    String?
@@ -27,13 +31,17 @@ model Workstations {
   Paths          Paths[]
   DefectivePaths DefectivePaths[]
 
+  sector Sectors @relation(fields: [sectorName], references: [name])
+
   @@map("workstations")
 }
 
 model Users {
   id           String   @id @default(uuid())
   name         String
+  surname      String
   password     String
+  avatar       String?
   email        String   @unique
   isSupervisor Boolean  @default(false)
   createdAt    DateTime @default(now()) @updatedAt

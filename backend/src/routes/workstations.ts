@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import z from "zod";
 import { prisma } from "../lib/prisma";
 
-const workStationSchema = z.object({
-  sector: z.string(),
+export const workStationSchema = z.object({
+  sectorName: z.string(),
   isDisposal: z.boolean(),
-  description: z.string().optional(),
   qrcode: z.string(),
+  description: z.string(),
 });
 
 async function createWorkStation(req: Request, res: Response) {

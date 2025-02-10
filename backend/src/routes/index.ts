@@ -8,8 +8,14 @@ import {
 import { login } from "./login";
 import { getAllPaths } from "./paths";
 import { createProduct, getAllProducts } from "./products";
+import {
+  createSector,
+  deleteSector,
+  getAllsectors,
+  updateSector,
+} from "./sectors";
 import { createTray, getAllTrays } from "./trays";
-import { createUser, getAllUsers, login } from "./users";
+import { createUser, getAllUsers } from "./users";
 import {
   createWorkStation,
   deleteWorkstation,
@@ -23,6 +29,11 @@ routes.get("/users", getAllUsers);
 routes.post("/users", createUser);
 // login route
 routes.post("/login", login);
+//sector routes
+routes.get("/sectors", getAllsectors);
+routes.post("/sectors", createSector);
+routes.patch("/sectors/:name", updateSector);
+routes.delete("/sectors/:name", deleteSector);
 // workstations routes
 routes.get("/workstations", getAllWorkstations);
 routes.post("/workstations", createWorkStation);
