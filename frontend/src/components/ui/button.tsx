@@ -28,6 +28,8 @@ const buttonVariants = cva(
           "bg-slate-100 border-2 border-blue-500 text-blue-500 hover:bg-blue-500/10 dark:bg-blue-500/10 dark:text-blue-500",
         associated:
           "bg-slate-100 border-2 border-orange-500 text-orange-500 hover:bg-orange-500/10 dark:bg-orange-500/10 dark:text-orange-500",
+        transparent:
+          "bg-transparent text-slate-900 hover:bg-red-500 hover:text-white dark:text-slate-50 dark:hover:bg-red-500", // Agora a cor do texto muda para branco quando passa o mouse
       },
       size: {
         default: "h-9 px-4 py-2",
@@ -42,6 +44,7 @@ const buttonVariants = cva(
     },
   }
 );
+
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
