@@ -2,7 +2,7 @@ import PIL.Image
 from QRCodeGenerator import QRCode
 from pyzbar.pyzbar import decode
 
-dados = "ET-019"
+dados = "PDT-001"
 
 qr = QRCode()
 qr.receber_dados(dados)
