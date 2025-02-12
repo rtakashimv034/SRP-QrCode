@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch --env-file .env src/server.ts",
-    "pool": "tsx watch --env-file .env src/middleware/postgres.ts"
+    "dev": "tsx watch --env-file .env src/server.ts"
   },
   "author": "",
   "license": "ISC",
@@ -14,15 +13,9 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.8",
-<<<<<<< HEAD
     "@types/node": "^22.13.1",
-    "prisma": "^6.2.1",
-    "prisma-erd-generator": "^1.11.2",
     "ts-node": "^10.9.2",
-=======
-    "@types/node": "^22.10.2",
     "prisma": "^6.3.1",
->>>>>>> a7190c07329d4bb074d44b22ce693e30367c51c6
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   },

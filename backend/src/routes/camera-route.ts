@@ -4,83 +4,77 @@ import { prisma } from "../lib/prisma";
 import { generateSerialNumber } from "../utils/SNgenerator";
 
 const stepSchema = z.object({
-  stationQrcode: z.string(),
+  sectorName: z.string(),
+  stationId: z.number(),
   trayQrcode: z.string(),
   registeredAt: z.string().transform((str) => new Date(str)),
 });
 
-type Station = {
-  stationId: number;
-  registeredAt: Date;
-};
-
-let stations: Station[] = [];
+let steps: z.infer<typeof stepSchema>[] = [];
 
 export async function generateStep(req: Request, res: Response) {
   const step = stepSchema.parse(req.body);
 
   try {
-    // fetch last normal workstation and the current workstaton
-    const [lastWorkstation, currentWorkstation] = await prisma.$transaction([
-      prisma.workstations.findFirst({
-        where: {
-          isDisposal: false,
-        },
-        orderBy: {
-          id: "desc",
-        },
-      }),
-      prisma.workstations.findUnique({
-        where: { qrcode: step.stationQrcode },
-      }),
-    ]);
-    if (!currentWorkstation) {
-      res.status(404).json({ message: "Current workstation not found" });
+    // checks if the station id exists on this specific sector
+    const station = await prisma.workstations.findFirst({
+      where: {
+        id: step.stationId,
+        sectorName: step.sectorName,
+      },
+    });
+    if (!station) {
+      res
+        .status(404)
+        .json({ errors: "station or sector not found or is already disposed" });
       return;
     }
-    stations.push({
-      stationId: currentWorkstation.id,
-      registeredAt: step.registeredAt,
-    });
-    // itera sobre a lista de stations e da um post pra cada step (criando novas paths)
-    if (lastWorkstation?.id === currentWorkstation?.id && stations.length > 0) {
+    // add to steps list
+    steps.push(step);
+    // verifica se é ultima estação
+    if (station.type === "final") {
+      // create product
       const product = await prisma.products.create({
         data: {
           SN: generateSerialNumber(),
         },
       });
       // array of path data
-      const data = stations.map(({ stationId, registeredAt }) => ({
+      const data = steps.map(({ stationId, registeredAt }) => ({
         prodSN: product.SN,
         stationId,
-        createdAt: registeredAt,
+        sectorName: step.sectorName,
+        registeredAt,
       }));
       // Create all paths in a single call
       await prisma.paths.createMany({ data });
-      stations = [];
-      res.status(200).json({ message: "Paths registered successfully" });
+      steps = [];
+      res.status(201).json({ message: "Paths registered successfully" });
       return;
     }
-    // verifica se é uma estação de dispatch
-    if (currentWorkstation.isDisposal) {
+    // verifica se é estação de defeito
+    if (station.type === "defective") {
+      // create defective product
       const defectiveProduct = await prisma.defectiveProducts.create({});
-      const data = stations.map(({ registeredAt, stationId }) => ({
+      // array of path data
+      const data = steps.map(({ stationId, registeredAt }) => ({
         defProdId: defectiveProduct.id,
         stationId,
-        createdAt: registeredAt,
+        sectorName: step.sectorName,
+        registeredAt,
       }));
-      // Create all defective paths in a single call
+      // Create all paths in a single call
       await prisma.defectivePaths.createMany({ data });
-      stations = [];
+      steps = [];
       res
-        .status(200)
+        .status(201)
         .json({ message: "Defective paths registered successfully" });
       return;
     }
-
-    res.status(200).json({ message: "step registered" });
+    res.status(201).json({ message: "Step added successfully" });
   } catch (error) {
     res.status(500).json({ message: `Server error: ${error}` });
     console.error(error);
+    return;
   }
 }
