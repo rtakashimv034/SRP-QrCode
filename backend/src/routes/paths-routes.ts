@@ -34,6 +34,19 @@ async function createPath(req: Request, res: Response) {
   }
 }
 
+async function deletePathRoute(req: Request, res: Response) {
+  const id = req.params.stationId
+
+  try {
+    await prisma.users.delete({ where: { id }})
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json( {mesasage: `Server error: ${error}` } );
+    console.error(error);
+    return;
+  }
+}
+
 async function getAllPaths(req: Request, res: Response) {
   try {
     const paths = await prisma.paths.findMany({
@@ -48,4 +61,4 @@ async function getAllPaths(req: Request, res: Response) {
   }
 }
 
-export { createPath, getAllPaths };
+export { createPath, getAllPaths, deletePathRoute };

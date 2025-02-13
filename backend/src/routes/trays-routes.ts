@@ -32,6 +32,20 @@ async function createTray(req: Request, res: Response) {
     return;
   }
 }
+
+async function deleteTray(req: Request, res: Response) {
+  const id = req.params.id
+
+  try {
+    await prisma.users.delete({ where: { id }})
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json( {mesasage: `Server error: ${error}` } );
+    console.error(error);
+    return;
+  }
+}
+
 async function getAllTrays(req: Request, res: Response) {
   try {
     const trays = await prisma.trays.findMany({
@@ -46,4 +60,4 @@ async function getAllTrays(req: Request, res: Response) {
   }
 }
 
-export { createTray, getAllTrays };
+export { createTray, getAllTrays, deleteTray };

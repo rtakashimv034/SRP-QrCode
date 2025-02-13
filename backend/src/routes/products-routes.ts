@@ -19,6 +19,18 @@ async function createProduct(req: Request, res: Response) {
   }
 }
 
+async function deleteProduct(req: Request, res: Response) {
+  const id = req.params.id
+  try {
+    await prisma.users.delete({ where: { id }})
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json( {mesasage: `Server error: ${error}` } );
+    console.error(error);
+    return;
+  }
+}
+
 async function getAllProducts(req: Request, res: Response) {
   try {
     const products = await prisma.products.findMany({
@@ -34,4 +46,4 @@ async function getAllProducts(req: Request, res: Response) {
   }
 }
 
-export { createProduct, getAllProducts };
+export { createProduct, getAllProducts, deleteProduct };
