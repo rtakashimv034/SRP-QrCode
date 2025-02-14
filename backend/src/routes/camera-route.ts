@@ -6,7 +6,6 @@ import { generateSerialNumber } from "../utils/SNgenerator";
 const stepSchema = z.object({
   sectorName: z.string(),
   stationId: z.number(),
-  trayQrcode: z.string(),
   registeredAt: z.string().transform((str) => new Date(str)),
 });
 
@@ -40,10 +39,10 @@ export async function generateStep(req: Request, res: Response) {
         },
       });
       // array of path data
-      const data = steps.map(({ stationId, registeredAt }) => ({
+      const data = steps.map(({ stationId, registeredAt, sectorName }) => ({
         prodSN: product.SN,
         stationId,
-        sectorName: step.sectorName,
+        sectorName,
         registeredAt,
       }));
       // Create all paths in a single call
@@ -57,10 +56,10 @@ export async function generateStep(req: Request, res: Response) {
       // create defective product
       const defectiveProduct = await prisma.defectiveProducts.create({});
       // array of path data
-      const data = steps.map(({ stationId, registeredAt }) => ({
+      const data = steps.map(({ stationId, registeredAt, sectorName }) => ({
         defProdId: defectiveProduct.id,
         stationId,
-        sectorName: step.sectorName,
+        sectorName,
         registeredAt,
       }));
       // Create all paths in a single call
