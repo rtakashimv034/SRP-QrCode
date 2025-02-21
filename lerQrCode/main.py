@@ -6,7 +6,7 @@ from flask_cors import CORS
 import signal
 import sys
 from datetime import datetime
-
+import requests
 
 # Variável global para armazenar os QR codes lidos
 qrcodes = []  # Lista única para todas as câmeras
@@ -19,14 +19,6 @@ running = True
 app = Flask(__name__)
 CORS(app)
 
-# Configuração do banco de dados PostgreSQL
-DB_CONFIG = {
-    "dbname": "meu_banco",
-    "user": "meu_usuario",
-    "password": "minha_senha",
-    "host": "localhost",
-    "port": "5432"
-}
 
 # Criando conexão com o banco de dados
 def conectar_bd():
@@ -59,6 +51,7 @@ def read_qr_code(camera_index):
         decoded_objects = pyzbar.decode(frame)
         found_bdj = None
         found_produto = None
+        found_produto_defeituoso = None
 
         for obj in decoded_objects:
             data = obj.data.decode('utf-8')
@@ -80,6 +73,8 @@ def read_qr_code(camera_index):
                 found_bdj = data
             elif data.startswith('P'):  # Supondo que Produto começa com 'P'
                 found_produto = data
+            elif data.startswith('D'): #Supondo que produto defeituoso começa com 'D'
+                found_produto_defeituoso = data
 
             with lock:
                 camera_entry = next((entry for entry in qrcodes if entry["camera"] == camera_index), None)
@@ -127,9 +122,36 @@ def read_qr_code(camera_index):
                         print(f"Timestamp de adição: {timestamp_adicao}, Timestamp da bandeja: {bdj_timestamp}")
                         print("Caminho do produto atualizado:", product_path)
 
+                        for path in product_path:
+                            jsons = []
+
+                            if len(path) >= 2:
+                                dicionario = {
+                                    "sectorName": (),
+                                    "stationId" : (),
+                                    "trayQrcode": (),
+                                    "registeredAt": (),
+                                }
+
+                            try: 
+                                response = requests.post('http://localhost:3333/api/v1/camera', json=data)
+
+                                # Verificando a resposta
+                                if response.status_code == 201:
+                                    print("Post criado com sucesso!")
+                                    print("Resposta do servidor:", response.json())  # Exibe a resposta JSON
+                                else:
+                                    print("Erro ao criar o post:", response.status_code)
+                                    print("Detalhes:", response.text)  # Exibe a resposta de erro, se houver
+                            except:
+                                print("ocorreu um erro para passar os dados para o banco")
+
+
                 # Remove o BDJ detectado de todas as câmeras
                 for entry in qrcodes:
                     entry["BDJ"] = [bdj for bdj in entry["BDJ"] if bdj["data"] != found_bdj]
+
+        
 
         # Exibe a imagem da câmera com os retângulos
         cv2.imshow(window_name, frame)
