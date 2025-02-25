@@ -43,7 +43,7 @@ export function Login() {
   return (
     <div className="flex overflow-hidden items-center justify-center h-screen bg-img bg-transparent bg-[100%] bg-cover bg-no-repeat">
       <Card className="flex p-32 flex-col justify-center items-center w-2/3 md:w-[40%] h-[90%] bg-white/25 bg-no-repeat backdrop-blur-[11px] border-none">
-        <CardHeader className="w-full">
+        <CardHeader className="wimage.png-full">
           <div className="bg-white w-fill h-36 text-4xl italic flex justify-center items-center">
             LOGO
           </div>
