@@ -1,17 +1,17 @@
 import { EllipsisVertical } from "lucide-react";
 
 type Props = {
-  avatarURL: string;
+  avatar: string;
   name: string;
   surName: string;
 };
 
-export function UserCard({ avatarURL, name, surName }: Props) {
+export function UserCard({ avatar, name, surName }: Props) {
   return (
     <div className="bg-gradient-to-r from-green-default to-green-dark p-2 flex flex-row justify-between">
       <div className="flex flex-row space-x-4 items-center px-2">
         <img
-          src={avatarURL}
+          src={avatar}
           alt="PO"
           style={{
             minWidth: "70px",
