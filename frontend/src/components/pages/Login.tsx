@@ -6,8 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as z from "zod";
-import { Checkbox } from "./ui/checkbox";
-import { PasswordField } from "./ui/passwordfield";
+import { Checkbox } from "../ui/checkbox";
+import { PasswordField } from "../ui/passwordfield";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
@@ -33,7 +33,7 @@ export function Login() {
       const token = response.data.token;
       localStorage.setItem("authToken", token);
       alert("Login realizado com sucesso!");
-      navigate("/home");
+      navigate("/reports");
     } catch (error) {
       console.error("Erro ao realizar login", error);
       alert("Falha ao fazer login. Tente novamente.");
@@ -43,8 +43,8 @@ export function Login() {
   return (
     <div className="flex overflow-hidden items-center justify-center h-screen bg-img bg-transparent bg-[100%] bg-cover bg-no-repeat">
       <Card className="flex p-32 flex-col justify-center items-center w-2/3 md:w-[40%] h-[90%] bg-white/25 bg-no-repeat backdrop-blur-[11px] border-none">
-        <CardHeader className="wimage.png-full">
-          <div className="bg-white w-fill h-36 text-4xl italic flex justify-center items-center">
+        <CardHeader className="flex w-full">
+          <div className="bg-white w-full h-36 text-4xl italic flex justify-center items-center">
             LOGO
           </div>
         </CardHeader>

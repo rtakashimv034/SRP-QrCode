@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-export function useDownloadQRCode() {
+export function QRCodeDownloader() {
   const svgRefs = useRef<{ [key: string]: SVGSVGElement | null }>({});
   const downloadQRCode = (id: string) => {
     const qrCodeElement = svgRefs.current[id];
@@ -34,5 +34,5 @@ export function useDownloadQRCode() {
     }
   };
 
-  return {downloadQRCode, svgRefs};
+  return { downloadQRCode, svgRefs };
 }

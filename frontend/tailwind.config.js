@@ -24,11 +24,12 @@ export default {
           light: "#4B6558",
           dark: "#13261F",
         },
+        default: "#DAE5DF",
       },
     },
   },
   plugins: [
-    require("tailwindcss-animate"),
+    import("tailwindcss-animate"),
     function ({ addVariant }) {
       addVariant("child", "& > *");
       addVariant("child-hover", "& > *:hover");
