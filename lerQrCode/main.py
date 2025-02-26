@@ -7,6 +7,8 @@ import signal
 import sys
 from datetime import datetime
 import requests
+import json
+
 
 # Variável global para armazenar os QR codes lidos
 qrcodes = []  # Lista única para todas as câmeras
@@ -18,11 +20,6 @@ running = True
 
 app = Flask(__name__)
 CORS(app)
-
-
-# Criando conexão com o banco de dados
-def conectar_bd():
-    return psycopg2.connect(**DB_CONFIG)
 
 # Variável para armazenar as capturas de vídeo
 caps = {}
@@ -51,7 +48,6 @@ def read_qr_code(camera_index):
         decoded_objects = pyzbar.decode(frame)
         found_bdj = None
         found_produto = None
-        found_produto_defeituoso = None
 
         for obj in decoded_objects:
             data = obj.data.decode('utf-8')
@@ -73,8 +69,6 @@ def read_qr_code(camera_index):
                 found_bdj = data
             elif data.startswith('P'):  # Supondo que Produto começa com 'P'
                 found_produto = data
-            elif data.startswith('D'): #Supondo que produto defeituoso começa com 'D'
-                found_produto_defeituoso = data
 
             with lock:
                 camera_entry = next((entry for entry in qrcodes if entry["camera"] == camera_index), None)
@@ -96,7 +90,7 @@ def read_qr_code(camera_index):
 
         # Verifica se BDJ e Produto foram lidos no mesmo frame
         if found_bdj and found_produto:
-            print(f"[!] Câmera {camera_index}: BDJ ({found_bdj}) e Produto ({found_produto}) DETECTADOS SIMULTANEAMENTE!")
+            #print(f"[!] Câmera {camera_index}: BDJ ({found_bdj}) e Produto ({found_produto}) DETECTADOS SIMULTANEAMENTE!")
 
             with lock:
                 # Encontra a estação (ET) associada ao BDJ
@@ -112,29 +106,34 @@ def read_qr_code(camera_index):
                 # Adiciona o par [produto, estacao, timestamp_adicao, timestamp_bandeja] ao product_path, se não existir
                 if estacao and bdj_timestamp:
                     now = datetime.now()
-                    timestamp_adicao = now.strftime("%Y-%m-%d %H:%M:%S")  # Timestamp de adição
-                    novo_caminho = [found_produto, estacao, timestamp_adicao, bdj_timestamp]
+                    #timestamp_adicao = now.strftime("%Y-%m-%d %H:%M:%S")  # Timestamp de adição "envio para o banco"
+                    novo_caminho = [found_produto, estacao, bdj_timestamp]
 
                     # Verifica se o caminho já existe (ignorando os timestamps)
                     if not any(caminho[0] == found_produto and caminho[1] == estacao for caminho in product_path):
                         product_path.append(novo_caminho)
                         print(f"Produto {found_produto} passou pela estação {estacao}.")
-                        print(f"Timestamp de adição: {timestamp_adicao}, Timestamp da bandeja: {bdj_timestamp}")
+                        print(f" Timestamp da bandeja: {bdj_timestamp}")
                         print("Caminho do produto atualizado:", product_path)
 
-                        for path in product_path:
-                            jsons = []
+
+                # Remove o BDJ detectado de todas as câmeras
+                for entry in qrcodes:
+                    entry["BDJ"] = [bdj for bdj in entry["BDJ"] if bdj["data"] != found_bdj]
+
+            for path in product_path:
 
                             if len(path) >= 2:
                                 dicionario = {
-                                    "sectorName": (),
-                                    "stationId" : (),
-                                    "trayQrcode": (),
-                                    "registeredAt": (),
+                                    "stationId" : path[1] ,
+                                    "prodSN": path[0],
+                                    "registeredAt": path[2],
                                 }
-
+                            
+                            data = json.dumps(dicionario, indent=4)  # Converte o dicionário em JSON
+                            print(data)
                             try: 
-                                response = requests.post('http://localhost:3333/api/v1/camera', json=data)
+                                response = requests.post('http://localhost:3333/api/v1/path', json=data)
 
                                 # Verificando a resposta
                                 if response.status_code == 201:
@@ -145,11 +144,6 @@ def read_qr_code(camera_index):
                                     print("Detalhes:", response.text)  # Exibe a resposta de erro, se houver
                             except:
                                 print("ocorreu um erro para passar os dados para o banco")
-
-
-                # Remove o BDJ detectado de todas as câmeras
-                for entry in qrcodes:
-                    entry["BDJ"] = [bdj for bdj in entry["BDJ"] if bdj["data"] != found_bdj]
 
         
 
