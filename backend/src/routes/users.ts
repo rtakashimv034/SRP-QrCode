@@ -3,7 +3,7 @@ import { prisma } from "../lib/prisma";
 
 import { Request, Response } from "express";
 
-const bcrypt = require("bcryptjs");
+import bcrypt from "bcryptjs";
 
 interface QueryParams {
   order?: "asc" | "desc";
@@ -13,7 +13,8 @@ interface QueryParams {
 const userSchema = z.object({
   name: z.string(),
   surname: z.string(),
-  password: z.string(),
+  password: z.string().min(8, "password must be at least 8 characters"),
+  avatar: z.string().optional(),
   email: z.string().email(),
   isSupervisor: z.boolean(),
 });
@@ -30,7 +31,11 @@ async function createUser(req: Request, res: Response) {
       res.status(409).json({ errors: "user with same email already exists" });
       return;
     }
+    // create new user
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    data.password = hashedPassword;
     const newUser = await prisma.users.create({ data });
+
     res.status(201).json({
       name: newUser.name,
       email: newUser.email,

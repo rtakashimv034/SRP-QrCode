@@ -26,10 +26,10 @@ model Sectors {
 
 model Workstations {
   id             Int              @id @default(autoincrement())
-  sectorName     String
-  type           String           @default("normal")
+  description    String
   qrcode         String           @unique
-  description    String?
+  type           String
+  sectorName     String
   createdAt      DateTime         @default(now()) @updatedAt
   Paths          Paths[]
   DefectivePaths DefectivePaths[]
