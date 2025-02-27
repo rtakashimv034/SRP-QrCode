@@ -1,6 +1,7 @@
 import defaultAvatar from "@/assets/default_avatar.png";
 import { Menu } from "../Menu";
 import { UserCard } from "../UserCard";
+
 type DefaultLayoutProps = {
   children: React.ReactNode;
 };

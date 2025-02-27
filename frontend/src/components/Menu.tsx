@@ -22,9 +22,11 @@ export function Menu() {
           onClick={() => navigate("/reports")}
         >
           <StickyNote
-            className={`size-7 fill-${
-              pathname === "/reports" ? "white" : "black"
-            } text-${pathname === "/reports" ? "yellow-dark" : "white"}`}
+            className={`size-7 ${
+              pathname === "/reports"
+                ? "fill-white text-yellow-dark"
+                : "text-white fill-black"
+            }`}
           />
           <span className="font-normal">Relatórios</span>
         </Button>
@@ -36,9 +38,11 @@ export function Menu() {
           onClick={() => navigate("/sectors")}
         >
           <Factory
-            className={`size-7 fill-${
-              pathname === "/sectors" ? "white" : "black"
-            } text-${pathname === "/sectors" ? "yellow-dark" : "white"}`}
+            className={`size-7 ${
+              pathname === "/sectors"
+                ? "fill-white text-yellow-dark"
+                : "text-white fill-black"
+            }`}
           />
           <span className="font-normal">Setores</span>
         </Button>
@@ -48,9 +52,11 @@ export function Menu() {
           onClick={() => navigate("/users")}
         >
           <UsersRound
-            className={`size-7 fill-${
-              pathname === "/users" ? "white" : "black"
-            } text-${pathname === "/users" ? "white" : "black"}`}
+            className={`size-7 ${
+              pathname === "/users"
+                ? "fill-white text-white"
+                : "fill-black text-black"
+            }`}
           />
           <span className="font-normal">Usuários</span>
         </Button>
