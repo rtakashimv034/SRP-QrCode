@@ -2,12 +2,34 @@ import { Request, Response } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { workStationSchema } from "./workstations";
-
 const sectorSchema = z.object({
   name: z.string(),
   createdAt: z.string().optional(),
-  workstations: z.array(workStationSchema).optional(),
+  workstations: z.array(workStationSchema),
 });
+
+function validateWS(
+  workstations: z.infer<typeof workStationSchema>[] = []
+): string {
+  if (workstations.length < 3) {
+    return "Not enough workstations allowed";
+  }
+
+  const finalCount = workstations.filter(({ type }) => type === "final").length;
+  const defectiveCount = workstations.filter(
+    ({ type }) => type === "defective"
+  ).length;
+
+  if (finalCount !== 1 || defectiveCount !== 1) {
+    return "Sector must contain one final and one defective workstation!";
+  }
+
+  const qrCodes = new Set(workstations.map(({ qrcode }) => qrcode));
+  if (qrCodes.size !== workstations.length) {
+    return "Duplicate QR codes are not allowed within the same sector.";
+  }
+  return "";
+}
 
 async function getAllsectors(req: Request, res: Response) {
   try {
@@ -28,17 +50,40 @@ async function getAllsectors(req: Request, res: Response) {
 
 async function createSector(req: Request, res: Response) {
   const { name, createdAt, workstations } = sectorSchema.parse(req.body);
+  const invalidation = validateWS(workstations);
+
+  if (invalidation) {
+    res.status(400).json({ error: invalidation });
+    return;
+  }
+  // query all existing qrcodes
+  const existingQrcodes = await prisma.workstations
+    .findMany({
+      select: { qrcode: true },
+    })
+    .then((ws) => ws.map((ws) => ws.qrcode));
+  // checks if some QRcode is already being used in other sector
+  const qrCodes = workstations.map((ws) => ws.qrcode);
+  const conflictingQRCodes = qrCodes.filter((qr) =>
+    existingQrcodes.includes(qr)
+  );
+
+  if (conflictingQRCodes.length > 0) {
+    res.status(400).json({
+      error: `QR codes ${conflictingQRCodes.join(
+        ", "
+      )} are already in use in other sectors.`,
+    });
+    return;
+  }
+
   try {
     await prisma.sectors.create({
       data: {
         name,
         createdAt,
         workstations: {
-          create: workstations?.map(({ isDisposal, description, qrcode }) => ({
-            isDisposal,
-            qrcode,
-            description,
-          })),
+          create: workstations,
         },
       },
     });
@@ -46,7 +91,6 @@ async function createSector(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ errors: ` Server error: ${error} ` });
     console.log(error);
-    return;
   }
 }
 
@@ -59,32 +103,61 @@ async function updateSector(req: Request, res: Response) {
     return;
   }
 
+  const isInvalid = validateWS(workstations);
+  if (isInvalid) {
+    res.status(400).json({ error: isInvalid });
+    return;
+  }
+
+  // checks for existing qrcodes in other sectors
+  const existingQRCodesInOtherSectors = await prisma.workstations
+    .findMany({
+      where: { sectorName: { not: sectorName } },
+      select: { qrcode: true },
+    })
+    .then((ws) => ws.map((ws) => ws.qrcode));
+
+  // query all qrcodes
+  const existingQrcodes = await prisma.workstations
+    .findMany({
+      where: { sectorName },
+    })
+    .then((ws) => ws.map((ws) => ws.qrcode));
+  // checks if some QRcode is already being used in other sector
+  const qrCodes = workstations.map((ws) => ws.qrcode);
+  const conflictingQRCodes = qrCodes.filter((qr) =>
+    existingQRCodesInOtherSectors.includes(qr)
+  );
+
+  if (conflictingQRCodes.length > 0) {
+    res.status(400).json({
+      error: `QR codes ${conflictingQRCodes.join(
+        ", "
+      )} are already in use in other sectors.`,
+    });
+    return;
+  }
+  // create update and create sectors lists
+  const updates = workstations
+    .filter(({ qrcode }) => existingQrcodes.includes(qrcode))
+    .map(({ qrcode, ...rest }) => ({
+      where: { qrcode },
+      data: { ...rest },
+    }));
+
+  const creates = workstations.filter(
+    (ws) => !existingQrcodes.some((qr) => qr === ws.qrcode)
+  );
+
   try {
     await prisma.sectors.update({
       where: { name: sectorName },
       data: {
-        name, // Atualiza o nome do setor
+        name,
         workstations: {
-          // Remove workstations que não estão mais na lista
-          deleteMany: {
-            qrcode: { notIn: workstations?.map((ws) => ws.qrcode) }, // Remove as estações ausentes
-          },
-          // Atualiza workstations existentes
-          update: workstations
-            ?.filter((ws) => ws.qrcode) // Apenas estações já existentes
-            .map(({ qrcode, isDisposal, description }) => ({
-              where: { qrcode },
-              data: { isDisposal, description },
-            })),
-          // Cria novas workstations que não existem ainda
-          create: workstations
-            ?.filter((ws) => !ws.qrcode) // Apenas estações novas
-            .map(({ isDisposal, qrcode, description }) => ({
-              isDisposal,
-              qrcode,
-              description,
-              sector: { connect: { name } },
-            })),
+          deleteMany: { qrcode: { notIn: [...qrCodes] } },
+          update: updates,
+          create: creates,
         },
       },
     });

@@ -11,7 +11,7 @@ async function getAllPaths(req: Request, res: Response) {
   try {
     const paths = await prisma.paths.findMany({
       orderBy: {
-        createdAt: "asc",
+        registeredAt: "asc",
       },
     });
     res.status(200).json(paths);

@@ -5,6 +5,7 @@ import { prisma } from "../lib/prisma";
 const defectivePathSchema = z.object({
   stationId: z.number().int(),
   defProdId: z.number().int(),
+  sectorName: z.string(),
 });
 
 async function createDefectivePath(req: Request, res: Response) {
@@ -14,9 +15,10 @@ async function createDefectivePath(req: Request, res: Response) {
     // Check if the path already exists
     const existingPath = await prisma.defectivePaths.findUnique({
       where: {
-        stationId_defProdId: {
+        stationId_defProdId_sectorName: {
           stationId: data.stationId,
           defProdId: data.defProdId,
+          sectorName: data.sectorName,
         },
       },
     });
@@ -37,7 +39,7 @@ async function getAllDefectivePaths(req: Request, res: Response) {
   try {
     const defectivePaths = await prisma.defectivePaths.findMany({
       orderBy: {
-        createdAt: "asc",
+        registeredAt: "asc",
       },
     });
     res.status(200).json(defectivePaths);
