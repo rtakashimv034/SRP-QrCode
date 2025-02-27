@@ -1,5 +1,5 @@
 import { api } from "@/api";
-import { useDownloadQRCode } from "@/hooks/useDownloadQRCode";
+import { QRCodeDownloader } from "@/utils/QRCodeDownloader";
 import { Label } from "@radix-ui/react-label";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
@@ -36,7 +36,7 @@ export function StationManagment() {
   const [sector, setSector] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQROpen, setIsQROpen] = useState<string | null>(null);
-  const { downloadQRCode, svgRefs } = useDownloadQRCode();
+  const { downloadQRCode, svgRefs } = QRCodeDownloader();
 
   async function handleCreateStation(sector: string) {
     const data: Props = { id: uuidv4().toString(), sector };

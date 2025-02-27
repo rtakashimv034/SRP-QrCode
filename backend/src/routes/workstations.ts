@@ -3,10 +3,9 @@ import z from "zod";
 import { prisma } from "../lib/prisma";
 
 export const workStationSchema = z.object({
-  sectorName: z.string(),
-  isDisposal: z.boolean(),
-  qrcode: z.string(),
   description: z.string(),
+  qrcode: z.string(),
+  type: z.enum(["normal", "final", "defective"]),
 });
 
 async function createWorkStation(req: Request, res: Response) {
