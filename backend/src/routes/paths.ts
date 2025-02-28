@@ -3,11 +3,12 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
 export const pathSchema = z.object({
-  stationId: z.number().int(),
-  prodSN: z.string().regex(/^[A-Z0-9-]+$/, "Invalid serial number format"),
+  stationIdStr: z.string(),
+  prodSN: z.string().startsWith("PDT-"),
+  registeredAt: z.string().transform((str) => new Date(str)),
 });
 
-async function getAllPaths(req: Request, res: Response) {
+export async function getAllPaths(req: Request, res: Response) {
   try {
     const paths = await prisma.paths.findMany({
       orderBy: {
@@ -20,5 +21,3 @@ async function getAllPaths(req: Request, res: Response) {
     console.error(error);
   }
 }
-
-export { getAllPaths };

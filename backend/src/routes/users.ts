@@ -1,9 +1,5 @@
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
-<<<<<<< HEAD:backend/src/routes/users-routes.ts
-import {number, z} from "zod";
-=======
->>>>>>> 53c6ab86f82c85185b8976e9776173dbafbffdd6:backend/src/routes/users.ts
 
 import { Request, Response } from "express";
 
@@ -89,8 +85,5 @@ async function getAllUsers(req: Request, res: Response) {
   }
 }
 
-<<<<<<< HEAD:backend/src/routes/users-routes.ts
+
 export {createUser, getAllUsers, deleteUser};
-=======
-export { createUser, getAllUsers };
->>>>>>> 53c6ab86f82c85185b8976e9776173dbafbffdd6:backend/src/routes/users.ts

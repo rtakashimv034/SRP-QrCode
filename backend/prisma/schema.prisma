@@ -77,29 +77,29 @@ model Trays {
 }
 
 model Paths {
-  sectorName   String
   stationId    Int
   prodSN       String
   registeredAt DateTime? @default(now()) @updatedAt
 
   workStation Workstations @relation(fields: [stationId], references: [id])
   product     Products     @relation(fields: [prodSN], references: [SN])
-  sector      Sectors      @relation(fields: [sectorName], references: [name])
+  Sectors     Sectors?     @relation(fields: [sectorsName], references: [name])
+  sectorsName String?
 
-  @@id([stationId, prodSN, sectorName])
+  @@id([stationId, prodSN])
   @@map("paths")
 }
 
 model DefectivePaths {
-  sectorName   String
   stationId    Int
   defProdId    Int
   registeredAt DateTime? @default(now()) @updatedAt
 
   workStation      Workstations      @relation(fields: [stationId], references: [id])
   defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
-  sector           Sectors           @relation(fields: [sectorName], references: [name])
+  Sectors          Sectors?          @relation(fields: [sectorsName], references: [name])
+  sectorsName      String?
 
-  @@id([stationId, defProdId, sectorName])
+  @@id([stationId, defProdId])
   @@map("defective_paths")
 }

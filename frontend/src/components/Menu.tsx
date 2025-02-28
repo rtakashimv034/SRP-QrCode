@@ -8,7 +8,7 @@ export function Menu() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login");
+    navigate("/");
   };
 
   return (
