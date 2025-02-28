@@ -3,6 +3,12 @@
 @tailwind utilities;
 @layer base {
   :root {
-    --radius: 0.5rem
+    --radius: 0.5rem;
+  }
+}
+
+@layer utilities {
+  .bg-img {
+    background-image: url("./assets/bg.png");
   }
 }

@@ -3,9 +3,9 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-
+const removed = "[&_svg]:size-4";
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:focus-visible:ring-slate-300",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none  [&_svg]:shrink-0 dark:focus-visible:ring-slate-300",
   {
     variants: {
       variant: {
@@ -13,10 +13,12 @@ const buttonVariants = cva(
           "bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90",
         destructive:
           "bg-red-500 text-slate-50 shadow-sm hover:bg-red-500/90 dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/90",
-        submit:
+        submit_green:
           "bg-green-500 text-slate-50 shadow-sm hover:bg-green-500/90 dark:bg-green-900 dark:text-slate-50 dark:hover:bg-green-900/90",
+        submit:
+          "bg-yellow-dark text-slate-50 shadow-sm hover:bg-yellow-light dark:bg-yellow-dark dark:text-slate-50 dark:hover:bg-yellow-light/90",
         outline:
-          "border border-slate-200 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+          "border-2 border-slate-800 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         secondary:
           "bg-slate-100 text-slate-900 shadow-sm hover:bg-slate-100/80 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80",
         ghost:
@@ -26,6 +28,8 @@ const buttonVariants = cva(
           "bg-slate-100 border-2 border-blue-500 text-blue-500 hover:bg-blue-500/10 dark:bg-blue-500/10 dark:text-blue-500",
         associated:
           "bg-slate-100 border-2 border-orange-500 text-orange-500 hover:bg-orange-500/10 dark:bg-orange-500/10 dark:text-orange-500",
+        transparent:
+          "bg-transparent text-slate-900 hover:bg-red-500 hover:text-white dark:text-slate-50 dark:hover:bg-red-500", // Agora a cor do texto muda para branco quando passa o mouse
       },
       size: {
         default: "h-9 px-4 py-2",

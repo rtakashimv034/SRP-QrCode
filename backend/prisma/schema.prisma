@@ -8,24 +8,33 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model WorkStations {
+model Sectors {
+  name           String           @id
+  slug           String           @default("")
+  createdAt      DateTime         @default(now()) @updatedAt
+  workstations   Workstations[]
+  Paths          Paths[]
+  DefectivePaths DefectivePaths[]
+
+  @@map("sectors")
+}
+
+model Workstations {
   id             Int              @id @default(autoincrement())
-  sector         String
-  isDisposal     Boolean          @default(false)
-  qrcode         String
-  description    String?
+  description    String
+  qrcode         String           @unique
+  type           String
+  sectorName     String
   createdAt      DateTime         @default(now()) @updatedAt
   Paths          Paths[]
   DefectivePaths DefectivePaths[]
+
+  sector Sectors @relation(fields: [sectorName], references: [name])
 
   @@map("workstations")
 }
@@ -33,7 +42,9 @@ model WorkStations {
 model Users {
   id           String   @id @default(uuid())
   name         String
+  surname      String
   password     String
+  avatar       String?
   email        String   @unique
   isSupervisor Boolean  @default(false)
   createdAt    DateTime @default(now()) @updatedAt
@@ -59,32 +70,36 @@ model DefectiveProducts {
 
 model Trays {
   id        Int      @id @default(autoincrement())
-  qrcode    String
+  qrcode    String   @unique
   createdAt DateTime @default(now()) @updatedAt
 
   @@map("trays")
 }
 
 model Paths {
-  stationId Int
-  prodSN    String
-  createdAt DateTime @default(now()) @updatedAt
+  sectorName   String
+  stationId    Int
+  prodSN       String
+  registeredAt DateTime? @default(now()) @updatedAt
 
-  workStation WorkStations @relation(fields: [stationId], references: [id])
+  workStation Workstations @relation(fields: [stationId], references: [id])
   product     Products     @relation(fields: [prodSN], references: [SN])
+  sector      Sectors      @relation(fields: [sectorName], references: [name])
 
-  @@id([stationId, prodSN])
+  @@id([stationId, prodSN, sectorName])
   @@map("paths")
 }
 
 model DefectivePaths {
-  stationId Int
-  defProdId Int
-  createdAt DateTime @default(now()) @updatedAt
+  sectorName   String
+  stationId    Int
+  defProdId    Int
+  registeredAt DateTime? @default(now()) @updatedAt
 
-  workStation      WorkStations      @relation(fields: [stationId], references: [id])
+  workStation      Workstations      @relation(fields: [stationId], references: [id])
   defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
+  sector           Sectors           @relation(fields: [sectorName], references: [name])
 
-  @@id([stationId, defProdId])
+  @@id([stationId, defProdId, sectorName])
   @@map("defective_paths")
 }

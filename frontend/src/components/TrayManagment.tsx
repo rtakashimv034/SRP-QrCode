@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "./ui/button";
 
-import { useDownloadQRCode } from "@/hooks/useDownloadQRCode";
+import { QRCodeDownloader } from "@/utils/QRCodeDownloader";
 import {
   Dialog,
   DialogContent,
@@ -32,7 +32,7 @@ export function TrayManagment() {
   const navigate = useNavigate();
   const [trays, setTray] = useState<Props[]>([]);
   const [isQROpen, setIsQROpen] = useState<string | null>(null);
-  const { downloadQRCode, svgRefs } = useDownloadQRCode();
+  const { downloadQRCode, svgRefs } = QRCodeDownloader();
 
   async function handleCreateTray() {
     const data: Props = { id: uuidv4().toString() };
