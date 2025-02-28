@@ -35,7 +35,25 @@ async function createDefectivePath(req: Request, res: Response) {
     return;
   }
 }
+<<<<<<< HEAD:backend/src/routes/paths-routes.ts
+
+async function deletePathRoute(req: Request, res: Response) {
+  const id = req.params.stationId
+
+  try {
+    await prisma.users.delete({ where: { id }})
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json( {mesasage: `Server error: ${error}` } );
+    console.error(error);
+    return;
+  }
+}
+
+async function getAllPaths(req: Request, res: Response) {
+=======
 async function getAllDefectivePaths(req: Request, res: Response) {
+>>>>>>> 53c6ab86f82c85185b8976e9776173dbafbffdd6:backend/src/routes/defectivePaths.ts
   try {
     const defectivePaths = await prisma.defectivePaths.findMany({
       orderBy: {
@@ -50,4 +68,8 @@ async function getAllDefectivePaths(req: Request, res: Response) {
   }
 }
 
+<<<<<<< HEAD:backend/src/routes/paths-routes.ts
+export { createPath, getAllPaths, deletePathRoute };
+=======
 export { createDefectivePath, getAllDefectivePaths };
+>>>>>>> 53c6ab86f82c85185b8976e9776173dbafbffdd6:backend/src/routes/defectivePaths.ts

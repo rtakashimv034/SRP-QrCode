@@ -47,6 +47,19 @@ async function createUser(req: Request, res: Response) {
   }
 }
 
+async function deleteUser(req: Request, res: Response) {
+  const email = req.params.email
+
+  try {
+    await prisma.users.delete({ where: { email }})
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json( {mesasage: `Server error: ${error}` } );
+    console.error(error);
+    return;
+  }
+}
+
 async function getAllUsers(req: Request, res: Response) {
   try {
     const { isSupervisor, order }: QueryParams = req.query;
@@ -72,4 +85,5 @@ async function getAllUsers(req: Request, res: Response) {
   }
 }
 
-export { createUser, getAllUsers };
+
+export {createUser, getAllUsers, deleteUser};

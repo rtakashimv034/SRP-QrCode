@@ -4,7 +4,6 @@ import { prisma } from "../lib/prisma";
 
 export const workStationSchema = z.object({
   description: z.string(),
-  qrcode: z.string(),
   type: z.enum(["normal", "final", "defective"]),
 });
 

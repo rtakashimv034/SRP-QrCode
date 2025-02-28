@@ -1,9 +1,13 @@
 import express from "express";
-import { generateStep } from "./camera-route";
-import { createDefectivePath, getAllDefectivePaths } from "./defectivePaths";
+import { createPath } from "./camera-route";
+import {
+  createDefectivePath,
+  getAllDefectivePaths,
+} from "./defectivePathEndpoint";
 import {
   createDefectiveProduct,
   getAllDefectiveProducts,
+
 } from "./defectiveProducts";
 import { login } from "./login";
 import { getAllPaths } from "./paths";
@@ -48,12 +52,12 @@ routes.post("/products", createProduct);
 // paths routes
 routes.get("/paths", getAllPaths);
 // camera routes
-routes.post("/camera", generateStep);
 // defective products routes
 routes.get("/defective-products", getAllDefectiveProducts);
 routes.post("/defective-products", createDefectiveProduct);
-// defective paths routes
+// camera routes (NEW)
+routes.post("/camera/path", createPath);
+routes.post("/camera/defective-path", createDefectivePath);
+routes.get("/paths", getAllPaths);
 routes.get("/defective-paths", getAllDefectivePaths);
-routes.post("/defective-paths", createDefectivePath);
-
 export { routes };
