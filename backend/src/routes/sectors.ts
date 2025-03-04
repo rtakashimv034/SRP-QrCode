@@ -31,7 +31,7 @@ function validateSector(
   return "";
 }
 
-async function getAllsectors(req: Request, res: Response) {
+export async function getAllsectors(req: Request, res: Response) {
   try {
     const sectors = await prisma.sectors.findMany({
       orderBy: {
@@ -48,7 +48,7 @@ async function getAllsectors(req: Request, res: Response) {
   }
 }
 
-async function createSector(req: Request, res: Response) {
+export async function createSector(req: Request, res: Response) {
   const { name, createdAt, workstations } = sectorSchema.parse(req.body);
   const invalidation = validateSector(workstations);
 
@@ -58,13 +58,10 @@ async function createSector(req: Request, res: Response) {
   }
 
   try {
-    // get amount workstations registered
-    const existingWorkstations = await prisma.workstations.count({});
     // create workstations data
     const WSdata = workstations.map((ws, i) => ({
       type: ws.type,
       description: ws.description,
-      qrcode: `ET-${existingWorkstations + i + 1}`,
     }));
     // create sector
     await prisma.sectors.create({
@@ -83,7 +80,7 @@ async function createSector(req: Request, res: Response) {
   }
 }
 
-async function updateSector(req: Request, res: Response) {
+export async function updateSector(req: Request, res: Response) {
   const { name, workstations } = sectorSchema.parse(req.body);
   const sectorName = req.params.name;
 
@@ -110,61 +107,17 @@ async function updateSector(req: Request, res: Response) {
       }
     }
 
-    // Get existing workstations
-    const existingWorkstations = await prisma.workstations.findMany({
-      where: { sectorName },
-    });
-
-    // Prepare updates and creates
-    const existingQrCodes = existingWorkstations.map((ws) => ws.qrcode);
-    const updates = workstations
-      .filter((ws, index) => existingQrCodes[index])
-      .map((ws, index) => ({
-        where: { qrcode: existingQrCodes[index] },
-        data: {
-          type: ws.type,
-          description: ws.description,
-        },
-      }));
-
-    // Calculate new workstations to be created
-    const newWorkstationsCount =
-      workstations.length - existingWorkstations.length;
-    const lastQrCode =
-      existingWorkstations.length > 0
-        ? parseInt(
-            existingWorkstations[existingWorkstations.length - 1].qrcode.split(
-              "-"
-            )[1]
-          )
-        : 0;
-
-    const creates = workstations
-      .slice(existingWorkstations.length)
-      .map((ws, index) => ({
-        type: ws.type,
-        description: ws.description,
-        qrcode: `ET-${lastQrCode + index + 1}`,
-      }));
-
-    // Update sector
+    // Delete all existing workstations and create new ones
     await prisma.sectors.update({
       where: { name: sectorName },
       data: {
         name,
         workstations: {
-          deleteMany: {
-            AND: [
-              { sectorName },
-              {
-                qrcode: {
-                  notIn: existingQrCodes.slice(0, workstations.length),
-                },
-              },
-            ],
-          },
-          update: updates,
-          create: creates,
+          deleteMany: {}, // Delete all workstations in this sector
+          create: workstations.map((ws) => ({
+            type: ws.type,
+            description: ws.description,
+          })),
         },
       },
     });
@@ -176,11 +129,11 @@ async function updateSector(req: Request, res: Response) {
   }
 }
 
-async function deleteSector(req: Request, res: Response) {
-  const name = req.params.name;
+export async function deleteSector(req: Request, res: Response) {
+  const sectorName = req.params.name;
   try {
-    await prisma.workstations.deleteMany({ where: { sectorName: name } });
-    await prisma.sectors.delete({ where: { name } });
+    await prisma.workstations.deleteMany({ where: { sectorName } });
+    await prisma.sectors.delete({ where: { name: sectorName } });
     res.status(201).json({ message: "Sector deleted successfully" });
   } catch (error) {
     res.status(500).json({ errors: ` Server error: ${error} ` });
@@ -188,5 +141,3 @@ async function deleteSector(req: Request, res: Response) {
     return;
   }
 }
-
-export { createSector, deleteSector, getAllsectors, updateSector };

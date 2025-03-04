@@ -1,12 +1,5 @@
 import { Request, Response } from "express";
-import { z } from "zod";
 import { prisma } from "../lib/prisma";
-
-export const pathSchema = z.object({
-  stationIdStr: z.string(),
-  prodSN: z.string().startsWith("PDT-"),
-  registeredAt: z.string().transform((str) => new Date(str)),
-});
 
 export async function getAllPaths(req: Request, res: Response) {
   try {
