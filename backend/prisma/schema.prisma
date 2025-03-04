@@ -16,7 +16,8 @@ datasource db {
 model Sectors {
   name           String           @id
   slug           String           @default("")
-  createdAt      DateTime         @default(now()) @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   workstations   Workstations[]
   Paths          Paths[]
   DefectivePaths DefectivePaths[]
@@ -27,10 +28,10 @@ model Sectors {
 model Workstations {
   id             Int              @id @default(autoincrement())
   description    String
-  qrcode         String           @unique
   type           String
   sectorName     String
-  createdAt      DateTime         @default(now()) @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   Paths          Paths[]
   DefectivePaths DefectivePaths[]
 
@@ -48,13 +49,14 @@ model Users {
   email        String   @unique
   isSupervisor Boolean  @default(false)
   createdAt    DateTime @default(now()) @updatedAt
+  updatedAt    DateTime @updatedAt
 
   @@map("users")
 }
 
 model Products {
   SN        String   @id
-  createdAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
   Paths     Paths[]
 
   @@map("products")
@@ -62,7 +64,7 @@ model Products {
 
 model DefectiveProducts {
   id             Int              @id @default(autoincrement())
-  createdAt      DateTime         @default(now()) @updatedAt
+  createdAt      DateTime         @default(now())
   DefectivePaths DefectivePaths[]
 
   @@map("defective_products")
@@ -70,36 +72,35 @@ model DefectiveProducts {
 
 model Trays {
   id        Int      @id @default(autoincrement())
-  qrcode    String   @unique
-  createdAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
 
   @@map("trays")
 }
 
 model Paths {
-  stationId    Int
+  id           Int      @id @default(autoincrement())
+  stationId    Int?
   prodSN       String
-  registeredAt DateTime? @default(now()) @updatedAt
+  sectorsName  String?
+  registeredAt DateTime @default(now())
 
-  workStation Workstations @relation(fields: [stationId], references: [id])
-  product     Products     @relation(fields: [prodSN], references: [SN])
-  Sectors     Sectors?     @relation(fields: [sectorsName], references: [name])
-  sectorsName String?
+  workStation Workstations? @relation(fields: [stationId], references: [id])
+  product     Products      @relation(fields: [prodSN], references: [SN])
+  Sectors     Sectors?      @relation(fields: [sectorsName], references: [name])
 
-  @@id([stationId, prodSN])
   @@map("paths")
 }
 
 model DefectivePaths {
-  stationId    Int
+  id           Int      @id @default(autoincrement())
+  stationId    Int?
   defProdId    Int
-  registeredAt DateTime? @default(now()) @updatedAt
+  sectorsName  String?
+  registeredAt DateTime @default(now())
 
-  workStation      Workstations      @relation(fields: [stationId], references: [id])
+  workStation      Workstations?     @relation(fields: [stationId], references: [id])
   defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
   Sectors          Sectors?          @relation(fields: [sectorsName], references: [name])
-  sectorsName      String?
 
-  @@id([stationId, defProdId])
   @@map("defective_paths")
 }

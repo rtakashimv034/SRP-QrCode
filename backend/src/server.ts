@@ -17,6 +17,6 @@ app.use(
 
 app.use(express.json());
 app.use("/api/v1", routes);
-app.listen(PORT, () =>
+app.listen(PORT, "0.0.0.0", () =>
   console.log(`Server is running on port http://localhost:${PORT}/api/v1`)
 );
