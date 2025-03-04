@@ -58,13 +58,6 @@ export async function createSector(req: Request, res: Response) {
   }
 
   try {
-    // get latest worktstation
-    const existingWorkstations = await prisma.workstations.findFirst({
-      orderBy: {
-        id: "desc",
-      },
-    });
-
     // create workstations data
     const WSdata = workstations.map((ws, i) => ({
       type: ws.type,
