@@ -65,13 +65,10 @@ export async function createSector(req: Request, res: Response) {
       },
     });
 
-    const nextId = (existingWorkstations?.id || 0) + 1;
-
     // create workstations data
     const WSdata = workstations.map((ws, i) => ({
       type: ws.type,
       description: ws.description,
-      qrcode: `ET-${nextId + i}`,
     }));
     // create sector
     await prisma.sectors.create({
