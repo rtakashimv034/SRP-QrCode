@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { authenticateUser, loginSchema } from "../services/authService";
-async function login(req: Request, res: Response) {
+export async function login(req: Request, res: Response) {
   if (!req.body.email || !req.body.password) {
     res.status(400).json({ message: "Email and password are required." });
   }
@@ -14,5 +14,3 @@ async function login(req: Request, res: Response) {
     return;
   }
 }
-
-export { login };

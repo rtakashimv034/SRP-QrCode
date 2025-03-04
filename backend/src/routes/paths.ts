@@ -1,13 +1,7 @@
 import { Request, Response } from "express";
-import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
-export const pathSchema = z.object({
-  stationId: z.number().int(),
-  prodSN: z.string().regex(/^[A-Z0-9-]+$/, "Invalid serial number format"),
-});
-
-async function getAllPaths(req: Request, res: Response) {
+export async function getAllPaths(req: Request, res: Response) {
   try {
     const paths = await prisma.paths.findMany({
       orderBy: {
@@ -20,5 +14,3 @@ async function getAllPaths(req: Request, res: Response) {
     console.error(error);
   }
 }
-
-export { getAllPaths };

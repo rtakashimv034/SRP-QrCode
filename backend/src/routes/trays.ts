@@ -1,19 +1,9 @@
 import { Request, Response } from "express";
-import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
-const traySchema = z.object({
-  qrcode: z.string(),
-});
-
-async function createTray(req: Request, res: Response) {
-  const data = traySchema.parse(req.body);
+export async function createTray(req: Request, res: Response) {
   try {
-    await prisma.trays.create({
-      data: {
-        qrcode: data.qrcode,
-      },
-    });
+    await prisma.trays.create({});
     res.status(201).json({ message: "Tray created successfully" });
   } catch (error) {
     res.status(500).json({ message: `Server error: ${error}` });
@@ -21,7 +11,7 @@ async function createTray(req: Request, res: Response) {
     return;
   }
 }
-async function getAllTrays(req: Request, res: Response) {
+export async function getAllTrays(req: Request, res: Response) {
   try {
     const trays = await prisma.trays.findMany({
       orderBy: {
@@ -35,4 +25,18 @@ async function getAllTrays(req: Request, res: Response) {
   }
 }
 
-export { createTray, getAllTrays };
+export async function deleteTray(req: Request, res: Response) {
+  const id = Number(req.body);
+  try {
+    await prisma.trays.delete({
+      where: {
+        id,
+      },
+    });
+    res.status(201).json({ message: `Tray BDJ-${id} deleted successfully` });
+  } catch (error) {
+    res.status(500).json({ message: `Server error: ${error}` });
+    console.error(error);
+    return;
+  }
+}

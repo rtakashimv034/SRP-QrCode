@@ -1,11 +1,11 @@
 import { Route, Routes } from "react-router";
-import { CameraManagment } from "./components/CameraManagment";
 import { ForgotPassword } from "./components/ForgotPassword";
-import { Home } from "./components/Home";
-import { Login } from "./components/Login";
-import { NotFound } from "./components/NotFound";
-import { Presentation } from "./components/Presentation";
-import { StationManagment } from "./components/StationManagment";
+import { Login } from "./components/pages/Login";
+import { NotFound } from "./components/pages/NotFound";
+import { Presentation } from "./components/pages/Presentation";
+import { Reports } from "./components/pages/Reports";
+import { Sectors } from "./components/pages/Sectors";
+import { Users } from "./components/pages/Users";
 import { TrayManagment } from "./components/TrayManagment";
 
 function App() {
@@ -13,9 +13,9 @@ function App() {
     <Routes>
       <Route index element={<Presentation />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/camera-managment" element={<CameraManagment />} />
-      <Route path="/station-managment" element={<StationManagment />} />
+      <Route path="/reports" element={<Reports />} />
+      <Route path="/sectors" element={<Sectors />} />
+      <Route path="/users" element={<Users />} />
       <Route path="/tray-managment" element={<TrayManagment />} />
       <Route path="/retrive-password" element={<ForgotPassword />} />
       <Route path="*" element={<NotFound />} />
