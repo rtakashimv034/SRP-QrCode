@@ -2,29 +2,24 @@
     display: flex;
     flex-direction: row;
     height: calc(100% - 51.2px);
-    /* justify-items: stretch; */
     margin-left: 28.8px;
     margin-top: 25.6px;
     margin-right: 28.8px;
     gap: 28px;
-    /* margin-bottom: 25.6px; */
-    /* border: 10px solid black ; */
 }
 
 .ocorrencias{
     display: flex;
     flex-grow: 1;
-    width: 66%;
+    width: 60%;
     flex-direction: column;
     gap: 12px;
-    /* border: 8px solid gray ; */
 }
 
 .ocorrencia{
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    /* border: 6px solid yellow ; */
     column-gap: 20px;
 }
 
@@ -36,20 +31,17 @@
 
 .historico{
     flex-grow: 1;
-    width: 33%;
-    border: 5px solid cyan ;
+    width: 40%;
 }
 
 .cabeçalho{
     display: flex;
     font-size: 28px;
     font-weight: bold;  
-    /* border: 2px solid red; */
 }
 
 .titulo{
     flex-grow: 1;
-    /* border: 2px solid magenta; */
 }
 
 .icone_grande{
@@ -60,30 +52,69 @@
     margin-right: 9.6px;
 }
 
+.tabela{
+    width: 100%;
+    text-align: center;
+    border-collapse: separate;
+    border-spacing: 0px;
+}
 
+.tbl_header_row *{
+    background-color: #4B6558;
+    border-bottom: 1px solid #011128;
+    border-right: 1px solid #011128;
+    border-top: 1px solid #011128;
+}
 
-/* .icone_pequeno{
-    display: inline;
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-right: 6px;
+.tbl_header_row th:first-child{
+    border-left: 1px solid #011128;
+    border-top-left-radius: 9px;
+}
+
+.tbl_header_row th:last-child{  
+    border-top-right-radius: 9px;
+}
+
+.tbl_row > *{
+    border-bottom: 1px solid #011128;
+    border-right: 1px solid #011128;
+}
+
+.tbl_row td:first-child{
+    border-left: 1px solid #011128;
+}
+
+.tbl_row:last-child td:first-child{
+    border-bottom-left-radius: 9px;
+}
+
+.tbl_row:last-child td:last-child{
+    border-bottom-right-radius: 9px;
+}
+
+.grave{
+    height: 9.6px;
     width: 9.6px;
-    height: 11.2px;
+    background-color: #E75B42;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4.8px;
 }
 
-.botao_grande{
-    font-size: 10.4px;
-    font-weight: normal;
-    margin-top: auto;
-    margin-bottom: auto;
-    color: #5C5C5C;
-    background: transparent;
-    border: 0.8px solid #5C5C5C;
-    border-radius: 97.6px;
-    height: 19.2px;
-    width: 121.6px;
+.mediana{
+    height: 9.6px;
+    width: 9.6px;
+    background-color: #F9B74B;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4.8px;
 }
 
-.botao_grande:hover{
-    background-color: #86efac;
-} */
+.leve{
+    height: 9.6px;
+    width: 9.6px;
+    background-color: #3CAE49;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4.8px;
+}
