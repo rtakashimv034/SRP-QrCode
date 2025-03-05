@@ -6,15 +6,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthContextData["user"]>(null);
 
   useEffect(() => {
-    // Verifica se já existe um token salvo
     const token = localStorage.getItem("authToken");
-    const savedUser = localStorage.getItem("user");
+    const userId = localStorage.getItem("userId");
 
-    if (token && savedUser) {
+    if (token && userId) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser(JSON.parse(savedUser));
+      // Fetch user data from API
+      fetchUserData(userId);
     }
   }, []);
+
+  const fetchUserData = async (userId: string) => {
+    try {
+      const { data } = await api.get(`/users/${userId}`);
+      setUser(data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      signOut(); // If we can't fetch user data, sign out
+    }
+  };
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -22,8 +32,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { token, user } = data;
 
       localStorage.setItem("authToken", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      console.log(`user: ${JSON.stringify(user)}`);
+      localStorage.setItem("userId", user.id);
+
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setUser(user);
     } catch (error) {
@@ -34,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = () => {
     localStorage.removeItem("authToken");
-    localStorage.removeItem("user");
+    localStorage.removeItem("userId");
     setUser(null);
     api.defaults.headers.authorization = "";
   };
