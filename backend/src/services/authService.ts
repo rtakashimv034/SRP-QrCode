@@ -36,5 +36,5 @@ export async function authenticateUser(email: string, password: string) {
     expiresIn: "7d",
   });
 
-  return { token };
+  return { token, user };
 }

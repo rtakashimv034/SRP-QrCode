@@ -1,7 +1,7 @@
 import { EllipsisVertical } from "lucide-react";
 
 type Props = {
-  avatar: string;
+  avatar?: string;
   name: string;
   surName: string;
 };

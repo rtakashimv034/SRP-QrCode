@@ -1,39 +1,62 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileChartPie, Edit2Icon, EyeIcon, TrashIcon } from "lucide-react";
+import { Edit2Icon, EyeIcon, FileChartPie, TrashIcon } from "lucide-react";
 
-export default function SectorCard() {
+type WorkstationType = "normal" | "defective" | "final";
+
+type Workstation = {
+  id: number;
+  description: string;
+  type: WorkstationType;
+  sectorName: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SectorProps = {
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+  workstations: Workstation[];
+};
+
+type Props = Pick<SectorProps, "name" | "workstations">;
+
+export function SectorCard({ name, workstations }: Props) {
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-lg w-full h-[716px] overflow-y-auto">
-      <div className=" grid grid-cols-3 gap-[38px]">
-        {[...Array(18)].map((_, index) => (
-          <Card key={index} className="overflow-hidden rounded-2xl shadow-md flex ">
-            <div className="bg-green-light w-6"></div>
-            <CardContent className="flex flex-col">
-                <div className="relative flex flex-row justify-between">
-                    <div className="flex flex-col">
-                        <h3 className="font-bold text-xl pt-[15px] pb-[5px]">Setor de Soldagem</h3>
-                        <p className="text-sm text-gray-600">100 Bandejas Linkadas</p>
-                        <p className="text-sm text-gray-600">Nº de estações: 05</p>
-                    </div>
-                    <div className="absolute pt-[9px] -right-12">
-                        <div className="flex flex-col gap-[6px]">
-                            <button><Edit2Icon className="h-[20px] w-[20px] text-gray-400  border-gray-400 border-2 rounded-sm hover:bg-yellow-300" /></button>
-                            <button><EyeIcon className="h-[20px] w-[20px] text-gray-400  border-gray-400 border-2 rounded-sm hover:bg-blue-300 " /></button>
-                            <button><TrashIcon className="h-[20px] w-[20px] text-gray-400  border-gray-400 border-2 rounded-sm hover:bg-red-300" /></button>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-row gap-x-7 pt-6">
-                    <p className="mt-2 font-semibold text-xs text-gray-dark">Total de Ocorrências: 120</p>
-                    <Button className="bg-transparent border-gray-400 border-2 text-gray-dark rounded-2xl h-[18px] text-[10px] mt-2 hover:bg-green-300 ">
-                        <FileChartPie className=" text-gray-dark" size={15}/> Gerar Relatório
-                    </Button>
-                </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+    <Card className="overflow-hidden rounded-xl bg-[#f6f6f6] h-28 shadow-md w-full flex">
+      <div className="bg-green-light shrink-0 w-4" />
+      <CardContent className="flex flex-row w-full p-2 relative">
+        <div className="flex flex-col justify-between ">
+          <div className="flex flex-col">
+            <h2 className="font-semibold text-base">{name}</h2>
+            <p className="text-xs opacity-50">
+              Nº de estações: {workstations.length}
+            </p>
+          </div>
+          <div className="flex mb-2 flex-row gap-x-4 items-center">
+            <p className="font-semibold whitespace-nowrap text-xs opacity-70">
+              Total de Ocorrências: 120
+            </p>
+            <Button className="px-3 bg-transparent border border-black opacity-50 rounded-2xl h-4 text-[10px] hover:bg-green-300 ">
+              <FileChartPie className="text-black size-3" />
+              <span className="text-black font-normal">Gerar Relatório</span>
+            </Button>
+          </div>
+        </div>
+        <div className="right-1.5 top-1.5 absolute flex flex-col gap-1.5">
+          <button className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300">
+            <Edit2Icon className="fill-black " />
+          </button>
+          <button className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-blue-300">
+            <EyeIcon className="fill-black text-white " />
+          </button>
+          <button className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300">
+            <TrashIcon className="fill-black" />
+          </button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

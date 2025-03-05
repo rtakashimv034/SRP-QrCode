@@ -1,7 +1,7 @@
-import { api } from "@/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function Login() {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const {
     register,
     handleSubmit,
@@ -27,12 +28,9 @@ export function Login() {
     mode: "onSubmit",
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
+  const onSubmit = async ({ email, password }: LoginFormValues) => {
     try {
-      const response = await api.post("/login", data);
-      const token = response.data.token;
-      localStorage.setItem("authToken", token);
-      alert("Login realizado com sucesso!");
+      await signIn(email, password);
       navigate("/reports");
     } catch (error) {
       console.error("Erro ao realizar login", error);
