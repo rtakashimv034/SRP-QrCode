@@ -48,6 +48,31 @@ export async function getAllsectors(req: Request, res: Response) {
   }
 }
 
+export async function getSectorByName(req: Request, res: Response) {
+  const name = req.params.name as string;
+
+  try {
+    const sector = await prisma.sectors.findFirst({
+      where: {
+        name,
+      },
+      include: {
+        workstations: true,
+      },
+    });
+
+    if (!sector) {
+      res.status(404).json({ errors: "Sector not found" });
+      return;
+    }
+
+    res.status(200).json(sector);
+  } catch (error) {
+    res.status(500).json({ message: `Server error: ${error}` });
+    console.error(error);
+  }
+}
+
 export async function createSector(req: Request, res: Response) {
   const { name, createdAt, workstations } = sectorSchema.parse(req.body);
   const invalidation = validateSector(workstations);

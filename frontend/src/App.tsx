@@ -34,7 +34,7 @@ function App() {
           }
         />
         <Route
-          path="/create-sector"
+          path="sectors/create-sector"
           element={
             <ProtectedRoutes isSupervisor>
               <CreateSector />

@@ -74,7 +74,7 @@ export function Sectors() {
           {isSupervisor && (
             <Button
               className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl"
-              onClick={() => navigator("/create-sector")}
+              onClick={() => navigator("create-sector")}
             >
               <Plus />
               <span>Adicionar Setor</span>

@@ -9,14 +9,22 @@ import {
   createSector,
   deleteSector,
   getAllsectors,
+  getSectorByName,
   updateSector,
 } from "./sectors";
 import { createTray, deleteTray, getAllTrays } from "./trays";
-import { createUser, deleteUser, getAllUsers, updateUser } from "./users";
+import {
+  createUser,
+  deleteUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+} from "./users";
 
 const routes = express.Router();
 // user routes
 routes.get("/users", getAllUsers);
+routes.get("/users/:id", getUserById);
 routes.post("/users", createUser);
 routes.delete("/users/:id", deleteUser);
 routes.patch("/users/:id", updateUser);
@@ -24,6 +32,7 @@ routes.patch("/users/:id", updateUser);
 routes.post("/login", login);
 //sector routes
 routes.get("/sectors", getAllsectors);
+routes.get("/sectors/:name", getSectorByName);
 routes.post("/sectors", createSector);
 routes.patch("/sectors/:name", updateSector);
 routes.delete("/sectors/:name", deleteSector);

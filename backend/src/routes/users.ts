@@ -75,6 +75,22 @@ export async function getAllUsers(req: Request, res: Response) {
   }
 }
 
+export async function getUserById(req: Request, res: Response) {
+  const id = req.params.id as string;
+
+  try {
+    const user = await prisma.users.findFirst({ where: { id } });
+    if (!user) {
+      res.status(404).json({ errors: "User not found" });
+      return;
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: `Server error: ${error}` });
+    console.error(error);
+  }
+}
+
 export async function deleteUser(req: Request, res: Response) {
   const id = req.params.id as string;
   try {
