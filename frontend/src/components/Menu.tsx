@@ -11,19 +11,24 @@ export function Menu() {
     navigate("/");
   };
 
+  const isReports = pathname === "/reports";
+  const isSectors =
+    pathname === "/sectors" || pathname === "/sectors/create-sector";
+  const isUsers = pathname === "/users";
+
   return (
     <div className="bg-white flex flex-col items-center justify-between p-8">
       <div className="flex flex-col gap-5 w-full">
         <Button
-          variant={pathname === "/reports" ? "submit" : "outline"}
+          variant={isReports ? "submit" : "outline"}
           className={`justify-start px-2 child:font-normal child:transition-all ${
-            pathname === "/reports" && "first:child:hover:text-yellow-light"
+            isReports && "first:child:hover:text-yellow-light"
           }`}
           onClick={() => navigate("/reports")}
         >
           <StickyNote
             className={`size-7 ${
-              pathname === "/reports"
+              isReports
                 ? "fill-white text-yellow-dark"
                 : "text-white fill-black"
             }`}
@@ -31,15 +36,15 @@ export function Menu() {
           <span className="font-normal">Relatórios</span>
         </Button>
         <Button
-          variant={pathname === "/sectors" ? "submit" : "outline"}
+          variant={isSectors ? "submit" : "outline"}
           className={`justify-start px-2 child:font-normal child:transition-all ${
-            pathname === "/sectors" && "first:child:hover:text-yellow-light"
+            isSectors && "first:child:hover:text-yellow-light"
           }`}
           onClick={() => navigate("/sectors")}
         >
           <Factory
             className={`size-7 ${
-              pathname === "/sectors"
+              isSectors
                 ? "fill-white text-yellow-dark"
                 : "text-white fill-black"
             }`}
@@ -47,15 +52,13 @@ export function Menu() {
           <span className="font-normal">Setores</span>
         </Button>
         <Button
-          variant={pathname === "/users" ? "submit" : "outline"}
+          variant={isUsers ? "submit" : "outline"}
           className={`justify-start px-2 child:font-normal child:transition-all`}
           onClick={() => navigate("/users")}
         >
           <UsersRound
             className={`size-7 ${
-              pathname === "/users"
-                ? "fill-white text-white"
-                : "fill-black text-black"
+              isUsers ? "fill-white text-white" : "fill-black text-black"
             }`}
           />
           <span className="font-normal">Usuários</span>

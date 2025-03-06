@@ -1,6 +1,8 @@
 import defaultAvatar from "@/assets/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
+import { Navigate } from "react-router-dom";
 import { Menu } from "../Menu";
+import { SplashScreen } from "../SplashScreen";
 import { UserCard } from "../UserCard";
 
 type DefaultLayoutProps = {
@@ -8,10 +10,18 @@ type DefaultLayoutProps = {
 };
 
 export function DefaultLayout({ children }: DefaultLayoutProps) {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to={"/login"} replace />;
+  }
+
+  if (!user) {
+    return <SplashScreen />;
+  }
 
   const getAvatarSrc = () => {
-    if (!user?.avatar || user.avatar === "") {
+    if (!user.avatar || user.avatar === "") {
       return defaultAvatar;
     }
     return user.avatar;
@@ -22,8 +32,8 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
       <aside className="grid grid-rows-[20%_80%] space-y-8 child:rounded-lg">
         <UserCard
           avatar={getAvatarSrc()}
-          name={user!.name}
-          surName={user!.surName}
+          name={user.name}
+          surName={user.surName}
         />
         <Menu />
       </aside>

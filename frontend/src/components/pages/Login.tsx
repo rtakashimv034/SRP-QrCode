@@ -89,7 +89,7 @@ export function Login() {
               className="rounded-full px-6"
               disabled={isSubmitting}
             >
-              Entrar
+              {isSubmitting ? "Carregando..." : "Entrar"}
             </Button>
           </form>
         </CardContent>

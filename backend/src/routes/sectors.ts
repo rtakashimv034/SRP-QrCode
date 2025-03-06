@@ -3,7 +3,6 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
 const workstationSchema = z.object({
-  type: z.enum(["normal", "final", "defective"]),
   description: z.string(),
 });
 
@@ -12,24 +11,6 @@ const sectorSchema = z.object({
   createdAt: z.string().optional(),
   workstations: z.array(workstationSchema),
 });
-
-function validateSector(
-  workstations: z.infer<typeof workstationSchema>[] = []
-): string {
-  if (workstations.length < 3) {
-    return "Not enough workstations allowed";
-  }
-
-  const finalCount = workstations.filter(({ type }) => type === "final").length;
-  const defectiveCount = workstations.filter(
-    ({ type }) => type === "defective"
-  ).length;
-
-  if (finalCount !== 1 || defectiveCount !== 1) {
-    return "Sector must contain one final and one defective workstation!";
-  }
-  return "";
-}
 
 export async function getAllsectors(req: Request, res: Response) {
   try {
@@ -48,28 +29,47 @@ export async function getAllsectors(req: Request, res: Response) {
   }
 }
 
+export async function getSectorByName(req: Request, res: Response) {
+  const name = req.params.name as string;
+
+  try {
+    const sector = await prisma.sectors.findFirst({
+      where: {
+        name,
+      },
+      include: {
+        workstations: true,
+      },
+    });
+
+    if (!sector) {
+      res.status(404).json({ errors: "Sector not found" });
+      return;
+    }
+
+    res.status(200).json(sector);
+  } catch (error) {
+    res.status(500).json({ message: `Server error: ${error}` });
+    console.error(error);
+  }
+}
+
 export async function createSector(req: Request, res: Response) {
   const { name, createdAt, workstations } = sectorSchema.parse(req.body);
-  const invalidation = validateSector(workstations);
 
-  if (invalidation) {
-    res.status(400).json({ error: invalidation });
+  if (workstations.length < 3) {
+    res.status(400).json({ errors: "At least 3 workstations are required" });
     return;
   }
 
   try {
-    // create workstations data
-    const WSdata = workstations.map((ws, i) => ({
-      type: ws.type,
-      description: ws.description,
-    }));
     // create sector
     await prisma.sectors.create({
       data: {
         name,
         createdAt,
         workstations: {
-          create: WSdata,
+          create: workstations,
         },
       },
     });
@@ -89,9 +89,8 @@ export async function updateSector(req: Request, res: Response) {
     return;
   }
 
-  const invalidation = validateSector(workstations);
-  if (invalidation) {
-    res.status(400).json({ error: invalidation });
+  if (workstations.length < 3) {
+    res.status(400).json({ errors: "At least 3 workstations are required" });
     return;
   }
 
@@ -114,10 +113,7 @@ export async function updateSector(req: Request, res: Response) {
         name,
         workstations: {
           deleteMany: {}, // Delete all workstations in this sector
-          create: workstations.map((ws) => ({
-            type: ws.type,
-            description: ws.description,
-          })),
+          create: workstations,
         },
       },
     });
@@ -134,7 +130,7 @@ export async function deleteSector(req: Request, res: Response) {
   try {
     await prisma.workstations.deleteMany({ where: { sectorName } });
     await prisma.sectors.delete({ where: { name: sectorName } });
-    res.status(201).json({ message: "Sector deleted successfully" });
+    res.status(204).json({ message: "Sector deleted successfully" });
   } catch (error) {
     res.status(500).json({ errors: ` Server error: ${error} ` });
     console.log(error);

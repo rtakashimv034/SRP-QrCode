@@ -14,6 +14,8 @@ export default {
           default: "#F3EFE3",
           light: "#DAE5DF",
           dark: "#707070",
+          input: "#EBEAED",
+          placeholder: "#5C5C5C",
         },
         yellow: {
           light: "#FFD801",

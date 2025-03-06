@@ -5,6 +5,7 @@ import { routes } from "./routes";
 dotenv.config();
 
 const PORT = 3333;
+const domain = process.env.DOMAIN;
 const app = express();
 
 app.use(
@@ -12,11 +13,12 @@ app.use(
     origin: "*",
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
+    methods: "*",
   })
 );
 
 app.use(express.json());
 app.use("/api/v1", routes);
 app.listen(PORT, "0.0.0.0", () =>
-  console.log(`Server is running on port http://localhost:${PORT}/api/v1`)
+  console.log(`[+] Server is running at http://${domain}:${PORT}/api/v1`)
 );
