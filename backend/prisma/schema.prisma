@@ -28,7 +28,6 @@ model Sectors {
 model Workstations {
   id             Int              @id @default(autoincrement())
   description    String
-  type           String
   sectorName     String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt

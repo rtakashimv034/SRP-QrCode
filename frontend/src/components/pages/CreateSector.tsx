@@ -10,6 +10,8 @@ import { Workstation, WorkstationCard } from "../WorkstationCard";
 export function CreateSector() {
   const [sectorName, setSectorName] = useState("");
   const [stations, setStations] = useState<Workstation[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const invalidSectorName =
@@ -31,6 +33,16 @@ export function CreateSector() {
   const handleDeleteStation = (id: string) => {
     const updateStations = stations.filter((station) => station.localId !== id);
     setStations(updateStations);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -101,7 +113,13 @@ export function CreateSector() {
               </div>
             </div>
             <div className="flex justify-center items-center h-52">
-              <Button disabled={isDisabled}>Salvar Setor</Button>
+              <Button
+                disabled={isDisabled || isLoading}
+                variant={"submit"}
+                onClick={handleSubmit}
+              >
+                {isLoading ? "Salvando..." : "Salvar Setor"}
+              </Button>
             </div>
           </div>
         </div>
