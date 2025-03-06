@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router";
 import { ForgotPassword } from "./components/ForgotPassword";
 import { CreateSector } from "./components/pages/CreateSector";
+import { EditSector } from "./components/pages/EditSector";
 import { Login } from "./components/pages/Login";
 import { NotFound } from "./components/pages/NotFound";
 import { Presentation } from "./components/pages/Presentation";
@@ -34,10 +35,18 @@ function App() {
           }
         />
         <Route
-          path="sectors/create-sector"
+          path="/sectors/create-sector"
           element={
             <ProtectedRoutes isManager>
               <CreateSector />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/sectors/edit-sector/:name" // Rota dinâmica para edição
+          element={
+            <ProtectedRoutes isManager>
+              <EditSector />
             </ProtectedRoutes>
           }
         />

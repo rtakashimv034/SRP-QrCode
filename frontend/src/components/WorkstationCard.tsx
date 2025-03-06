@@ -6,16 +6,34 @@ export type LocalWorkstationProps = {
   localId: string;
 };
 
-export type WorkstationProps = Pick<LocalWorkstationProps, "description">;
+export type WorkstationProps = {
+  id?: number;
+  sectorName?: string;
+  description: string;
+  updatedAt: string;
+  createdAt: string;
+};
+
+export type CreationWorkstationProps = Pick<
+  LocalWorkstationProps,
+  "description"
+>;
 
 type Props = {
   station: LocalWorkstationProps;
   isLatest: boolean;
   onDelete: (id: string) => void;
+  description: string; // Add description as a prop
+  onDescriptionChange: (id: string, description: string) => void; // Add onDescriptionChange as a prop
 };
 
-export function WorkstationCard({ isLatest, onDelete, station }: Props) {
-  const [description, setDescription] = useState("");
+export function WorkstationCard({
+  isLatest,
+  onDelete,
+  station,
+  description,
+  onDescriptionChange,
+}: Props) {
   const [isEnabled, setIsEnabled] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +59,7 @@ export function WorkstationCard({ isLatest, onDelete, station }: Props) {
             !isEnabled && "opacity-50"
           }`}
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => onDescriptionChange(station.localId, e.target.value)} // Call onDescriptionChange
           disabled={!isEnabled}
           onBlur={() => setIsEnabled(false)}
         />

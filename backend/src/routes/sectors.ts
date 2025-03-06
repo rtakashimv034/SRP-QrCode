@@ -130,7 +130,7 @@ export async function deleteSector(req: Request, res: Response) {
   try {
     await prisma.workstations.deleteMany({ where: { sectorName } });
     await prisma.sectors.delete({ where: { name: sectorName } });
-    res.status(201).json({ message: "Sector deleted successfully" });
+    res.status(204).json({ message: "Sector deleted successfully" });
   } catch (error) {
     res.status(500).json({ errors: ` Server error: ${error} ` });
     console.log(error);
