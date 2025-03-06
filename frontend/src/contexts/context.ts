@@ -6,13 +6,13 @@ interface User {
   surName: string;
   avatar: string | null;
   email: string;
-  isSupervisor: boolean;
+  isManager: boolean;
 }
 
 export interface AuthContextData {
   user: User | null;
   isAuthenticated: boolean;
-  isSupervisor: boolean;
+  isManager: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
 }

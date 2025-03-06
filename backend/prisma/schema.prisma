@@ -41,15 +41,15 @@ model Workstations {
 }
 
 model Users {
-  id           String   @id @default(uuid())
-  name         String
-  surname      String
-  password     String
-  avatar       String?
-  email        String   @unique
-  isSupervisor Boolean  @default(false)
-  createdAt    DateTime @default(now()) @updatedAt
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  surname   String
+  password  String
+  avatar    String?
+  email     String   @unique
+  isManager Boolean  @default(false)
+  createdAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }

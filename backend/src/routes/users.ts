@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 
 interface QueryParams {
   order?: "asc" | "desc";
-  isSupervisor?: string;
+  isManager?: string;
 }
 
 const userSchema = z.object({
@@ -16,7 +16,7 @@ const userSchema = z.object({
   password: z.string().min(8, "password must be at least 8 characters"),
   avatar: z.string().optional(),
   email: z.string().email(),
-  isSupervisor: z.boolean(),
+  isManager: z.boolean(),
 });
 
 // Create a partial schema for updates
@@ -52,19 +52,15 @@ export async function createUser(req: Request, res: Response) {
 
 export async function getAllUsers(req: Request, res: Response) {
   try {
-    const { isSupervisor, order }: QueryParams = req.query;
+    const { isManager, order }: QueryParams = req.query;
     const condition =
-      isSupervisor === "true"
-        ? true
-        : isSupervisor === "false"
-        ? false
-        : undefined;
+      isManager === "true" ? true : isManager === "false" ? false : undefined;
     const users = await prisma.users.findMany({
       orderBy: {
         name: order || "asc",
       },
       where: {
-        isSupervisor: condition,
+        isManager: condition,
       },
     });
     res.status(200).json(users);

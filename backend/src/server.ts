@@ -13,6 +13,7 @@ app.use(
     origin: "*",
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
+    methods: "*",
   })
 );
 

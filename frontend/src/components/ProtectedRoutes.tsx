@@ -3,10 +3,10 @@ import { Navigate } from "react-router-dom";
 
 type Props = {
   children: React.ReactNode;
-  isSupervisor?: boolean;
+  isManager?: boolean;
 };
 
-export function ProtectedRoutes({ children, isSupervisor = false }: Props) {
+export function ProtectedRoutes({ children, isManager = false }: Props) {
   const token = localStorage.getItem("authToken");
   const userRole = localStorage.getItem("userRole");
 
@@ -14,7 +14,7 @@ export function ProtectedRoutes({ children, isSupervisor = false }: Props) {
     return <Navigate to={"/login"} replace />;
   }
 
-  if (isSupervisor && userRole === "supervisor") {
+  if (isManager && userRole === "supervisor") {
     return <Navigate to={"/create-sector"} replace />;
   }
 

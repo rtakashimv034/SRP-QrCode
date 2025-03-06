@@ -17,7 +17,7 @@ export function Sectors() {
   const { getCache, setCache } = useCache<Props>({ key: "sectors-cache" });
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { isSupervisor } = useAuth();
+  const { isManager } = useAuth();
 
   const fetchSectors = async () => {
     try {
@@ -71,7 +71,7 @@ export function Sectors() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          {isSupervisor && (
+          {isManager && (
             <Button
               className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl"
               onClick={() => navigator("create-sector")}

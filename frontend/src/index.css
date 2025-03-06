@@ -20,4 +20,32 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: gray; /* verde para combinar com o tema */
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: gray;
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar {
+    border-radius: 4px;
+    scrollbar-width: thin; /* Para Firefox */
+    scrollbar-color: gray #f1f1f1; /* Para Firefox */
+  }
 }

@@ -65,8 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     const loginSplash =
-      !localStorage.getItem("authToken") &&
-      (pathname === "/" || pathname === "/login");
+      localStorage.getItem("authToken") &&
+      !(pathname === "/" || pathname === "/login");
     return loginSplash ? <SplashScreen /> : <AuthSplashScreen />;
   }
 
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         isAuthenticated: !!user,
-        isSupervisor: user?.isSupervisor || false,
+        isManager: user?.isManager || false,
         signIn,
         signOut,
       }}
