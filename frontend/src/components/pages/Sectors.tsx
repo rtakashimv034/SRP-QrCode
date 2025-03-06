@@ -21,16 +21,15 @@ export function Sectors() {
 
   const fetchSectors = async () => {
     try {
-      const cachedSectors = getCache();
-      if (cachedSectors) {
-        setSectors(cachedSectors);
-        return;
-      }
-      // Se não tem cache ou está expirado, faz a requisição
       const { data, status } = await api.get<Props>("/sectors");
       if (status === 200) {
         setSectors(data);
         setCache(data);
+      }
+
+      const cachedSectors = getCache();
+      if (cachedSectors) {
+        setSectors(cachedSectors);
       }
     } catch (error) {
       console.error("Erro ao buscar setores:", error);

@@ -1,13 +1,15 @@
 import { Edit2Icon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-export type Workstation = {
+export type LocalWorkstationProps = {
   description: string;
   localId: string;
 };
 
+export type WorkstationProps = Pick<LocalWorkstationProps, "description">;
+
 type Props = {
-  station: Workstation;
+  station: LocalWorkstationProps;
   isLatest: boolean;
   onDelete: (id: string) => void;
 };
@@ -36,7 +38,7 @@ export function WorkstationCard({ isLatest, onDelete, station }: Props) {
           type="text"
           placeholder={!isEnabled ? "Edit description" : "Description name..."}
           className={`outline-none w-full px-3 py-1 font-medium bg-gray-input placeholder:text-gray-placeholder placeholder:font-normal ${
-            !isEnabled && "opacity-85"
+            !isEnabled && "opacity-50"
           }`}
           value={description}
           onChange={(e) => setDescription(e.target.value)}

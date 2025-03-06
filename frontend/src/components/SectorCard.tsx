@@ -1,17 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Edit2Icon, EyeIcon, FileChartPie, TrashIcon } from "lucide-react";
-import { Workstation } from "./WorkstationCard";
+import { WorkstationProps } from "./WorkstationCard";
 
 export type SectorProps = {
   name: string;
-  createdAt: string;
-  updatedAt: string;
-  disabled?: boolean;
-  workstations: Workstation[] | [];
+  workstations: WorkstationProps[] | [];
 };
 
-type Props = Pick<SectorProps, "name" | "workstations" | "disabled">;
+type Props = Pick<SectorProps, "name" | "workstations"> & {
+  disabled?: boolean;
+};
 
 export function SectorCard({ name, workstations, disabled = false }: Props) {
   return (
