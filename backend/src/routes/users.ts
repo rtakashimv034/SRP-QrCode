@@ -100,7 +100,7 @@ export async function deleteUser(req: Request, res: Response) {
       return;
     }
     await prisma.users.delete({ where: { id } });
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(204).json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: `Server error: ${error}` });
     console.error(error);

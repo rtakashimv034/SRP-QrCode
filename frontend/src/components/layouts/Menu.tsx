@@ -1,6 +1,6 @@
 import { Factory, LogOut, StickyNote, UsersRound } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 export function Menu() {
   const navigate = useNavigate();
