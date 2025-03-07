@@ -3,7 +3,6 @@ import { prisma } from "../lib/prisma";
 
 export async function createTray(req: Request, res: Response) {
   try {
-    // create a new tray with the next available id and qrcode
     await prisma.trays.create({});
     res.status(201).json({ message: "Tray created successfully" });
   } catch (error) {
