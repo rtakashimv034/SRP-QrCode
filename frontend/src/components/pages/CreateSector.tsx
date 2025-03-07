@@ -52,8 +52,8 @@ export function CreateSector() {
     try {
       setIsLoading(true);
       const data: CreationSectorProps = { name, workstations };
-      const res = await api.post("/sectors", data);
-      if (res.status === 201) {
+      const { status } = await api.post("/sectors", data);
+      if (status === 201) {
         setIsModalOpen(true);
         setWorkstations([]);
         setSectorName("");

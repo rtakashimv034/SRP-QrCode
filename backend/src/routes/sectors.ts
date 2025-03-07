@@ -49,6 +49,10 @@ export async function getSectorByName(req: Request, res: Response) {
 
     res.status(200).json(sector);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ message: `Server error: ${error}` });
     console.error(error);
   }
@@ -75,6 +79,10 @@ export async function createSector(req: Request, res: Response) {
     });
     res.status(201).json({ message: "Sector created successfully" });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ errors: ` Server error: ${error} ` });
     console.log(error);
   }
@@ -120,6 +128,10 @@ export async function updateSector(req: Request, res: Response) {
 
     res.status(200).json({ message: "Sector updated successfully" });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ errors: `Server error: ${error}` });
     console.error(error);
   }
@@ -132,6 +144,10 @@ export async function deleteSector(req: Request, res: Response) {
     await prisma.sectors.delete({ where: { name: sectorName } });
     res.status(204).json({ message: "Sector deleted successfully" });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ errors: ` Server error: ${error} ` });
     console.log(error);
     return;

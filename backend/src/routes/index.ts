@@ -20,7 +20,7 @@ import {
   getUserById,
   updateUser,
 } from "./users";
-
+("");
 const routes = express.Router();
 // user routes
 routes.get("/users", getAllUsers);

@@ -47,6 +47,10 @@ export async function createPath(req: Request, res: Response) {
     res.status(201).json({ message: "Paths registered successfully" });
     return;
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ message: `Server error: ${error}` });
     console.error(error);
     return;
@@ -89,6 +93,10 @@ export async function createDefectivePath(req: Request, res: Response) {
       .json({ message: "Defective Paths registered successfully" });
     return;
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ message: `Server error: ${error}` });
     console.error(error);
     return;

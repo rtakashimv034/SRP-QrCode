@@ -1,35 +1,67 @@
-import { EllipsisVertical } from "lucide-react";
+import { Edit2Icon, TrashIcon } from "lucide-react";
+import { UserProps } from "./UserModal";
+import { Card, CardContent } from "./ui/card";
+
+type LocalUserProps = Pick<
+  UserProps,
+  "avatar" | "name" | "id" | "isManager" | "surname"
+>;
 
 type Props = {
-  avatar?: string;
-  name: string;
-  surName: string;
+  user: LocalUserProps;
+  onUpdate?: () => void;
+  onDelete?: () => void;
 };
 
-export function UserCard({ avatar, name, surName }: Props) {
+export function UserCard({ user, onDelete, onUpdate }: Props) {
   return (
-    <div className="bg-gradient-to-r from-green-default to-green-dark p-2 flex flex-row justify-between">
-      <div className="flex flex-row space-x-4 items-center px-2">
-        <img
-          src={avatar}
-          alt="PO"
-          style={{
-            minWidth: "70px",
-            minHeight: "auto",
-            width: "70px",
-            height: "70px",
-            borderRadius: "100%",
-            maxWidth: "none",
-          }}
-        />
-        <div className=" flex flex-col space-y-1 items-start child:text-white">
-          <p className="font-light text-sm  leading-none">Bem vindo,</p>
-          <p className="font-bold  text-sm leading-none">
-            {name} {surName}
-          </p>
+    <Card className="relative overflow-hidden rounded-xl bg-[#f6f6f6] h-28 shadow-md w-full flex">
+      <div className="bg-green-light shrink-0 w-4" />
+      <CardContent className="flex flex-row w-full p-2">
+        <div className="w-full gap-3 flex flex-row items-center p-2">
+          <img
+            src={user.avatar}
+            alt="avatar"
+            style={{
+              minWidth: "90px",
+              minHeight: "auto",
+              width: "90px",
+              height: "90px",
+              borderRadius: "100%",
+              maxWidth: "none",
+              border: "1px solid",
+            }}
+          />
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="font-normal text-lg overflow-hidden text-ellipsis">
+                {user.name}
+              </span>
+              <span className="font-bold text-lg">{user.surname}</span>
+            </div>
+            <p className="text-xs opacity-70">
+              Matrícula: #{user.id?.slice(0, 4)}
+            </p>
+            <p className="text-xs opacity-45 mt-1">
+              Permissão: {user.isManager ? "Gerente" : "Supervisor"}
+            </p>
+          </div>
         </div>
+      </CardContent>
+      <div className="flex flex-col absolute top-1.5 right-1.5 gap-1.5">
+        <button
+          onClick={onUpdate}
+          className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
+        >
+          <Edit2Icon className="fill-black" />
+        </button>
+        <button
+          className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
+          onClick={onDelete}
+        >
+          <TrashIcon className="fill-black" />
+        </button>
       </div>
-      <EllipsisVertical color="white" size={26} />
-    </div>
+    </Card>
   );
 }

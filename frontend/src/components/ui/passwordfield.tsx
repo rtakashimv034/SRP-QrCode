@@ -4,7 +4,7 @@ import { Input } from "./input";
 
 interface PasswordFieldProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  placeholder: string;
+  placeholder?: string;
   id?: string;
 }
 

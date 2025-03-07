@@ -1,9 +1,9 @@
 import defaultAvatar from "@/assets/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
-import { Menu } from "../Menu";
 import { SplashScreen } from "../SplashScreen";
-import { UserCard } from "../UserCard";
+import { Menu } from "./Menu";
+import { UserAsideCard } from "./UserAsideCard";
 
 type DefaultLayoutProps = {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
   return (
     <div className="w-screen h-screen overflow-hidden grid grid-cols-[20%_80%] space-x-8 bg-default p-20 child:rounded-lg">
       <aside className="grid grid-rows-[20%_80%] space-y-8 child:rounded-lg">
-        <UserCard
+        <UserAsideCard
           avatar={getAvatarSrc()}
           name={user.name}
           surName={user.surName}
