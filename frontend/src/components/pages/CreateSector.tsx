@@ -31,11 +31,21 @@ export function CreateSector() {
       .filter((e) => e.trim().length)
       .join("").length < 3;
 
-  const isDisabled = invalidSectorName || workstations.length < 3;
+  const invalidWsName = workstations.some((ws) => {
+    return (
+      ws.name
+        .split("")
+        .filter((e) => e.trim().length)
+        .join("").length < 2
+    );
+  });
+
+  const isDisabled =
+    invalidSectorName || workstations.length < 3 || invalidWsName;
 
   const handleAddingStation = () => {
     const newStation: LocalWorkstationProps = {
-      description: "",
+      name: "",
       localId: uuidv4(),
     };
     setWorkstations([...workstations, newStation]);
@@ -66,9 +76,9 @@ export function CreateSector() {
     }
   };
 
-  const handleDescriptionChange = (id: string, description: string) => {
+  const handleNameChange = (id: string, name: string) => {
     const updatedStations = workstations.map((station) =>
-      station.localId === id ? { ...station, description } : station
+      station.localId === id ? { ...station, name } : station
     );
     setWorkstations(updatedStations);
   };
@@ -118,8 +128,8 @@ export function CreateSector() {
                         station={station}
                         isLatest={i === workstations.length - 1}
                         onDelete={() => handleDeleteStation(station.localId)}
-                        description={station.description} // Pass description
-                        onDescriptionChange={handleDescriptionChange} // Pass onDescriptionChange
+                        name={station.name} // Pass name
+                        onNameChange={handleNameChange} // Pass onNameChange
                       />
                     ))}
                   </div>

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
 const workstationSchema = z.object({
-  description: z.string(),
+  name: z.string().min(2),
 });
 
 const sectorSchema = z.object({

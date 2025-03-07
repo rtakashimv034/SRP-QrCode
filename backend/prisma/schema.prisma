@@ -15,7 +15,6 @@ datasource db {
 
 model Sectors {
   name           String           @id
-  slug           String           @default("")
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   workstations   Workstations[]
@@ -26,15 +25,17 @@ model Sectors {
 }
 
 model Workstations {
-  id             Int              @id @default(autoincrement())
-  description    String
-  sectorName     String
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id   Int    @id @default(autoincrement())
+  name String
+
+  sectorName String
+  sector     Sectors @relation(fields: [sectorName], references: [name])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   Paths          Paths[]
   DefectivePaths DefectivePaths[]
-
-  sector Sectors @relation(fields: [sectorName], references: [name])
 
   @@map("workstations")
 }
@@ -42,7 +43,7 @@ model Workstations {
 model Users {
   id        String   @id @default(uuid())
   name      String
-  surname   String
+  surname   String?
   password  String
   avatar    String?
   email     String   @unique
@@ -77,29 +78,27 @@ model Trays {
 }
 
 model Paths {
-  id           Int      @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   stationId    Int?
-  prodSN       String
+  workStation  Workstations? @relation(fields: [stationId], references: [id])
   sectorsName  String?
-  registeredAt DateTime @default(now())
-
-  workStation Workstations? @relation(fields: [stationId], references: [id])
-  product     Products      @relation(fields: [prodSN], references: [SN])
-  Sectors     Sectors?      @relation(fields: [sectorsName], references: [name])
+  Sectors      Sectors?      @relation(fields: [sectorsName], references: [name])
+  prodSN       String
+  product      Products      @relation(fields: [prodSN], references: [SN])
+  registeredAt DateTime      @default(now())
 
   @@map("paths")
 }
 
 model DefectivePaths {
-  id           Int      @id @default(autoincrement())
-  stationId    Int?
-  defProdId    Int
-  sectorsName  String?
-  registeredAt DateTime @default(now())
-
+  id               Int               @id @default(autoincrement())
+  stationId        Int?
   workStation      Workstations?     @relation(fields: [stationId], references: [id])
+  defProdId        Int
   defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
+  sectorsName      String?
   Sectors          Sectors?          @relation(fields: [sectorsName], references: [name])
+  registeredAt     DateTime          @default(now())
 
   @@map("defective_paths")
 }

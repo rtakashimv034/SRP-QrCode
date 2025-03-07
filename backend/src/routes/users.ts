@@ -12,7 +12,7 @@ interface QueryParams {
 
 const userSchema = z.object({
   name: z.string().min(3, ""),
-  surname: z.string(),
+  surname: z.string().optional(),
   password: z.string().min(8, "password must be at least 8 characters"),
   avatar: z.string().optional(),
   email: z.string().email(),

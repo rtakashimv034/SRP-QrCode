@@ -44,7 +44,7 @@ export function EditSector() {
         setSectorName(data.name);
         const localStations: LocalWorkstationProps[] = data.workstations.map(
           (station) => ({
-            description: station.description,
+            name: station.name,
             localId: uuidv4(),
           })
         );
@@ -67,7 +67,7 @@ export function EditSector() {
 
   const handleAddingStation = () => {
     const newStation: LocalWorkstationProps = {
-      description: "",
+      name: "",
       localId: uuidv4(),
     };
     setLocalWorkstations([...localWorkstations, newStation]);
@@ -88,9 +88,7 @@ export function EditSector() {
       const workstationsForApi: WorkstationProps[] = localWorkstations.map(
         (station) => ({
           sectorName: sectorName,
-          description: station.description,
-          createdAt: new Date().toISOString(), // Add createdAt
-          updatedAt: new Date().toISOString(), // Add updatedAt
+          name: station.name,
         })
       );
 
@@ -110,9 +108,9 @@ export function EditSector() {
     }
   };
 
-  const handleDescriptionChange = (id: string, description: string) => {
+  const handleNameChange = (id: string, name: string) => {
     const updatedStations = localWorkstations.map((station) =>
-      station.localId === id ? { ...station, description } : station
+      station.localId === id ? { ...station, name } : station
     );
     setLocalWorkstations(updatedStations); // Update localWorkstations state
   };
@@ -164,8 +162,8 @@ export function EditSector() {
                         station={station}
                         isLatest={i === workstations.length - 1}
                         onDelete={() => handleDeleteStation(station.localId)}
-                        description={station.description}
-                        onDescriptionChange={handleDescriptionChange}
+                        name={station.name}
+                        onNameChange={handleNameChange}
                       />
                     ))}
                   </div>
@@ -190,11 +188,9 @@ export function EditSector() {
                   disabled={true}
                   data={{
                     name: sectorName,
-                    workstations: localWorkstations.map(({ description }) => ({
+                    workstations: localWorkstations.map(({ name }) => ({
                       sectorName,
-                      description,
-                      createdAt: new Date().toISOString(),
-                      updatedAt: new Date().toISOString(),
+                      name,
                     })),
                   }}
                 />
