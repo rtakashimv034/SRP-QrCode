@@ -140,7 +140,13 @@ export async function updateSector(req: Request, res: Response) {
 export async function deleteSector(req: Request, res: Response) {
   const sectorName = req.params.name;
   try {
-    await prisma.workstations.deleteMany({ where: { sectorName } });
+    await prisma.workstations.deleteMany({
+      where: {
+        sector: {
+          name: sectorName,
+        },
+      },
+    });
     await prisma.sectors.delete({ where: { name: sectorName } });
     res.status(204).json({ message: "Sector deleted successfully" });
   } catch (error) {

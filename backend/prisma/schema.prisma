@@ -14,7 +14,8 @@ datasource db {
 }
 
 model Sectors {
-  name           String           @id
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   workstations   Workstations[]
@@ -81,8 +82,8 @@ model Paths {
   id           Int           @id @default(autoincrement())
   stationId    Int?
   workStation  Workstations? @relation(fields: [stationId], references: [id])
-  sectorsName  String?
-  Sectors      Sectors?      @relation(fields: [sectorsName], references: [name])
+  sectorName   String?
+  Sectors      Sectors?      @relation(fields: [sectorName], references: [name])
   prodSN       String
   product      Products      @relation(fields: [prodSN], references: [SN])
   registeredAt DateTime      @default(now())
@@ -96,8 +97,8 @@ model DefectivePaths {
   workStation      Workstations?     @relation(fields: [stationId], references: [id])
   defProdId        Int
   defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
-  sectorsName      String?
-  Sectors          Sectors?          @relation(fields: [sectorsName], references: [name])
+  sectorName       String?
+  Sectors          Sectors?          @relation(fields: [sectorName], references: [name])
   registeredAt     DateTime          @default(now())
 
   @@map("defective_paths")
