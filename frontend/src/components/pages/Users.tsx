@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
 import { Plus, Search, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Button } from "../ui/button";
 import {
@@ -24,11 +25,14 @@ export function Users() {
   const [users, setUsers] = useState<Props>([]);
   const [user, setUser] = useState<UserProps | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { getCache, setCache } = useCache<Props>({ key: "users-cache" });
+  const { getCache, setCache, clearCache } = useCache<Props>({
+    key: "users-cache",
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const { isManager } = useAuth();
-
+  const { user: currentUser, signOut } = useAuth();
+  const navigate = useNavigate();
   const fetchUsers = async () => {
     try {
       const { data, status } = await api.get<Props>("/users");
@@ -42,8 +46,8 @@ export function Users() {
         setUsers(cachedUsers);
       }
     } catch (error) {
+      alert(`Erro ao deletar usuário: ${error}`);
       console.error("Erro ao buscar usuários:", error);
-      alert("Erro ao carregar usuários");
     }
   };
 
@@ -54,9 +58,14 @@ export function Users() {
       if (status === 204) {
         setIsModalOpen(false); // Fecha o modal
         fetchUsers(); // Atualiza a lista de usuários
+        if (user?.id === currentUser?.id) {
+          clearCache();
+          signOut();
+          navigate("/");
+        }
       }
     } catch (error) {
-      alert("Erro ao deletar setor");
+      alert(`Erro ao deletar usuário: ${error}`);
       console.log(error);
     } finally {
       setIsLoading(false);
@@ -82,7 +91,7 @@ export function Users() {
             </h1>
           </div>
           <p className="text-sm text-gray-500 whitespace-nowrap">
-            {29} usuários cadastrados.
+            {users.length} usuários cadastrados.
           </p>
         </div>
         <div className="flex flex-row items-center gap-5">
@@ -115,7 +124,7 @@ export function Users() {
           <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
             {filteredUsers.map((user) => (
               <UserCard
-                data={user}
+                user={user}
                 key={user.id}
                 onDelete={() => {
                   setUser(user); // Define o usuario a ser deletado

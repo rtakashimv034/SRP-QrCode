@@ -11,7 +11,7 @@ interface QueryParams {
 }
 
 const userSchema = z.object({
-  name: z.string(),
+  name: z.string().min(3, ""),
   surname: z.string(),
   password: z.string().min(8, "password must be at least 8 characters"),
   avatar: z.string().optional(),
@@ -44,6 +44,10 @@ export async function createUser(req: Request, res: Response) {
       email: newUser.email,
     });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ errors: ` Server error: ${error} ` });
     console.log(error);
     return;
@@ -82,6 +86,10 @@ export async function getUserById(req: Request, res: Response) {
     }
     res.status(200).json(user);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ message: `Server error: ${error}` });
     console.error(error);
   }
@@ -102,6 +110,10 @@ export async function deleteUser(req: Request, res: Response) {
     await prisma.users.delete({ where: { id } });
     res.status(204).json({ message: "User deleted successfully" });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+      return;
+    }
     res.status(500).json({ message: `Server error: ${error}` });
     console.error(error);
     return;

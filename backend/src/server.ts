@@ -20,5 +20,5 @@ app.use(
 app.use(express.json());
 app.use("/api/v1", routes);
 app.listen(PORT, "0.0.0.0", () =>
-  console.log(`[+] Server is running at http://172.30.22.223:${PORT}/api/v1`)
+  console.log(`[+] Server is running at http://${domain}:${PORT}/api/v1`)
 );

@@ -8,49 +8,59 @@ type LocalUserProps = Pick<
 >;
 
 type Props = {
-  data: LocalUserProps;
+  user: LocalUserProps;
   onUpdate?: () => void;
   onDelete?: () => void;
 };
 
-export function UserCard({ data, onDelete, onUpdate }: Props) {
+export function UserCard({ user, onDelete, onUpdate }: Props) {
   return (
-    <Card className="overflow-hidden rounded-2xl shadow-md flex items-center w-full relative">
-      <div className="bg-green-light w-6 h-full absolute left-0 top-0 bottom-0" />
-      <div className="flex items-center pl-6 w-full">
-        <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+    <Card className="relative overflow-hidden rounded-xl bg-[#f6f6f6] h-28 shadow-md w-full flex">
+      <div className="bg-green-light shrink-0 w-4" />
+      <CardContent className="flex flex-row w-full p-2">
+        <div className="w-full gap-3 flex flex-row items-center p-2">
           <img
-            src={data.avatar}
+            src={user.avatar}
             alt="avatar"
-            className="w-full h-full object-cover rounded-full"
+            style={{
+              minWidth: "90px",
+              minHeight: "auto",
+              width: "90px",
+              height: "90px",
+              borderRadius: "100%",
+              maxWidth: "none",
+              border: "1px solid",
+            }}
           />
-        </div>
-        <CardContent className="flex flex-col ml-4 flex-grow">
-          <div className="flex flex-row items-center gap-1">
-            <h2 className="font-bold text-xl">{data.name}</h2>
-            <h3 className="font-normal text-xl">{data.surname}</h3>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-1.5">
+              <span className="font-normal text-lg overflow-hidden text-ellipsis">
+                {user.name}
+              </span>
+              <span className="font-bold text-lg">{user.surname}</span>
+            </div>
+            <p className="text-xs opacity-70">
+              Matrícula: #{user.id?.slice(0, 4)}
+            </p>
+            <p className="text-xs opacity-45 mt-1">
+              Permissão: {user.isManager ? "Gerente" : "Supervisor"}
+            </p>
           </div>
-          <p className="text-sm text-gray-600">
-            Matrícula: #{data.id?.slice(0, 4)}
-          </p>
-          <p className="text-sm text-gray-600">
-            Permissão: {data.isManager ? "Gerente" : "Supervisor"}
-          </p>
-        </CardContent>
-        <div className="flex flex-col gap-[6px] ml-auto pr-4">
-          <button
-            onClick={onUpdate}
-            className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
-          >
-            <Edit2Icon className="fill-black" />
-          </button>
-          <button
-            className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
-            onClick={onDelete}
-          >
-            <TrashIcon className="fill-black" />
-          </button>
         </div>
+      </CardContent>
+      <div className="flex flex-col absolute top-1.5 right-1.5 gap-1.5">
+        <button
+          onClick={onUpdate}
+          className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
+        >
+          <Edit2Icon className="fill-black" />
+        </button>
+        <button
+          className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
+          onClick={onDelete}
+        >
+          <TrashIcon className="fill-black" />
+        </button>
       </div>
     </Card>
   );
