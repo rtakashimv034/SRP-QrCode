@@ -1,5 +1,4 @@
 import { api } from "@/api";
-import defaultAvatar from "@/assets/default_avatar.png";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Camera } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -21,9 +20,9 @@ export type UserProps = {
   name: string;
   surname?: string;
   email: string;
-  password: string;
+  password?: string;
   isManager: boolean;
-  avatar: string;
+  avatar?: string;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -46,7 +45,10 @@ const userSchema = z.object({
     }),
   surname: z.string().optional(),
   email: z.string().email("Formato de e-mail inválido"),
-  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+  password: z
+    .string()
+    .min(8, "A senha deve ter pelo menos 8 caracteres")
+    .optional(),
 });
 
 type UserFormData = z.infer<typeof userSchema>;
@@ -54,6 +56,7 @@ type UserFormData = z.infer<typeof userSchema>;
 export function UserModal({ fetchUsers, modal, user }: Props) {
   const {
     register,
+    unregister,
     handleSubmit,
     reset,
     setValue,
@@ -70,19 +73,19 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
 
   const [isManager, setIsManager] = useState(user?.isManager || false);
 
+  // Preenche os valores do formulário quando o modal é aberto ou o usuário muda
   useEffect(() => {
-    if (modal.isOpen) {
-      if (user) {
-        setValue("name", user.name);
-        setValue("surname", user.surname);
-        setValue("email", user.email);
-        setIsManager(user.isManager);
-      } else {
-        reset();
-        setIsManager(false);
-      }
+    if (modal.isOpen && user) {
+      setValue("name", user.name);
+      setValue("surname", user.surname);
+      setValue("email", user.email);
+      unregister("password");
+      setIsManager(user.isManager);
+    } else if (modal.isOpen && !user) {
+      reset();
+      setIsManager(false);
     }
-  }, [user, setValue, reset, modal.isOpen]);
+  }, [modal.isOpen, user, setValue, reset, unregister]);
 
   const onSubmit: SubmitHandler<UserFormData> = async (data) => {
     try {
@@ -90,7 +93,6 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
         const updateData: UpdateUserProps = {
           name: data.name,
           surname: data.surname,
-          avatar: defaultAvatar,
           email: data.email,
           isManager,
         };
@@ -102,7 +104,6 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
       } else {
         const createData: UserProps = {
           ...data,
-          avatar: defaultAvatar,
           isManager,
         };
         const { status } = await api.post("/users", createData);

@@ -3,8 +3,12 @@ import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { CreationSectorProps, SectorCard } from "../cards/SectorCard";
+import {
+  LocalWorkstationProps,
+  WorkstationCard,
+} from "../cards/WorkstationCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { CreationSectorProps, SectorCard } from "../SectorCard";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -15,7 +19,6 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Label } from "../ui/label";
-import { LocalWorkstationProps, WorkstationCard } from "../WorkstationCard";
 
 export function CreateSector() {
   const [name, setSectorName] = useState("");
@@ -31,11 +34,21 @@ export function CreateSector() {
       .filter((e) => e.trim().length)
       .join("").length < 3;
 
-  const isDisabled = invalidSectorName || workstations.length < 3;
+  const invalidWsName = workstations.some((ws) => {
+    return (
+      ws.name
+        .split("")
+        .filter((e) => e.trim().length)
+        .join("").length < 2
+    );
+  });
+
+  const isDisabled =
+    invalidSectorName || workstations.length < 3 || invalidWsName;
 
   const handleAddingStation = () => {
     const newStation: LocalWorkstationProps = {
-      description: "",
+      name: "",
       localId: uuidv4(),
     };
     setWorkstations([...workstations, newStation]);
@@ -66,9 +79,9 @@ export function CreateSector() {
     }
   };
 
-  const handleDescriptionChange = (id: string, description: string) => {
+  const handleNameChange = (id: string, name: string) => {
     const updatedStations = workstations.map((station) =>
-      station.localId === id ? { ...station, description } : station
+      station.localId === id ? { ...station, name } : station
     );
     setWorkstations(updatedStations);
   };
@@ -118,8 +131,8 @@ export function CreateSector() {
                         station={station}
                         isLatest={i === workstations.length - 1}
                         onDelete={() => handleDeleteStation(station.localId)}
-                        description={station.description} // Pass description
-                        onDescriptionChange={handleDescriptionChange} // Pass onDescriptionChange
+                        name={station.name} // Pass name
+                        onNameChange={handleNameChange} // Pass onNameChange
                       />
                     ))}
                   </div>

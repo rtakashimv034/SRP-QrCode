@@ -2,37 +2,34 @@ import { Edit2Icon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export type LocalWorkstationProps = {
-  description: string;
+  name: string;
   localId: string;
 };
+
+export type CreationWorkstationProps = Pick<LocalWorkstationProps, "name">;
 
 export type WorkstationProps = {
   id?: number;
   sectorName?: string;
-  description: string;
-  updatedAt: string;
-  createdAt: string;
+  name: string;
+  updatedAt?: string;
+  createdAt?: string;
 };
-
-export type CreationWorkstationProps = Pick<
-  LocalWorkstationProps,
-  "description"
->;
 
 type Props = {
   station: LocalWorkstationProps;
   isLatest: boolean;
   onDelete: (id: string) => void;
-  description: string; // Add description as a prop
-  onDescriptionChange: (id: string, description: string) => void; // Add onDescriptionChange as a prop
+  name: string; // Add name as a prop
+  onNameChange: (id: string, name: string) => void; // Add onNameChange as a prop
 };
 
 export function WorkstationCard({
   isLatest,
   onDelete,
   station,
-  description,
-  onDescriptionChange,
+  name,
+  onNameChange,
 }: Props) {
   const [isEnabled, setIsEnabled] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,12 +51,13 @@ export function WorkstationCard({
         <input
           ref={inputRef}
           type="text"
-          placeholder={!isEnabled ? "Edit description" : "Description name..."}
+          placeholder={!isEnabled ? "Sector Name" : "Set sector name"}
           className={`outline-none w-full px-3 py-1 font-medium bg-gray-input placeholder:text-gray-placeholder placeholder:font-normal ${
             !isEnabled && "opacity-50"
           }`}
-          value={description}
-          onChange={(e) => onDescriptionChange(station.localId, e.target.value)} // Call onDescriptionChange
+          required
+          value={name}
+          onChange={(e) => onNameChange(station.localId, e.target.value)} // Call onNameChange
           disabled={!isEnabled}
           onBlur={() => setIsEnabled(false)}
         />

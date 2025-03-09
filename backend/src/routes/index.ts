@@ -39,7 +39,7 @@ routes.delete("/sectors/:name", deleteSector);
 // trays routes
 routes.get("/trays", getAllTrays);
 routes.post("/trays", createTray);
-routes.post("/trays", deleteTray);
+routes.delete("/trays", deleteTray);
 // products routes
 routes.get("/products", getAllProducts);
 // defective products routes

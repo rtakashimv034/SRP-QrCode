@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/hooks/useAuth";
 import { Edit2Icon, EyeIcon, FileChartPie, TrashIcon } from "lucide-react";
 import { CreationWorkstationProps } from "./WorkstationCard";
 
@@ -23,6 +24,8 @@ export function SectorCard({
   onShowQrcode,
   onUpdate,
 }: Props) {
+  const { isManager } = useAuth();
+
   return (
     <Card className="overflow-hidden rounded-xl bg-[#f6f6f6] h-28 shadow-md w-full flex">
       <div className="bg-green-light shrink-0 w-4" />
@@ -47,29 +50,31 @@ export function SectorCard({
             </Button>
           </div>
         </div>
-        <div className="right-1.5 top-1.5 absolute flex flex-col gap-1.5">
-          <button
-            onClick={onUpdate}
-            disabled={disabled}
-            className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
-          >
-            <Edit2Icon className="fill-black" />
-          </button>
-          <button
-            onClick={onShowQrcode}
-            disabled={disabled}
-            className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-blue-300"
-          >
-            <EyeIcon className="fill-black text-white" />
-          </button>
-          <button
-            disabled={disabled}
-            className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
-            onClick={onDelete}
-          >
-            <TrashIcon className="fill-black" />
-          </button>
-        </div>
+        {isManager && (
+          <div className="right-1.5 top-1.5 absolute flex flex-col gap-1.5">
+            <button
+              onClick={onUpdate}
+              disabled={disabled}
+              className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
+            >
+              <Edit2Icon className="fill-black" />
+            </button>
+            <button
+              onClick={onShowQrcode}
+              disabled={disabled}
+              className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-blue-300"
+            >
+              <EyeIcon className="fill-black text-white" />
+            </button>
+            <button
+              disabled={disabled}
+              className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
+              onClick={onDelete}
+            >
+              <TrashIcon className="fill-black" />
+            </button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
