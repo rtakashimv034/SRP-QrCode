@@ -1,7 +1,8 @@
 import defaultAvatar from "@/assets/default_avatar.png";
+import { useAuth } from "@/hooks/useAuth";
 import { Edit2Icon, TrashIcon } from "lucide-react";
-import { UserProps } from "./UserModal";
-import { Card, CardContent } from "./ui/card";
+import { UserProps } from "../UserModal";
+import { Card, CardContent } from "../ui/card";
 
 type LocalUserProps = Pick<
   UserProps,
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function UserCard({ user, onDelete, onUpdate }: Props) {
+  const { isManager } = useAuth();
   return (
     <Card className="relative overflow-hidden rounded-xl bg-[#f6f6f6] h-28 shadow-md w-full flex">
       <div className="bg-green-light shrink-0 w-4" />
@@ -49,20 +51,22 @@ export function UserCard({ user, onDelete, onUpdate }: Props) {
           </div>
         </div>
       </CardContent>
-      <div className="flex flex-col absolute top-1.5 right-1.5 gap-1.5">
-        <button
-          onClick={onUpdate}
-          className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
-        >
-          <Edit2Icon className="fill-black" />
-        </button>
-        <button
-          className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
-          onClick={onDelete}
-        >
-          <TrashIcon className="fill-black" />
-        </button>
-      </div>
+      {isManager && (
+        <div className="flex flex-col absolute top-1.5 right-1.5 gap-1.5">
+          <button
+            onClick={onUpdate}
+            className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
+          >
+            <Edit2Icon className="fill-black" />
+          </button>
+          <button
+            className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
+            onClick={onDelete}
+          >
+            <TrashIcon className="fill-black" />
+          </button>
+        </div>
+      )}
     </Card>
   );
 }

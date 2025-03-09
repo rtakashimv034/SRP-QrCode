@@ -18,26 +18,12 @@ function App() {
       <Routes>
         <Route index element={<Presentation />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/reports"
-          element={
-            <ProtectedRoutes>
-              <Reports />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/sectors"
-          element={
-            <ProtectedRoutes>
-              <Sectors />
-            </ProtectedRoutes>
-          }
-        />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/sectors" element={<Sectors />} />
         <Route
           path="/sectors/create-sector"
           element={
-            <ProtectedRoutes isManager>
+            <ProtectedRoutes path="/sectors">
               <CreateSector />
             </ProtectedRoutes>
           }
@@ -45,19 +31,12 @@ function App() {
         <Route
           path="/sectors/edit-sector/:name" // Rota dinâmica para edição
           element={
-            <ProtectedRoutes isManager>
+            <ProtectedRoutes path="/sectors">
               <EditSector />
             </ProtectedRoutes>
           }
         />
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoutes>
-              <Users />
-            </ProtectedRoutes>
-          }
-        />
+        <Route path="/users" element={<Users />} />
         <Route path="/tray-managment" element={<TrayManagment />} />
         <Route path="/retrive-password" element={<ForgotPassword />} />
         <Route path="*" element={<NotFound />} />

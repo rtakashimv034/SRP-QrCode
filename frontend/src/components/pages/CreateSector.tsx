@@ -3,8 +3,12 @@ import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { CreationSectorProps, SectorCard } from "../cards/SectorCard";
+import {
+  LocalWorkstationProps,
+  WorkstationCard,
+} from "../cards/WorkstationCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { CreationSectorProps, SectorCard } from "../SectorCard";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -15,7 +19,6 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Label } from "../ui/label";
-import { LocalWorkstationProps, WorkstationCard } from "../WorkstationCard";
 
 export function CreateSector() {
   const [name, setSectorName] = useState("");

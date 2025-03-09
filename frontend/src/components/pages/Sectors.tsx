@@ -14,8 +14,8 @@ import { useCache } from "@/hooks/useCache";
 import { Factory, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CreationSectorProps, SectorCard } from "../cards/SectorCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { CreationSectorProps, SectorCard } from "../SectorCard";
 
 type Props = CreationSectorProps[];
 

@@ -9,6 +9,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.4.2",
     "@prisma/client": "^6.4.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
@@ -16,6 +17,7 @@
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^22.13.1",
     "prisma": "^6.3.1",
+    "prisma-erd-generator": "^2.0.4",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"

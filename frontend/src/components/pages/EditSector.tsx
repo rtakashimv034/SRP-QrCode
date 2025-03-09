@@ -3,8 +3,14 @@ import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { CreationSectorProps, SectorCard } from "../cards/SectorCard";
+import {
+  CreationWorkstationProps,
+  LocalWorkstationProps,
+  WorkstationCard,
+  WorkstationProps,
+} from "../cards/WorkstationCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { CreationSectorProps, SectorCard } from "../SectorCard";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -15,12 +21,6 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Label } from "../ui/label";
-import {
-  CreationWorkstationProps,
-  LocalWorkstationProps,
-  WorkstationCard,
-  WorkstationProps,
-} from "../WorkstationCard";
 
 export function EditSector() {
   const { name } = useParams<{ name: string }>(); // Acessa o nome do setor da rota

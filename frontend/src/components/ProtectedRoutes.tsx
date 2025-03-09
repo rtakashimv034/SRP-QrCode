@@ -1,21 +1,22 @@
+import { useAuth } from "@/hooks/useAuth";
 import React from "react";
 import { Navigate } from "react-router-dom";
 
 type Props = {
   children: React.ReactNode;
-  isManager?: boolean;
+  path: string;
 };
 
-export function ProtectedRoutes({ children, isManager = false }: Props) {
-  const token = localStorage.getItem("authToken");
-  const userRole = localStorage.getItem("userRole");
+export function ProtectedRoutes({ children, path }: Props) {
+  const { isManager } = useAuth();
 
+  const token = localStorage.getItem("authToken");
   if (!token) {
     return <Navigate to={"/login"} replace />;
   }
 
-  if (isManager && userRole === "supervisor") {
-    return <Navigate to={"/create-sector"} replace />;
+  if (!isManager) {
+    return <Navigate to={path} replace />;
   }
 
   return <>{children}</>;

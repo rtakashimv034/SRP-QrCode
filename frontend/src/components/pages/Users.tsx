@@ -4,6 +4,7 @@ import { useCache } from "@/hooks/useCache";
 import { Plus, Search, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserCard } from "../cards/UserCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Button } from "../ui/button";
 import {
@@ -15,7 +16,6 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Input } from "../ui/input";
-import { UserCard } from "../UserCard";
 import { UserModal, UserProps } from "../UserModal";
 
 type Props = UserProps[];
@@ -72,8 +72,8 @@ export function Users() {
     }
   };
 
-  const filteredUsers = users.filter((s) =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
