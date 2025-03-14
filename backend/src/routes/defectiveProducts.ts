@@ -4,7 +4,10 @@ export async function getAllDefectiveProducts(req: Request, res: Response) {
   try {
     const defectiveProducts = await prisma.defectiveProducts.findMany({
       orderBy: {
-        id: "desc",
+        createdAt: "asc",
+      },
+      include: {
+        defectivePaths: true,
       },
     });
     res.status(200).json(defectiveProducts);

@@ -7,6 +7,9 @@ export async function getAllProducts(req: Request, res: Response) {
       orderBy: {
         createdAt: "asc",
       },
+      include: {
+        paths: true,
+      },
     });
     res.status(200).json(products);
   } catch (error) {
