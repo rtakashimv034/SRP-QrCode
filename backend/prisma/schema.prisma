@@ -23,8 +23,8 @@ model Sectors {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   workstations   Workstations[]
-  Paths          Paths[]
-  DefectivePaths DefectivePaths[]
+  paths          Paths[]
+  defectivePaths DefectivePaths[]
 
   @@map("sectors")
 }
@@ -39,8 +39,8 @@ model Workstations {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Paths          Paths[]
-  DefectivePaths DefectivePaths[]
+  paths          Paths[]
+  defectivePaths DefectivePaths[]
 
   @@map("workstations")
 }
@@ -62,7 +62,7 @@ model Users {
 model Products {
   SN        String   @id
   createdAt DateTime @default(now())
-  Paths     Paths[]
+  paths     Paths[]
 
   @@map("products")
 }
@@ -70,7 +70,7 @@ model Products {
 model DefectiveProducts {
   id             Int              @id @default(autoincrement())
   createdAt      DateTime         @default(now())
-  DefectivePaths DefectivePaths[]
+  defectivePaths DefectivePaths[]
 
   @@map("defective_products")
 }

@@ -20,6 +20,8 @@ export async function getAllsectors(req: Request, res: Response) {
       },
       include: {
         workstations: true,
+        paths: true,
+        defectivePaths: true,
       },
     });
     res.status(200).json(sectors);

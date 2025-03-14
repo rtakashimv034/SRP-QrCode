@@ -27,8 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userId");
+    localStorage.clear();
     setUser(null);
     api.defaults.headers.authorization = "";
   };

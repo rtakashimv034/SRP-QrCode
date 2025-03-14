@@ -39,7 +39,7 @@ export function SectorCard({
           </div>
           <div className="flex mb-2 flex-row gap-x-4 items-center">
             <p className="font-semibold whitespace-nowrap text-xs opacity-70">
-              Total de Ocorrências: 120
+              Total de Ocorrências:
             </p>
             <Button
               disabled={disabled}

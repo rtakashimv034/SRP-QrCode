@@ -102,15 +102,16 @@ export function CreateSector() {
           Cadastrar Setor
         </h1>
       </div>
-      <div className="flex-1 grid grid-cols-[55%_45%]">
-        <div className="flex-1 flex justify-center items-center pr-4">
-          <div className="rounded-xl child:px-4 w-full h-96 overflow-hidden border-2 flex flex-col border-green-light">
+      <div className="flex-1 grid grid-cols-[55%_45%] pt-2">
+        <div className="flex flex-col justify-between gap-4 items-center pr-4">
+          {/* sector card */}
+          <div className="rounded-xl child:px-4 w-full h-full overflow-hidden border-2 flex flex-col border-green-light">
             <div className="bg-green-light shrink-0 flex items-center w-full h-10">
               <h1 className="text-white font-semibold text-lg">
                 Dados do setor
               </h1>
             </div>
-            <div className="flex-1 flex justify-evenly flex-col gap-2">
+            <div className="flex-1 flex justify-evenly pb-2 flex-col gap-2">
               <div className="flex flex-col gap-1">
                 <Label className="font-normal text-base">Nome do Setor</Label>
                 <input
@@ -121,8 +122,8 @@ export function CreateSector() {
                   value={name}
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-0.5">
                   <Label className="font-normal text-base">Estações</Label>
                   <div className="flex flex-col h-40 overflow-y-auto custom-scrollbar">
                     {workstations.map((station, i) => (
@@ -147,10 +148,18 @@ export function CreateSector() {
               </div>
             </div>
           </div>
+          {/* Tray card */}
+          <div className="rounded-xl child:px-4 w-full h-full overflow-hidden border-2 flex flex-col basis-1/3 border-green-light">
+            <div className="bg-green-light shrink-0 flex items-center w-full h-10">
+              <h1 className="text-white font-semibold text-lg">
+                Adicionar Bandejas
+              </h1>
+            </div>
+          </div>
         </div>
         <div className="flex-1 flex justify-center items-center pl-4">
           <div className="w-full h-full max-h-96 flex flex-col justify-center items-center">
-            <div className="flex flex-col h-full w-full border-2 rounded-lg border-green-light max-h-80 py-2 px-4">
+            <div className="flex flex-col h-full w-full border-2 rounded-lg border-green-light py-2 px-4">
               <h1 className="flex font-bold text-xl">Visualização:</h1>
               <div className="flex-1 flex justify-center items-center px-8">
                 <SectorCard disabled={true} data={{ name, workstations }} />

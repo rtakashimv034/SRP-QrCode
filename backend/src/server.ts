@@ -19,6 +19,10 @@ app.use(
 
 app.use(express.json());
 app.use("/api/v1", routes);
+app.use((req, res, next) => {
+  console.log(`[+] Request received from: ${req.ip}`);
+  next();
+});
 app.listen(PORT, "0.0.0.0", () =>
   console.log(`[+] Server is running at http://${domain}:${PORT}/api/v1`)
 );
