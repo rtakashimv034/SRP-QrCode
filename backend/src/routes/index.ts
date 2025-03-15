@@ -1,4 +1,5 @@
 import express from "express";
+import { upload } from "../lib/multer";
 import { createDefectivePath, createPath } from "./camera-route";
 import { getAllDefectivePaths } from "./defectivePaths";
 import { getAllDefectiveProducts } from "./defectiveProducts";
@@ -12,7 +13,6 @@ import {
   getSectorByName,
   updateSector,
 } from "./sectors";
-import { createTray, deleteTray, getAllTrays } from "./trays";
 import {
   createUser,
   deleteUser,
@@ -25,9 +25,9 @@ const routes = express.Router();
 // user routes
 routes.get("/users", getAllUsers);
 routes.get("/users/:id", getUserById);
-routes.post("/users", createUser);
+routes.post("/users", upload.single("avatar"), createUser);
+routes.patch("/users/:id", upload.single("avatar"), updateUser);
 routes.delete("/users/:id", deleteUser);
-routes.patch("/users/:id", updateUser);
 // login route
 routes.post("/login", login);
 //sector routes
@@ -36,10 +36,6 @@ routes.get("/sectors/:name", getSectorByName);
 routes.post("/sectors", createSector);
 routes.patch("/sectors/:name", updateSector);
 routes.delete("/sectors/:name", deleteSector);
-// trays routes
-routes.get("/trays", getAllTrays);
-routes.post("/trays", createTray);
-routes.delete("/trays", deleteTray);
 // products routes
 routes.get("/products", getAllProducts);
 // defective products routes

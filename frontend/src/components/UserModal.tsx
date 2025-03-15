@@ -1,6 +1,6 @@
-import { api } from "@/api";
+import { api, baseURL } from "@/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Camera } from "lucide-react";
+import { Camera, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,8 +27,6 @@ export type UserProps = {
   updatedAt?: string;
 };
 
-type UpdateUserProps = Omit<UserProps, "password" | "createdAt">;
-
 type Props = {
   user: UserProps | null;
   modal: ModalProps;
@@ -49,6 +47,7 @@ const userSchema = z.object({
     .string()
     .min(8, "A senha deve ter pelo menos 8 caracteres")
     .optional(),
+  avatar: z.any().optional(),
 });
 
 type UserFormData = z.infer<typeof userSchema>;
@@ -73,40 +72,57 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
 
   const [isManager, setIsManager] = useState(user?.isManager || false);
 
-  // Preenche os valores do formulário quando o modal é aberto ou o usuário muda
-  useEffect(() => {
-    if (modal.isOpen && user) {
-      setValue("name", user.name);
-      setValue("surname", user.surname);
-      setValue("email", user.email);
-      unregister("password");
-      setIsManager(user.isManager);
-    } else if (modal.isOpen && !user) {
-      reset();
-      setIsManager(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }, [modal.isOpen, user, setValue, reset, unregister]);
+  };
 
   const onSubmit: SubmitHandler<UserFormData> = async (data) => {
     try {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("surname", data.surname || "");
+      formData.append("email", data.email);
+      formData.append("isManager", String(isManager)); // Convertendo para string
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
+      if (removeAvatar) {
+        formData.append("removeAvatar", "true");
+      }
+      if (!user && data.password) {
+        // Apenas adiciona a senha durante a criação
+        formData.append("password", data.password);
+      }
+
       if (user) {
-        const updateData: UpdateUserProps = {
-          name: data.name,
-          surname: data.surname,
-          email: data.email,
-          isManager,
-        };
-        const { status } = await api.patch(`/users/${user.id}`, updateData);
+        const { status } = await api.patch(`/users/${user.id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         if (status === 200) {
           modal.setIsOpen(false);
           fetchUsers();
+          window.location.reload();
         }
       } else {
-        const createData: UserProps = {
-          ...data,
-          isManager,
-        };
-        const { status } = await api.post("/users", createData);
+        const { status } = await api.post("/users", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         if (status === 201) {
           modal.setIsOpen(false);
           fetchUsers();
@@ -118,6 +134,26 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
     }
   };
 
+  // Preenche os valores do formulário quando o modal é aberto ou o usuário muda
+  useEffect(() => {
+    if (modal.isOpen && user) {
+      setValue("name", user.name);
+      setValue("surname", user.surname);
+      setValue("email", user.email);
+      unregister("password");
+      setIsManager(user.isManager);
+      if (user.avatar) {
+        setAvatarPreview(`${baseURL}/uploads/${user.avatar}`);
+      }
+      setRemoveAvatar(false);
+    } else if (modal.isOpen && !user) {
+      reset();
+      setIsManager(false);
+      setAvatarPreview(null);
+      setRemoveAvatar(false);
+    }
+  }, [modal.isOpen, user, setValue, reset, unregister]);
+
   return (
     <Dialog open={modal.isOpen} onOpenChange={modal.setIsOpen}>
       <DialogContent className="w-1/4 flex flex-col items-center gap-0 overflow-hidden py-0 px-4 border-0">
@@ -127,13 +163,40 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
             {user ? "Atualizar Usuário" : "Adicionar Usuário"}
           </span>
         </div>
-        <div className="flex justify-center mt-20">
-          <div className="size-36 border-2 border-gray-700 rounded-full p-0 flex items-center justify-center">
-            <Camera className="text-gray-700 size-20" />
+        <div className="flex flex-col justify-between gap-2 items-center mt-16">
+          <div className="size-36 border-2 border-gray-700 relative rounded-full p-0 flex items-center justify-center">
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt="Avatar Preview"
+                className="size-[8.5rem] rounded-full"
+              />
+            ) : (
+              <Camera className="text-gray-700 size-20" />
+            )}
+            <input
+              id="avatarInput"
+              type="file"
+              className="absolute size-36 hover:cursor-pointer bg-red-400 rounded-full opacity-0"
+              accept="image/png, image/jpeg"
+              onChange={handleAvatarChange}
+            />
           </div>
+          {avatarPreview && (
+            <Button
+              className="px-3 bg-transparent border border-black opacity-70 rounded-2xl h-5 text-[10px] hover:bg-red-300"
+              onClick={() => {
+                setAvatarPreview(null);
+                setRemoveAvatar(true);
+              }}
+            >
+              <Trash2 className="text-black size-3" />
+              <span className="text-black font-normal">Remover Avatar</span>
+            </Button>
+          )}
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="px-6 py-4 w-full">
-          <div className="flex gap-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="px-6 w-full">
+          <div className="flex mt-4 gap-2">
             <div className="flex flex-col w-1/2">
               <Label className="text-base font-normal">Nome:</Label>
               <Input
@@ -162,7 +225,7 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
             </div>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-2">
             <Label className="text-base font-normal">Email:</Label>
             <Input
               {...register("email")}
@@ -190,7 +253,7 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
               )}
             </div>
           )}
-          <div className="mt-4">
+          <div className="mt-2">
             <Label className="text-base font-normal ">Permissões:</Label>
             <div className="flex gap-2 mt-2">
               <Button
@@ -221,7 +284,11 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
             <Button
               type="button"
               className="border border-gray-600 text-black px-4 py-2 rounded-md bg-transparent hover:bg-gray-100"
-              onClick={() => reset()}
+              onClick={() => {
+                reset();
+                setAvatarPreview(null);
+                setRemoveAvatar(true);
+              }}
             >
               Limpar
             </Button>

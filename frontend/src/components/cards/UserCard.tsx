@@ -1,3 +1,4 @@
+import { baseURL } from "@/api";
 import defaultAvatar from "@/assets/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
 import { Edit2Icon, TrashIcon } from "lucide-react";
@@ -23,7 +24,9 @@ export function UserCard({ user, onDelete, onUpdate }: Props) {
       <CardContent className="flex flex-row w-full p-2">
         <div className="w-full gap-3 flex flex-row items-center p-2">
           <img
-            src={user.avatar ? user.avatar : defaultAvatar}
+            src={
+              user.avatar ? `${baseURL}/uploads/${user.avatar}` : defaultAvatar
+            }
             alt="avatar"
             style={{
               minWidth: "90px",

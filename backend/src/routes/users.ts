@@ -4,30 +4,35 @@ import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
 
 import bcrypt from "bcryptjs";
-
+import fs from "fs";
+import path from "path";
 interface QueryParams {
   order?: "asc" | "desc";
   isManager?: string;
 }
 
 const userSchema = z.object({
-  name: z.string().min(3, ""),
+  name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   surname: z.string().optional(),
-  password: z.string().min(8, "password must be at least 8 characters"),
-  avatar: z.string().optional(),
-  email: z.string().email(),
-  isManager: z.boolean(),
+  email: z.string().email("Formato de e-mail inválido"),
+  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+  isManager: z.string(),
+  removeAvatar: z.string().optional(),
 });
 
 // Create a partial schema for updates
 const updateUserSchema = userSchema.partial();
 
 export async function createUser(req: Request, res: Response) {
-  const data = userSchema.parse(req.body);
+  const { email, isManager, name, password, surname } = userSchema.parse(
+    req.body
+  );
+  const avatar = req.file ? req.file.filename : null;
+
   try {
     const existingUser = await prisma.users.findFirst({
       where: {
-        email: data.email,
+        email,
       },
     });
     if (existingUser) {
@@ -35,9 +40,17 @@ export async function createUser(req: Request, res: Response) {
       return;
     }
     // create new user
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    data.password = hashedPassword;
-    const newUser = await prisma.users.create({ data });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await prisma.users.create({
+      data: {
+        name,
+        surname,
+        email,
+        password: hashedPassword,
+        avatar,
+        isManager: isManager === "true",
+      },
+    });
 
     res.status(201).json({
       name: newUser.name,
@@ -107,6 +120,20 @@ export async function deleteUser(req: Request, res: Response) {
       res.status(404).json({ errors: "User not found" });
       return;
     }
+
+    // Verificar se o usuário tem uma foto de perfil
+    if (user.avatar) {
+      const avatarPath = path.join(__dirname, "../uploads", user.avatar);
+
+      // Verificar se o arquivo existe e deletá-lo
+      if (fs.existsSync(avatarPath)) {
+        fs.unlinkSync(avatarPath); // Deleta o arquivo
+        console.log(`[+] Avatar ${user.avatar} deleted successfully.`);
+      } else {
+        console.log(`[-] Avatar ${user.avatar} not found in uploads folder.`);
+      }
+    }
+
     await prisma.users.delete({ where: { id } });
     res.status(204).json({ message: "User deleted successfully" });
   } catch (error) {
@@ -121,10 +148,12 @@ export async function deleteUser(req: Request, res: Response) {
 }
 
 export async function updateUser(req: Request, res: Response) {
-  try {
-    const id = req.params.id;
-    const updateData = updateUserSchema.parse(req.body);
+  const id = req.params.id;
+  const { email, isManager, name, surname, password, removeAvatar } =
+    updateUserSchema.parse(req.body);
+  const avatar = req.file ? req.file.filename : null;
 
+  try {
     const user = await prisma.users.findFirst({
       where: { id },
     });
@@ -135,9 +164,9 @@ export async function updateUser(req: Request, res: Response) {
     }
 
     // Only check email if it's being updated
-    if (updateData.email && updateData.email !== user.email) {
+    if (email && email !== user.email) {
       const existingUser = await prisma.users.findFirst({
-        where: { email: updateData.email },
+        where: { email },
       });
       if (existingUser) {
         res.status(409).json({ errors: "user with same email already exists" });
@@ -145,14 +174,28 @@ export async function updateUser(req: Request, res: Response) {
       }
     }
 
-    // Hash password only if it's being updated
-    if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, 10);
+    // Verifica se a foto deve ser removida
+    if (removeAvatar === "true" && user.avatar) {
+      const avatarPath = path.join(__dirname, "../uploads", user.avatar);
+      if (fs.existsSync(avatarPath)) {
+        fs.unlinkSync(avatarPath); // Deleta a foto do sistema de arquivos
+      }
     }
+    // Hash password only if it's being updated
+    const hashedPassword = password
+      ? await bcrypt.hash(password, 10)
+      : user.password;
 
     await prisma.users.update({
       where: { id },
-      data: updateData,
+      data: {
+        name,
+        surname,
+        email,
+        password: hashedPassword,
+        avatar: removeAvatar === "true" ? null : avatar || user.avatar,
+        isManager: isManager === "true",
+      },
     });
 
     res.status(200).json({ message: "User updated successfully" });
