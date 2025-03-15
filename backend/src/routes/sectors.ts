@@ -8,8 +8,13 @@ const workstationSchema = z.object({
 
 const sectorSchema = z.object({
   name: z.string(),
+  amountTrays: z.number().int().min(1).positive(),
   createdAt: z.string().optional(),
   workstations: z.array(workstationSchema),
+});
+
+const updateSectorSchema = sectorSchema.omit({
+  amountTrays: true,
 });
 
 export async function getAllsectors(req: Request, res: Response) {
@@ -61,7 +66,9 @@ export async function getSectorByName(req: Request, res: Response) {
 }
 
 export async function createSector(req: Request, res: Response) {
-  const { name, createdAt, workstations } = sectorSchema.parse(req.body);
+  const { name, createdAt, workstations, amountTrays } = sectorSchema.parse(
+    req.body
+  );
 
   if (workstations.length < 3) {
     res.status(400).json({ errors: "At least 3 workstations are required" });
@@ -74,6 +81,7 @@ export async function createSector(req: Request, res: Response) {
       data: {
         name,
         createdAt,
+        amountTrays,
         workstations: {
           create: workstations,
         },
@@ -91,7 +99,7 @@ export async function createSector(req: Request, res: Response) {
 }
 
 export async function updateSector(req: Request, res: Response) {
-  const { name, workstations } = sectorSchema.parse(req.body);
+  const { name, workstations } = updateSectorSchema.parse(req.body);
   const sectorName = req.params.name;
 
   if (!sectorName) {

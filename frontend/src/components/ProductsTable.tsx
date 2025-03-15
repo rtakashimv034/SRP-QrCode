@@ -27,30 +27,41 @@ export function ProductsTable({ data }: Props) {
         </tr>
       </thead>
       <tbody className="child:text-sm child:child:px-1">
-        {data.map((product, i) => (
-          <tr key={i}>
+        {data.length > 0 ? (
+          data.map((product, i) => (
+            <tr key={i}>
+              <td
+                className={`border ${
+                  i === data.length - 1 && "rounded-bl-lg"
+                } border-gray-900 border-t-0 border-l py-2`}
+              >
+                #{product.id}
+              </td>
+              <td className="border border-gray-900 border-t-0 border-l-0 py-2">
+                {product.createdAt.slice(11, 16)}
+              </td>
+              <td
+                className={`border ${
+                  i === data.length - 1 && "rounded-br-lg"
+                } border-gray-900 border-t-0 border-l-0 py-2`}
+              >
+                <Button className="bg-transparent border border-gray-400 text-gray-700 rounded-2xl h-7 text-xs hover:bg-green-300">
+                  <FileChartPie className="text-gray-700" size={15} />
+                  Gerar Relatório
+                </Button>
+              </td>
+            </tr>
+          ))
+        ) : (
+          <tr>
             <td
-              className={`border ${
-                i === data.length - 1 && "rounded-bl-lg"
-              } border-gray-900 border-t-0 border-l py-2`}
+              colSpan={3}
+              className="border border-t-0 border-gray-900 rounded-b-lg py-2 font-light opacity-70"
             >
-              #{product.id}
-            </td>
-            <td className="border border-gray-900 border-t-0 border-l-0 py-2">
-              {product.createdAt.slice(11, 16)}
-            </td>
-            <td
-              className={`border ${
-                i === data.length - 1 && "rounded-br-lg"
-              } border-gray-900 border-t-0 border-l-0 py-2`}
-            >
-              <Button className="bg-transparent border border-gray-400 text-gray-700 rounded-2xl h-7 text-xs hover:bg-green-300">
-                <FileChartPie className="text-gray-700" size={15} />
-                Gerar Relatório
-              </Button>
+              Nenhum produto com defeito detectado.
             </td>
           </tr>
-        ))}
+        )}
       </tbody>
     </table>
   );

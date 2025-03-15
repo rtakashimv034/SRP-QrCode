@@ -20,11 +20,16 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 
+import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
+import { ChevronDown, ChevronUp } from "lucide-react";
+
 export function CreateSector() {
   const [name, setSectorName] = useState("");
   const [workstations, setWorkstations] = useState<LocalWorkstationProps[]>([]);
+  const [amountTrays, setAmountTrays] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { generateAndDownloadZip, isGenerating } = useQRCodeGenerator();
 
   const navigate = useNavigate();
 
@@ -44,7 +49,10 @@ export function CreateSector() {
   });
 
   const isDisabled =
-    invalidSectorName || workstations.length < 3 || invalidWsName;
+    invalidSectorName ||
+    workstations.length < 3 ||
+    invalidWsName ||
+    amountTrays < 1;
 
   const handleAddingStation = () => {
     const newStation: LocalWorkstationProps = {
@@ -61,15 +69,20 @@ export function CreateSector() {
     setWorkstations(updatedStations);
   };
 
+  const generateTrays = async (amountTrays: number) => {
+    await generateAndDownloadZip(amountTrays, "BDJ");
+  };
+
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      const data: CreationSectorProps = { name, workstations };
+      const data: CreationSectorProps = { name, workstations, amountTrays };
       const { status } = await api.post("/sectors", data);
       if (status === 201) {
         setIsModalOpen(true);
         setWorkstations([]);
         setSectorName("");
+        await generateTrays(amountTrays);
       }
     } catch (error) {
       alert(`could not create sector: ${error}`);
@@ -155,6 +168,24 @@ export function CreateSector() {
                 Adicionar Bandejas
               </h1>
             </div>
+            <div className="h-full flex flex-col justify-center items-center">
+              <div className=" h-full py-1.5 flex flex-col items-center justify-between">
+                <h1 className="text-base leading-none">Bandejas Disponíveis</h1>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min={1}
+                    value={amountTrays}
+                    onChange={(e) => setAmountTrays(Number(e.target.value))}
+                    className="custom-number-input rounded-md border border-gray-500 font-medium pr-1 pl-3 py-1 bg-gray-200 w-24"
+                  />
+                  <div className="chevron-buttons border-l border-l-gray-500 flex w-8 flex-col shrink h-8 items-center absolute top-[1px] right-[1px]">
+                    <ChevronUp className=" bg-transparent rounded-tr-[5px] size-5 text-gray-700 border-b border-b-gray-500 w-full" />
+                    <ChevronDown className="size-5 rounded-br-[5px] text-gray-700 w-full" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div className="flex-1 flex justify-center items-center pl-4">
@@ -162,7 +193,10 @@ export function CreateSector() {
             <div className="flex flex-col h-full w-full border-2 rounded-lg border-green-light py-2 px-4">
               <h1 className="flex font-bold text-xl">Visualização:</h1>
               <div className="flex-1 flex justify-center items-center px-8">
-                <SectorCard disabled={true} data={{ name, workstations }} />
+                <SectorCard
+                  disabled={true}
+                  data={{ name, workstations, amountTrays }}
+                />
               </div>
             </div>
             <div className="flex justify-center items-center h-52">
@@ -171,7 +205,7 @@ export function CreateSector() {
                 variant={"submit"}
                 onClick={handleSubmit}
               >
-                {isLoading ? "Salvando..." : "Salvar Setor"}
+                {isLoading || isGenerating ? "Salvando..." : "Salvar Setor"}
               </Button>
             </div>
           </div>

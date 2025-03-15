@@ -20,6 +20,7 @@ generator erd {
 model Sectors {
   id             Int              @id @default(autoincrement())
   name           String           @unique
+  amountTrays    Int
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   workstations   Workstations[]
@@ -73,13 +74,6 @@ model DefectiveProducts {
   defectivePaths DefectivePaths[]
 
   @@map("defective_products")
-}
-
-model Trays {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-
-  @@map("trays")
 }
 
 model Paths {
