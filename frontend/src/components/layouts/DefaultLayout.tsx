@@ -1,3 +1,4 @@
+import { baseURL } from "@/api";
 import defaultAvatar from "@/assets/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
@@ -24,7 +25,9 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
     <div className="w-screen h-screen overflow-hidden grid grid-cols-[20%_80%] space-x-8 bg-default p-20 child:rounded-lg">
       <aside className="grid grid-rows-[20%_80%] space-y-8 child:rounded-lg">
         <UserAsideCard
-          avatar={user.avatar ? user.avatar : defaultAvatar}
+          avatar={
+            user.avatar ? `${baseURL}/uploads/${user.avatar}` : defaultAvatar
+          }
           name={user.name}
           surName={user.surName}
         />
