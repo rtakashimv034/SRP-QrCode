@@ -6,6 +6,7 @@ import { CreationWorkstationProps } from "./WorkstationCard";
 
 export type CreationSectorProps = {
   name: string;
+  amountTrays: number;
   workstations: CreationWorkstationProps[] | [];
 };
 
@@ -33,6 +34,9 @@ export function SectorCard({
         <div className="flex flex-col justify-between">
           <div className="flex flex-col">
             <h2 className="font-semibold text-base">{data.name}</h2>
+            <p className="text-xs opacity-50">
+              {data.amountTrays} Bandejas Linkadas
+            </p>
             <p className="text-xs opacity-50">
               Nº de estações: {data.workstations.length}
             </p>

@@ -48,4 +48,38 @@
     scrollbar-width: thin; /* Para Firefox */
     scrollbar-color: gray #f1f1f1; /* Para Firefox */
   }
+
+  /* Mantém os botões sempre visíveis */
+  .custom-number-input {
+    appearance: textfield; /* Remove estilo padrão */
+    position: relative;
+  }
+
+  /* WebKit Browsers (Chrome, Safari, Edge) */
+  /* Mantém os botões visíveis */
+  /* Remove o estilo padrão do input */
+  .custom-number-input::-webkit-inner-spin-button {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* ✅ Permite interação mesmo estando atrás */
+    pointer-events: auto;
+
+    width: 2rem;
+    height: 2rem;
+    margin-right: -0.3rem;
+
+    border-radius: 4px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+
+    cursor: pointer;
+  }
+
+  /* Faz os botões artificiais NÃO bloquearem a interação */
+  .chevron-buttons {
+    pointer-events: none;
+  }
 }

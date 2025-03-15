@@ -22,6 +22,8 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 
+type EditSectorProps = Omit<CreationSectorProps, "amountTrays">;
+
 export function EditSector() {
   const { name } = useParams<{ name: string }>(); // Acessa o nome do setor da rota
   const [sectorName, setSectorName] = useState("");
@@ -33,6 +35,7 @@ export function EditSector() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [amountTrays, setAmountTrays] = useState(0);
   const navigate = useNavigate();
 
   const fetchSectorData = async () => {
@@ -50,6 +53,7 @@ export function EditSector() {
         );
         setLocalWorkstations(localStations);
         setWorkstations(data.workstations);
+        setAmountTrays(data.amountTrays);
       }
     } catch (error) {
       console.error("Erro ao carregar setor:", error);
@@ -92,7 +96,7 @@ export function EditSector() {
         })
       );
 
-      const data: CreationSectorProps = {
+      const data: EditSectorProps = {
         name: sectorName,
         workstations: workstationsForApi,
       };
@@ -192,6 +196,7 @@ export function EditSector() {
                       sectorName,
                       name,
                     })),
+                    amountTrays,
                   }}
                 />
               </div>
