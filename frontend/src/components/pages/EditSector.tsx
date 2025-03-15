@@ -164,7 +164,7 @@ export function EditSector() {
                       <WorkstationCard
                         key={station.localId}
                         station={station}
-                        isLatest={i === workstations.length - 1}
+                        isLatest={i === localWorkstations.length - 1}
                         onDelete={() => handleDeleteStation(station.localId)}
                         name={station.name}
                         onNameChange={handleNameChange}

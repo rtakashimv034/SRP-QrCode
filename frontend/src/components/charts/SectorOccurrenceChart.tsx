@@ -1,6 +1,6 @@
 import { ApexOptions } from "apexcharts";
 import Chart from "react-apexcharts";
-import { SectorProps } from "./pages/Reports";
+import { SectorProps } from "../pages/Reports";
 
 type Props = {
   sectors: SectorProps[];

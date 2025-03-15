@@ -144,6 +144,8 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
       setIsManager(user.isManager);
       if (user.avatar) {
         setAvatarPreview(`${baseURL}/uploads/${user.avatar}`);
+      } else {
+        setAvatarPreview(null);
       }
       setRemoveAvatar(false);
     } else if (modal.isOpen && !user) {
