@@ -74,7 +74,7 @@ export function Users() {
         if (user?.id === currentUser?.id) {
           clearCache();
           signOut();
-          navigate("/");
+          navigate("/login");
         }
       }
     } catch (error) {

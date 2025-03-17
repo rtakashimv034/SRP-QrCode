@@ -43,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       socket.emit("user-offline", user.id);
     }
     localStorage.clear();
+    console.log(localStorage);
     setUser(null);
     api.defaults.headers.authorization = "";
   };
