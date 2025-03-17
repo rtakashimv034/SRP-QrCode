@@ -1,4 +1,5 @@
-import { api } from "@/api";
+import { api } from "@/api/axios";
+import { socket } from "@/api/socket";
 import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
 import { Plus, Search, UsersRound } from "lucide-react";
@@ -77,6 +78,30 @@ export function Users() {
   );
 
   useEffect(() => {
+    socket.on("create-user", (user: UserProps) => {
+      setUsers((prevUsers) => [...prevUsers, user]);
+    });
+    socket.on("update-user", (updatedUser: UserProps) => {
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === updatedUser.id ? updatedUser : user
+        )
+      );
+    });
+    socket.on("delete-user", (deletedUser: UserProps) => {
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user.id !== deletedUser.id)
+      );
+    });
+
+    return () => {
+      socket.off("create-user");
+      socket.off("update-user");
+      socket.off("delete-user");
+    };
+  }, []);
+
+  useEffect(() => {
     fetchUsers();
   }, []);
 
@@ -149,7 +174,7 @@ export function Users() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Deletar Setor</DialogTitle>
+            <DialogTitle>Excluir Usuário</DialogTitle>
             <DialogDescription>
               Você tem certeza que deseja deletar excluir o usuário "
               {user?.name}" do sistema?

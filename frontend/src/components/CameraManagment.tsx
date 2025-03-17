@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Button } from "./ui/button";
 
-import { api } from "@/api";
+import { api } from "@/api/axios";
 import {
   Dialog,
   DialogContent,

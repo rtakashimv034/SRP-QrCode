@@ -1,4 +1,4 @@
-import { api } from "@/api";
+import { api } from "@/api/axios";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";

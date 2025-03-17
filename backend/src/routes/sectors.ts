@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
+import { io } from "../server";
 
 const workstationSchema = z.object({
   name: z.string().min(2),
@@ -46,6 +47,8 @@ export async function getSectorByName(req: Request, res: Response) {
       },
       include: {
         workstations: true,
+        paths: true,
+        defectivePaths: true,
       },
     });
 
@@ -75,18 +78,23 @@ export async function createSector(req: Request, res: Response) {
     return;
   }
 
+  const data = {
+    name,
+    createdAt,
+    amountTrays,
+    workstations: {
+      create: workstations,
+    },
+  };
+
   try {
     // create sector
     await prisma.sectors.create({
-      data: {
-        name,
-        createdAt,
-        amountTrays,
-        workstations: {
-          create: workstations,
-        },
-      },
+      data,
+      include: { workstations: true, defectivePaths: true, paths: true },
     });
+
+    io.emit("create-sector", data);
     res.status(201).json({ message: "Sector created successfully" });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -124,18 +132,26 @@ export async function updateSector(req: Request, res: Response) {
       }
     }
 
+    const data = {
+      name,
+      workstations: {
+        deleteMany: {}, // Delete all workstations in this sector
+        create: workstations,
+      },
+    };
+
     // Delete all existing workstations and create new ones
     await prisma.sectors.update({
       where: { name: sectorName },
-      data: {
-        name,
-        workstations: {
-          deleteMany: {}, // Delete all workstations in this sector
-          create: workstations,
-        },
+      data,
+      include: {
+        workstations: true,
+        paths: true,
+        defectivePaths: true,
       },
     });
 
+    io.emit("update-sector", data);
     res.status(200).json({ message: "Sector updated successfully" });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -150,6 +166,19 @@ export async function updateSector(req: Request, res: Response) {
 export async function deleteSector(req: Request, res: Response) {
   const sectorName = req.params.name;
   try {
+    // Busca os dados do setor antes de deletá-lo
+    const sector = await prisma.sectors.findUnique({
+      where: { name: sectorName },
+      include: {
+        workstations: true, // Inclui as workstations do setor
+      },
+    });
+
+    if (!sector) {
+      res.status(404).json({ errors: "Sector not found" });
+      return;
+    }
+
     await prisma.workstations.deleteMany({
       where: {
         sector: {
@@ -158,6 +187,7 @@ export async function deleteSector(req: Request, res: Response) {
       },
     });
     await prisma.sectors.delete({ where: { name: sectorName } });
+    io.emit("delete-sector", sector);
     res.status(204).json({ message: "Sector deleted successfully" });
   } catch (error) {
     if (error instanceof z.ZodError) {

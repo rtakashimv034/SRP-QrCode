@@ -1,4 +1,4 @@
-import { api } from "@/api";
+import { api } from "@/api/axios";
 import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,11 +21,12 @@ import {
 import { Label } from "../ui/label";
 
 import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
+import { LocalWorkstation } from "@/types/types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function CreateSector() {
   const [name, setSectorName] = useState("");
-  const [workstations, setWorkstations] = useState<LocalWorkstationProps[]>([]);
+  const [workstations, setWorkstations] = useState<LocalWorkstation[]>([]);
   const [amountTrays, setAmountTrays] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,4 +1,5 @@
-import { api, baseURL } from "@/api";
+import { baseURL } from "@/api";
+import { api } from "@/api/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Camera, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";

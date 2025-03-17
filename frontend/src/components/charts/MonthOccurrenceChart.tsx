@@ -1,5 +1,5 @@
 import { ApexOptions } from "apexcharts";
-import { useState } from "react"; // Importar useState para gerenciar o estado do ano selecionado
+import { useEffect, useRef, useState } from "react"; // Importar useState para gerenciar o estado do ano selecionado
 import Chart from "react-apexcharts";
 import { PathsGeneric } from "../cards/OccurrenceCard";
 
@@ -9,6 +9,8 @@ type Props = {
 };
 
 export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
+  const chartRef = useRef<any>(null);
+
   // Estado para armazenar o ano selecionado pelo usuário
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
@@ -79,7 +81,7 @@ export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
     "Dez",
   ];
 
-  const series: ApexAxisChartSeries = [
+  const initialSeries: ApexAxisChartSeries = [
     {
       name: "Caminhos normais",
       data: normalData,
@@ -168,10 +170,29 @@ export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
     },
   };
 
+  useEffect(() => {
+    if (chartRef.current) {
+      const newSeries = [
+        {
+          name: "Caminhos normais",
+          data: normalData,
+        },
+        {
+          name: "Caminhos de despacho",
+          data: defectiveData,
+        },
+      ];
+
+      // Atualize os dados do gráfico sem re-renderizar o componente
+      chartRef.current.updateSeries(newSeries);
+    }
+  }, [paths, defectivePaths]);
+
   return (
     <div>
       {/* Seletor de ano */}
-      <div className="child:text-sm child:opacity-70 flex flex-row items-center gap-1 justify-end mr-2 mt-1">
+      <div className="child:text-sm child:opacity-70 flex flex-row items-center gap-2 justify-end mr-2 mt-1">
+        <label htmlFor="year-select">Ano: </label>
         <select
           id="year-select"
           value={selectedYear}
@@ -188,7 +209,13 @@ export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
       </div>
 
       {/* Gráfico */}
-      <Chart height={177} options={options} series={series} type="line" />
+      <Chart
+        height={177}
+        options={options}
+        series={initialSeries}
+        type="line"
+        ref={chartRef} // Passe a referência para o gráfico
+      />
     </div>
   );
 }

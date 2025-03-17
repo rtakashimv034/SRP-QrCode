@@ -1,4 +1,5 @@
-import { api } from "@/api";
+import { api } from "@/api/axios";
+import { socket } from "@/api/socket";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,13 +12,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
+import { Sector } from "@/types/types";
 import { Factory, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreationSectorProps, SectorCard } from "../cards/SectorCard";
+import { SectorCard } from "../cards/SectorCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 
-type Props = CreationSectorProps[];
+type Props = Sector[];
 
 export function Sectors() {
   const navigator = useNavigate();
@@ -72,6 +74,31 @@ export function Sectors() {
   const filteredSectors = sectors.filter((s) =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    socket.on("create-sector", (sector: Sector) => {
+      setSectors((prev) => [...prev, sector]);
+    });
+    socket.on("update-sector", (updatedSector: Sector) => {
+      setSectors((prev) =>
+        prev.map((sector) =>
+          sector.name === updatedSector.name ? updatedSector : sector
+        )
+      );
+    });
+    socket.on("delete-sector", (sector: Sector) => {
+      setSectors((prev) => prev.filter((s) => s.name !== sector.name));
+    });
+    // Limpa os listeners ao desmontar o componente
+    return () => {
+      socket.off("create-path");
+      socket.off("create-defective-path");
+      socket.off("create-defective-product");
+      socket.off("create-sector");
+      socket.off("update-sector");
+      socket.off("delete-sector");
+    };
+  }, []);
 
   useEffect(() => {
     fetchSectors();

@@ -1,4 +1,5 @@
-import { api } from "@/api";
+import { api } from "@/api/axios";
+import { socket } from "@/api/socket";
 import HistoryIcon from "@/assets/Icon awesome-history.svg";
 import ClockIcon from "@/assets/Icon material-access-time.svg";
 import ReportIcon from "@/assets/Icon_simple_everplaces.svg";
@@ -37,7 +38,9 @@ export type SectorProps = {
 export function Reports() {
   const [sectors, setSectors] = useState<SectorProps[]>([]);
   const [paths, setPaths] = useState<PathsProps[]>([]);
-  const [products, setProducts] = useState<DefectiveProductProps[]>([]);
+  const [defectiveProducts, setDefectiveProducts] = useState<
+    DefectiveProductProps[]
+  >([]);
   const [defectivePaths, setDefectivePaths] = useState<DefectivePathsProps[]>(
     []
   );
@@ -78,13 +81,51 @@ export function Reports() {
         "/defective-products"
       );
       if (status === 200) {
-        setProducts(data);
+        setDefectiveProducts(data);
       }
     } catch (error) {
       alert("Error fetching products: " + error);
       console.error("Error fetch products: ", error);
     }
   };
+
+  // Escuta eventos do Socket.IO para atualização em tempo real
+  useEffect(() => {
+    socket.on("create-path", (newPath: PathsProps) => {
+      setPaths((prev) => [...prev, newPath]);
+    });
+    socket.on("create-defective-path", (newDefPath: DefectivePathsProps) => {
+      setDefectivePaths((prev) => [...prev, newDefPath]);
+    });
+    socket.on(
+      "create-defective-product",
+      (newDefProd: DefectiveProductProps) => {
+        setDefectiveProducts((prev) => [...prev, newDefProd]);
+      }
+    );
+    socket.on("create-sector", (sector: SectorProps) => {
+      setSectors((prev) => [...prev, sector]);
+    });
+    socket.on("update-sector", (updatedSector: SectorProps) => {
+      setSectors((prev) =>
+        prev.map((sector) =>
+          sector.name === updatedSector.name ? updatedSector : sector
+        )
+      );
+    });
+    socket.on("delete-sector", (sector: SectorProps) => {
+      setSectors((prev) => prev.filter((s) => s.name !== sector.name));
+    });
+    // Limpa os listeners ao desmontar o componente
+    return () => {
+      socket.off("create-path");
+      socket.off("create-defective-path");
+      socket.off("create-defective-product");
+      socket.off("create-sector");
+      socket.off("update-sector");
+      socket.off("delete-sector");
+    };
+  }, []);
 
   useEffect(() => {
     fetchSectors();
@@ -124,7 +165,7 @@ export function Reports() {
 
           {/* Tabela de Histórico */}
           <div className="overflow-x-auto">
-            <ProductsTable data={products} />
+            <ProductsTable data={defectiveProducts} />
           </div>
         </div>
       </div>

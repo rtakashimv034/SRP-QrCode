@@ -1,4 +1,4 @@
-import { api } from "@/api";
+import { api } from "@/api/axios";
 import { AuthSplashScreen } from "@/components/AuthSplashScreen";
 import { SplashScreen } from "@/components/SplashScreen";
 import { useEffect, useState } from "react";
