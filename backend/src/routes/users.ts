@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
+import { io } from "../server";
 interface QueryParams {
   order?: "asc" | "desc";
   isManager?: string;
@@ -41,16 +42,19 @@ export async function createUser(req: Request, res: Response) {
     }
     // create new user
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await prisma.users.create({
-      data: {
-        name,
-        surname,
-        email,
-        password: hashedPassword,
-        avatar,
-        isManager: isManager === "true",
-      },
-    });
+
+    const data = {
+      name,
+      surname,
+      email,
+      password: hashedPassword,
+      avatar,
+      isManager: isManager === "true",
+    };
+
+    const newUser = await prisma.users.create({ data });
+
+    io.emit("create-user", data);
 
     res.status(201).json({
       name: newUser.name,
@@ -135,6 +139,9 @@ export async function deleteUser(req: Request, res: Response) {
     }
 
     await prisma.users.delete({ where: { id } });
+
+    io.emit("delete-user", user);
+
     res.status(204).json({ message: "User deleted successfully" });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -186,17 +193,21 @@ export async function updateUser(req: Request, res: Response) {
       ? await bcrypt.hash(password, 10)
       : user.password;
 
+    const data = {
+      name,
+      surname,
+      email,
+      password: hashedPassword,
+      avatar: removeAvatar === "true" ? null : avatar || user.avatar,
+      isManager: isManager === "true",
+    };
+
     await prisma.users.update({
       where: { id },
-      data: {
-        name,
-        surname,
-        email,
-        password: hashedPassword,
-        avatar: removeAvatar === "true" ? null : avatar || user.avatar,
-        isManager: isManager === "true",
-      },
+      data,
     });
+
+    io.emit("update-user", data);
 
     res.status(200).json({ message: "User updated successfully" });
   } catch (error) {

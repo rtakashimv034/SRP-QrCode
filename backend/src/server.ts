@@ -1,26 +1,30 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
+import { createServer } from "http";
 import multer from "multer";
 import path from "path";
+import { Server } from "socket.io";
 import { routes } from "./routes";
+
 dotenv.config();
 
 const PORT = 3333;
 const domain = process.env.LOCAL;
 const app = express();
 
-app.use(
-  cors({
-    origin: "*",
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-    methods: "*",
-  })
-);
+const corsSettings = {
+  origin: "*",
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  methods: "*",
+};
+
+app.use(cors(corsSettings));
 
 app.use(express.json());
 
+// handle multipart upload
 app.use("/api/v1/uploads", express.static(path.join(__dirname, "uploads")));
 app.use((err: any, req: any, res: any, next: any) => {
   if (err instanceof multer.MulterError) {
@@ -33,10 +37,20 @@ app.use((err: any, req: any, res: any, next: any) => {
   }
 });
 app.use("/api/v1", routes);
-app.use((req, res, next) => {
-  console.log(`[+] Request received from: ${req.ip}`);
-  next();
+
+// Cria um servidor HTTP a partir do Express
+const server = createServer(app);
+// Configura o Socket.IO para usar o mesmo servidor HTTP
+export const io = new Server(server, { cors: corsSettings });
+
+io.on("connection", (socket) => {
+  console.log("Novo cliente conectado:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("Cliente desconectado:", socket.id);
+  });
 });
-app.listen(PORT, "0.0.0.0", () =>
+
+server.listen(PORT, "0.0.0.0", () =>
   console.log(`[+] Server is running at http://${domain}:${PORT}/api/v1`)
 );

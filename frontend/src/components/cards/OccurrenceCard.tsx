@@ -1,7 +1,7 @@
 import { FileChartPie } from "lucide-react";
+import { MonthOccurrenceChart } from "../charts/MonthOccurrenceChart";
+import { SectorOccurrenceChart } from "../charts/SectorOccurrenceChart";
 import { DefectivePathsProps, PathsProps, SectorProps } from "../pages/Reports";
-import { SectorOccurrenceChart } from "../SectorOccurrenceChart";
-import { TimeOccurrenceChart } from "../TimeOccurrenceChart";
 import { Button } from "../ui/button";
 
 type ChartData = {
@@ -34,7 +34,7 @@ export function OccurrenceCard({ icon, type, data }: Props) {
         {type === "sector" ? (
           <SectorOccurrenceChart sectors={data.sectors} />
         ) : (
-          <TimeOccurrenceChart
+          <MonthOccurrenceChart
             paths={data.paths}
             defectivePaths={data.defectivePaths}
           />

@@ -1,13 +1,18 @@
 import { ApexOptions } from "apexcharts";
+import { useEffect, useRef } from "react"; // Importe useRef e useEffect
 import Chart from "react-apexcharts";
-import { SectorProps } from "./pages/Reports";
+import { SectorProps } from "../pages/Reports";
 
 type Props = {
   sectors: SectorProps[];
 };
 
 export function SectorOccurrenceChart({ sectors }: Props) {
-  const series: ApexAxisChartSeries = [
+  // Crie uma referência para o gráfico
+  const chartRef = useRef<any>(null);
+
+  // Prepare os dados iniciais do gráfico
+  const initialSeries: ApexAxisChartSeries = [
     {
       name: "Caminhos normais",
       data: sectors.map((s) => s.paths.length),
@@ -17,6 +22,7 @@ export function SectorOccurrenceChart({ sectors }: Props) {
       data: sectors.map((s) => s.defectivePaths.length),
     },
   ];
+
   const options: ApexOptions = {
     colors: ["#1f9d0081", "#9d000081"], // Azul escuro
     stroke: {
@@ -63,5 +69,32 @@ export function SectorOccurrenceChart({ sectors }: Props) {
     },
   };
 
-  return <Chart height={177} options={options} series={series} type="line" />;
+  // Atualize os dados do gráfico quando os setores mudarem
+  useEffect(() => {
+    if (chartRef.current) {
+      const newSeries = [
+        {
+          name: "Caminhos normais",
+          data: sectors.map((s) => s.paths.length),
+        },
+        {
+          name: "Caminhos de despacho",
+          data: sectors.map((s) => s.defectivePaths.length),
+        },
+      ];
+
+      // Atualize os dados do gráfico sem re-renderizar o componente
+      chartRef.current.updateSeries(newSeries);
+    }
+  }, [sectors]);
+
+  return (
+    <Chart
+      height={177}
+      options={options}
+      series={initialSeries}
+      type="line"
+      ref={chartRef} // Passe a referência para o gráfico
+    />
+  );
 }

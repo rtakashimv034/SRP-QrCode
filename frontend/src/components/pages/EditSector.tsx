@@ -1,15 +1,16 @@
-import { api } from "@/api";
+import { api } from "@/api/axios";
+import {
+  CreationSector,
+  LocalWorkstation,
+  UpdateSector,
+  Workstation,
+} from "@/types/types";
 import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { CreationSectorProps, SectorCard } from "../cards/SectorCard";
-import {
-  CreationWorkstationProps,
-  LocalWorkstationProps,
-  WorkstationCard,
-  WorkstationProps,
-} from "../cards/WorkstationCard";
+import { SectorCard } from "../cards/SectorCard";
+import { WorkstationCard } from "../cards/WorkstationCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Button } from "../ui/button";
 import {
@@ -22,17 +23,13 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 
-type EditSectorProps = Omit<CreationSectorProps, "amountTrays">;
-
 export function EditSector() {
   const { name } = useParams<{ name: string }>(); // Acessa o nome do setor da rota
   const [sectorName, setSectorName] = useState("");
   const [localWorkstations, setLocalWorkstations] = useState<
-    LocalWorkstationProps[]
+    LocalWorkstation[]
   >([]);
-  const [workstations, setWorkstations] = useState<CreationWorkstationProps[]>(
-    []
-  );
+  const [workstations, setWorkstations] = useState<Workstation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [amountTrays, setAmountTrays] = useState(0);
@@ -40,12 +37,12 @@ export function EditSector() {
 
   const fetchSectorData = async () => {
     try {
-      const { data, status } = await api.get<CreationSectorProps>(
+      const { data, status } = await api.get<CreationSector>(
         `/sectors/${name}`
       );
       if (status === 200) {
         setSectorName(data.name);
-        const localStations: LocalWorkstationProps[] = data.workstations.map(
+        const localStations: LocalWorkstation[] = data.workstations.map(
           (station) => ({
             name: station.name,
             localId: uuidv4(),
@@ -70,7 +67,7 @@ export function EditSector() {
   const isDisabled = invalidSectorName || workstations.length < 3;
 
   const handleAddingStation = () => {
-    const newStation: LocalWorkstationProps = {
+    const newStation: LocalWorkstation = {
       name: "",
       localId: uuidv4(),
     };
@@ -89,14 +86,14 @@ export function EditSector() {
       setIsLoading(true);
 
       // Convert localWorkstations to WorkstationProps
-      const workstationsForApi: WorkstationProps[] = localWorkstations.map(
+      const workstationsForApi: Workstation[] = localWorkstations.map(
         (station) => ({
           sectorName: sectorName,
           name: station.name,
         })
       );
 
-      const data: EditSectorProps = {
+      const data: UpdateSector = {
         name: sectorName,
         workstations: workstationsForApi,
       };
@@ -164,7 +161,7 @@ export function EditSector() {
                       <WorkstationCard
                         key={station.localId}
                         station={station}
-                        isLatest={i === workstations.length - 1}
+                        isLatest={i === localWorkstations.length - 1}
                         onDelete={() => handleDeleteStation(station.localId)}
                         name={station.name}
                         onNameChange={handleNameChange}
