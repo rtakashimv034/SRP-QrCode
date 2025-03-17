@@ -14,9 +14,10 @@ type Props = {
   user: LocalUserProps;
   onUpdate?: () => void;
   onDelete?: () => void;
+  isOnline: boolean;
 };
 
-export function UserCard({ user, onDelete, onUpdate }: Props) {
+export function UserCard({ user, onDelete, onUpdate, isOnline }: Props) {
   const authData = useAuth();
   return (
     <Card className="relative overflow-hidden rounded-xl bg-gray-card h-28 shadow-md w-full flex">
@@ -41,7 +42,11 @@ export function UserCard({ user, onDelete, onUpdate }: Props) {
                 border: "1px solid",
               }}
             />
-            <div className="absolute bottom-0.5 right-0.5 rounded-full size-5 bg-green-500 border-[3px] border-gray-card" />
+            <div
+              className={`absolute bottom-0.5 right-0.5 rounded-full size-5 ${
+                isOnline ? "bg-green-500" : "bg-red-500"
+              } border-[3px] border-gray-card`}
+            />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">

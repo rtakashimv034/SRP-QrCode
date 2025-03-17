@@ -1,4 +1,5 @@
 import { api } from "@/api/axios";
+import { socket } from "@/api/socket";
 import { AuthSplashScreen } from "@/components/AuthSplashScreen";
 import { SplashScreen } from "@/components/SplashScreen";
 import { jwtDecode } from "jwt-decode";
@@ -13,7 +14,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { data } = await api.post("/login", { email, password });
+      const { data, status } = await api.post("/login", { email, password });
+
+      if (status !== 200) {
+        throw new Error("Some error occurred while logging in");
+      }
+
       const { token } = data;
 
       localStorage.setItem("authToken", token);
@@ -22,6 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const userJWT: UserPayload = jwtDecode(token);
       setUser(userJWT);
+
+      socket.emit("user-online", userJWT.id);
+
       setLoading(false);
     } catch (error) {
       console.error("Erro ao fazer login:", error);
@@ -30,6 +39,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = () => {
+    if (user) {
+      socket.emit("user-offline", user.id);
+    }
     localStorage.clear();
     setUser(null);
     api.defaults.headers.authorization = "";
@@ -38,8 +50,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchUserData = async ({ id }: UserPayload) => {
       try {
-        const { data } = await api.get<UserPayload>(`/users/${id}`);
-        setUser(data);
+        const { data, status } = await api.get<UserPayload>(`/users/${id}`);
+        if (status === 200) {
+          setUser(data);
+          socket.emit("user-online", id);
+        }
       } catch (error) {
         console.error("Error fetching user data:", error);
         signOut(); // If we can't fetch user data, sign out
@@ -49,7 +64,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initAuth = async () => {
       const token = localStorage.getItem("authToken");
       if (!token) {
-        console.log("token não existe");
         setLoading(false);
         return;
       }
@@ -65,6 +79,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     };
     initAuth();
+
+    // Clean up "user-online" event when component unmounts
+    return () => {
+      if (user) {
+        socket.emit("user-offline", user.id);
+      }
+    };
   }, []);
 
   if (loading) {

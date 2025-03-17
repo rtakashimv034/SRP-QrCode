@@ -2,6 +2,7 @@ import { api } from "@/api/axios";
 import { socket } from "@/api/socket";
 import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
+import { useOnlineUsers } from "@/hooks/useOnlineUsers";
 import { Plus, Search, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +36,9 @@ export function Users() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const { user: currentUser, signOut } = useAuth();
+
   const navigate = useNavigate();
+  const onlineUsers = useOnlineUsers();
 
   const fetchUsers = async () => {
     try {
@@ -156,16 +159,17 @@ export function Users() {
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto no-scrollbar">
           <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
-            {filteredUsers.map((user) => (
+            {filteredUsers.map((data) => (
               <UserCard
-                user={user}
-                key={user.id}
+                user={data}
+                key={data.id}
+                isOnline={onlineUsers.includes(data.id!)}
                 onDelete={() => {
-                  setUser(user); // Define o usuario a ser deletado
+                  setUser(data); // Define o usuario a ser deletado
                   setIsModalOpen(true); // Abre o modal
                 }}
                 onUpdate={() => {
-                  setUser(user);
+                  setUser(data);
                   setIsUserModalOpen(true);
                 }}
               />
