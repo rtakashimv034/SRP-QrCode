@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
-import { Sector } from "@/types/types";
+import { Sector } from "@/types/sectors";
 import { Factory, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +20,9 @@ import { SectorCard } from "../cards/SectorCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 
 type Props = Sector[];
+
+// Cache em memória para dados sensíveis
+let inMemorySectorCache: Props | null = null;
 
 export function Sectors() {
   const navigator = useNavigate();
@@ -29,19 +32,26 @@ export function Sectors() {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sectorName, setSectorName] = useState<string | null>(null); // Armazena o nome do setor a ser deletado
-  const { isManager } = useAuth();
+  const { user } = useAuth();
 
   const fetchSectors = async () => {
     try {
+      // Verifica o cache em memória primeiro
+      if (inMemorySectorCache) {
+        setSectors(inMemorySectorCache);
+      }
+      // Verifica o cache no localStorage
+      const cachedSectors = getCache();
+      if (cachedSectors) {
+        setSectors(cachedSectors);
+        inMemorySectorCache = cachedSectors; // Armazena em memória
+      }
+
       const { data, status } = await api.get<Props>("/sectors");
       if (status === 200) {
         setSectors(data);
         setCache(data);
-      }
-
-      const cachedSectors = getCache();
-      if (cachedSectors) {
-        setSectors(cachedSectors);
+        inMemorySectorCache = data; // Armazena em memória
       }
     } catch (error) {
       console.error("Erro ao buscar setores:", error);
@@ -129,7 +139,7 @@ export function Sectors() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          {isManager && (
+          {user?.isManager && (
             <Button
               className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl"
               onClick={() => navigator("create-sector")}

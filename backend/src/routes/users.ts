@@ -202,12 +202,12 @@ export async function updateUser(req: Request, res: Response) {
       isManager: isManager === "true",
     };
 
-    await prisma.users.update({
+    const updatedUser = await prisma.users.update({
       where: { id },
       data,
     });
 
-    io.emit("update-user", data);
+    io.emit("update-user", { ...updatedUser, id: updatedUser.id });
 
     res.status(200).json({ message: "User updated successfully" });
   } catch (error) {

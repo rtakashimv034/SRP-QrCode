@@ -15,6 +15,7 @@ export default {
           light: "#DAE5DF",
           dark: "#707070",
           input: "#EBEAED",
+          card: "#f6f6f6",
           placeholder: "#5C5C5C",
         },
         yellow: {

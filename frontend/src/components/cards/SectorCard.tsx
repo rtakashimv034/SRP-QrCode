@@ -25,10 +25,10 @@ export function SectorCard({
   onShowQrcode,
   onUpdate,
 }: Props) {
-  const { isManager } = useAuth();
+  const { user } = useAuth();
 
   return (
-    <Card className="overflow-hidden rounded-xl bg-[#f6f6f6] h-28 shadow-md w-full flex">
+    <Card className="overflow-hidden rounded-xl bg-gray-card h-28 shadow-md w-full flex">
       <div className="bg-green-light shrink-0 w-4" />
       <CardContent className="flex flex-row w-full p-2 relative">
         <div className="flex flex-col justify-between">
@@ -54,7 +54,7 @@ export function SectorCard({
             </Button>
           </div>
         </div>
-        {isManager && (
+        {user?.isManager && (
           <div className="right-1.5 top-1.5 absolute flex flex-col gap-1.5">
             <button
               onClick={onUpdate}

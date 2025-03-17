@@ -21,6 +21,9 @@ import { UserModal, UserProps } from "../UserModal";
 
 type Props = UserProps[];
 
+// Cache em memória para dados sensíveis
+let inMemoryUserCache: Props | null = null;
+
 export function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState<Props>([]);
@@ -31,20 +34,26 @@ export function Users() {
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
-  const { isManager } = useAuth();
   const { user: currentUser, signOut } = useAuth();
   const navigate = useNavigate();
+
   const fetchUsers = async () => {
     try {
-      const { data, status } = await api.get<Props>("/users");
-      if (status === 200) {
-        setUsers(data);
-        setCache(data);
+      // Verifica o cache em memória primeiro
+      if (inMemoryUserCache) {
+        setUsers(inMemoryUserCache);
       }
 
       const cachedUsers = getCache();
       if (cachedUsers) {
         setUsers(cachedUsers);
+        inMemoryUserCache = cachedUsers; // Armazena a lista em memória
+      }
+      const { data, status } = await api.get<Props>("/users");
+      if (status === 200) {
+        setUsers(data);
+        setCache(data);
+        inMemoryUserCache = data;
       }
     } catch (error) {
       alert(`Erro ao deletar usuário: ${error}`);
@@ -130,7 +139,7 @@ export function Users() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          {isManager && (
+          {currentUser?.isManager && (
             <Button
               className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl"
               onClick={() => {

@@ -11,9 +11,9 @@ type DefaultLayoutProps = {
 };
 
 export function DefaultLayout({ children }: DefaultLayoutProps) {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
-  if (!isAuthenticated) {
+  if (!user) {
     return <Navigate to={"/login"} replace />;
   }
 

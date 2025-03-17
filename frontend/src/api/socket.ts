@@ -1,7 +1,9 @@
 import io from "socket.io-client";
 import { domain, PORT } from ".";
 
-export const socket = io(`ws://${domain}:${PORT}`, {
+const wsURL = `ws://${domain}:${PORT}`;
+
+export const socket = io(wsURL, {
   autoConnect: true,
   reconnection: true,
   reconnectionAttempts: 10,
@@ -10,5 +12,7 @@ export const socket = io(`ws://${domain}:${PORT}`, {
 
 // Adicione logs para depuração
 socket.on("connect", () => {
-  console.log("Conectado ao servidor WebSocket");
+  console.log(`Conectado ao servidor WebSocket em ${wsURL}`);
 });
+
+// Novo usuário foi criado

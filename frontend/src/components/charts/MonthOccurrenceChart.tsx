@@ -1,22 +1,22 @@
 import { ApexOptions } from "apexcharts";
 import { useEffect, useRef, useState } from "react"; // Importar useState para gerenciar o estado do ano selecionado
 import Chart from "react-apexcharts";
-import { PathsGeneric } from "../cards/OccurrenceCard";
+import { DefectivePathsProps, PathsProps } from "../pages/Reports";
 
 type Props = {
-  paths: PathsGeneric<"normal">[] | [];
-  defectivePaths: PathsGeneric<"defective">[] | [];
+  paths: PathsProps[] | [];
+  defectivePaths: DefectivePathsProps[] | [];
 };
 
 export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
-  const chartRef = useRef<any>(null);
+  const chartRef = useRef<Chart | null>(null);
 
   // Estado para armazenar o ano selecionado pelo usuário
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   // Função para agrupar e acumular ocorrências por mês, mantendo o dia e o horário da ocorrência
   const groupByMonthWithDayAndTime = (
-    data: PathsGeneric<"normal">[] | PathsGeneric<"defective">[]
+    data: PathsProps[] | DefectivePathsProps[]
   ) => {
     const grouped: { [key: string]: { count: number; timestamps: string[] } } =
       {};
@@ -36,7 +36,7 @@ export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
 
   // Filtra os dados para o ano selecionado
   const filterDataByYear = (
-    data: PathsGeneric<"normal">[] | PathsGeneric<"defective">[],
+    data: PathsProps[] | DefectivePathsProps[],
     year: number
   ) => {
     return data.filter((item) => {
@@ -48,10 +48,13 @@ export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
   // Filtra os dados para o ano selecionado
   const filteredPaths = filterDataByYear(paths, selectedYear);
   const filteredDefectivePaths = filterDataByYear(defectivePaths, selectedYear);
-
   // Agrupa e acumula ocorrências normais e defeituosas por mês, com dias e horários
-  const normalGrouped = groupByMonthWithDayAndTime(filteredPaths);
-  const defectiveGrouped = groupByMonthWithDayAndTime(filteredDefectivePaths);
+  const normalGrouped = groupByMonthWithDayAndTime(
+    filteredPaths as PathsProps[]
+  );
+  const defectiveGrouped = groupByMonthWithDayAndTime(
+    filteredDefectivePaths as DefectivePathsProps[]
+  );
 
   // Cria uma lista completa de meses do ano (de janeiro a dezembro)
   const allMonths = Array.from({ length: 12 }, (_, i) => {
@@ -186,7 +189,7 @@ export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
       // Atualize os dados do gráfico sem re-renderizar o componente
       chartRef.current.updateSeries(newSeries);
     }
-  }, [paths, defectivePaths]);
+  }, [paths, defectivePaths, normalData, defectiveData]);
 
   return (
     <div>

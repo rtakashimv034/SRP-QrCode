@@ -9,7 +9,7 @@ type Props = {
 
 export function SectorOccurrenceChart({ sectors }: Props) {
   // Crie uma referência para o gráfico
-  const chartRef = useRef<any>(null);
+  const chartRef = useRef<Chart | null>(null);
 
   // Prepare os dados iniciais do gráfico
   const initialSeries: ApexAxisChartSeries = [

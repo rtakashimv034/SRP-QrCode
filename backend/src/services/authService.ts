@@ -31,10 +31,20 @@ export async function authenticateUser(email: string, password: string) {
   if (!isValid) {
     throw new Error("Invalid Password");
   }
+
+  const payload = {
+    id: user.id,
+    name: user.name,
+    surname: user.surname,
+    avatar: user.avatar,
+    email: user.email,
+    isManager: user.isManager,
+  };
+
   // generate and return JWT
-  const token = jwt.sign({ id: user.id, email: user.email }, secretKey!, {
+  const token = jwt.sign(payload, secretKey!, {
     expiresIn: "7d",
   });
 
-  return { token, user };
+  return { token };
 }

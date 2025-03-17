@@ -1,10 +1,9 @@
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import { ForgotPassword } from "./components/ForgotPassword";
 import { CreateSector } from "./components/pages/CreateSector";
 import { EditSector } from "./components/pages/EditSector";
 import { Login } from "./components/pages/Login";
 import { NotFound } from "./components/pages/NotFound";
-import { Presentation } from "./components/pages/Presentation";
 import { Reports } from "./components/pages/Reports";
 import { Sectors } from "./components/pages/Sectors";
 import { Users } from "./components/pages/Users";
@@ -13,11 +12,14 @@ import { TrayManagment } from "./components/TrayManagment";
 import { AuthProvider } from "./contexts/AuthProvider";
 
 function App() {
+  const { pathname } = useLocation();
+  if (pathname === "/") {
+    return <Navigate to={"/login"} replace />;
+  }
   return (
     <AuthProvider>
       <Routes>
-        <Route index element={<Presentation />} />
-        <Route path="/login" element={<Login />} />
+        <Route index path="/login" element={<Login />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/sectors" element={<Sectors />} />
         <Route
