@@ -42,16 +42,13 @@ export function Users() {
       // Verifica o cache em memória primeiro
       if (inMemoryUserCache) {
         setUsers(inMemoryUserCache);
-        return;
       }
 
       const cachedUsers = getCache();
       if (cachedUsers) {
         setUsers(cachedUsers);
         inMemoryUserCache = cachedUsers; // Armazena a lista em memória
-        return;
       }
-
       const { data, status } = await api.get<Props>("/users");
       if (status === 200) {
         setUsers(data);

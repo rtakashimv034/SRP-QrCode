@@ -39,14 +39,12 @@ export function Sectors() {
       // Verifica o cache em memória primeiro
       if (inMemorySectorCache) {
         setSectors(inMemorySectorCache);
-        return;
       }
       // Verifica o cache no localStorage
       const cachedSectors = getCache();
       if (cachedSectors) {
         setSectors(cachedSectors);
         inMemorySectorCache = cachedSectors; // Armazena em memória
-        return;
       }
 
       const { data, status } = await api.get<Props>("/sectors");
