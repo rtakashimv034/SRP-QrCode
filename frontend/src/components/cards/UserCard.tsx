@@ -17,27 +17,32 @@ type Props = {
 };
 
 export function UserCard({ user, onDelete, onUpdate }: Props) {
-  const { isManager } = useAuth();
+  const authData = useAuth();
   return (
-    <Card className="relative overflow-hidden rounded-xl bg-[#f6f6f6] h-28 shadow-md w-full flex">
+    <Card className="relative overflow-hidden rounded-xl bg-gray-card h-28 shadow-md w-full flex">
       <div className="bg-green-light shrink-0 w-4" />
       <CardContent className="flex flex-row w-full p-2">
         <div className="w-full gap-3 flex flex-row items-center p-2">
-          <img
-            src={
-              user.avatar ? `${baseURL}/uploads/${user.avatar}` : defaultAvatar
-            }
-            alt="avatar"
-            style={{
-              minWidth: "90px",
-              minHeight: "auto",
-              width: "90px",
-              height: "90px",
-              borderRadius: "100%",
-              maxWidth: "none",
-              border: "1px solid",
-            }}
-          />
+          <div className="relative flex flex-col justify-end items-end">
+            <img
+              src={
+                user.avatar
+                  ? `${baseURL}/uploads/${user.avatar}`
+                  : defaultAvatar
+              }
+              alt="avatar"
+              style={{
+                minWidth: "90px",
+                minHeight: "auto",
+                width: "90px",
+                height: "90px",
+                borderRadius: "100%",
+                maxWidth: "none",
+                border: "1px solid",
+              }}
+            />
+            <div className="absolute bottom-0.5 right-0.5 rounded-full size-5 bg-green-500 border-[3px] border-gray-card" />
+          </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="font-normal text-lg overflow-hidden text-ellipsis">
@@ -54,7 +59,7 @@ export function UserCard({ user, onDelete, onUpdate }: Props) {
           </div>
         </div>
       </CardContent>
-      {isManager && (
+      {authData.user?.isManager && (
         <div className="flex flex-col absolute top-1.5 right-1.5 gap-1.5">
           <button
             onClick={onUpdate}

@@ -4,7 +4,7 @@ import {
   LocalWorkstation,
   UpdateSector,
   Workstation,
-} from "@/types/types";
+} from "@/types/sectors";
 import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";

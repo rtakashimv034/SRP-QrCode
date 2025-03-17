@@ -21,7 +21,7 @@ import {
 import { Label } from "../ui/label";
 
 import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
-import { LocalWorkstation } from "@/types/types";
+import { LocalWorkstation } from "@/types/sectors";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function CreateSector() {

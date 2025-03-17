@@ -1,18 +1,16 @@
 import { createContext } from "react";
 
-interface User {
+export type UserPayload = {
   id: string;
   name: string;
   surName: string;
   avatar: string | null;
-  email: string;
   isManager: boolean;
-}
+  email: string;
+};
 
 export interface AuthContextData {
-  user: User | null;
-  isAuthenticated: boolean;
-  isManager: boolean;
+  user: UserPayload | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
 }

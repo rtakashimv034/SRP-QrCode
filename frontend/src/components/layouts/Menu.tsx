@@ -6,11 +6,6 @@ export function Menu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
-
   return (
     <div className="bg-white flex flex-col items-center justify-between p-8">
       <div className="flex flex-col gap-5 w-full">
@@ -67,7 +62,7 @@ export function Menu() {
         <Button
           variant={"transparent"}
           className="opacity-70 hover:opacity-100 transition-all"
-          onClick={handleLogout}
+          onClick={() => navigate("/login")}
         >
           <LogOut /> Sair
         </Button>

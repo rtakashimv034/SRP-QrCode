@@ -153,7 +153,7 @@ def read_qr_code(camera_index):
                     try:
                         # Envia a requisição POST para a API
                         response = requests.post(
-                            f'http://localhost:3333/api/v1/camera/path',
+                            f'http://20.10.70.151:3333/api/v1/camera/path',
                             json=dicionario,  # Passa o dicionário diretamente
                             timeout=10
                         )
@@ -235,7 +235,7 @@ def read_qr_code(camera_index):
                 print(data)
                 try:
                     response = requests.post(
-                        f'http://localhost:3333/api/v1/camera/defective-path', json=data)  # caminho defeituoso
+                        f'http://20.10.70.151:3333/api/v1/camera/defective-path', json=data)  # caminho defeituoso
 
                     # Verificando a resposta
                     if response.status_code == 201:

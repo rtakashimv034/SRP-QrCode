@@ -6,8 +6,8 @@ export async function login(req: Request, res: Response) {
     res.status(400).json({ message: "Email and password are required." });
   }
   try {
-    const { token, user } = await authenticateUser(email, password);
-    res.json({ token, user });
+    const { token } = await authenticateUser(email, password);
+    res.json({ token });
   } catch (error) {
     res.status(400).json({ message: error });
     console.error(error);

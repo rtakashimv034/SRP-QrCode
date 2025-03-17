@@ -10,7 +10,7 @@ import { routes } from "./routes";
 dotenv.config();
 
 const PORT = 3333;
-const domain = process.env.LOCAL;
+const domain = process.env.CALLIDUS;
 const app = express();
 
 const corsSettings = {
@@ -43,14 +43,13 @@ const server = createServer(app);
 // Configura o Socket.IO para usar o mesmo servidor HTTP
 export const io = new Server(server, { cors: corsSettings });
 
-io.on("connection", (socket) => {
+io.on("connect", (socket) => {
   console.log("Novo cliente conectado:", socket.id);
 
   socket.on("disconnect", () => {
     console.log("Cliente desconectado:", socket.id);
   });
 });
-
 server.listen(PORT, "0.0.0.0", () =>
   console.log(`[+] Server is running at http://${domain}:${PORT}/api/v1`)
 );

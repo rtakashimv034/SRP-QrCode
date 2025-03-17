@@ -8,14 +8,14 @@ type Props = {
 };
 
 export function ProtectedRoutes({ children, path }: Props) {
-  const { isManager } = useAuth();
+  const { user } = useAuth();
 
   const token = localStorage.getItem("authToken");
   if (!token) {
     return <Navigate to={"/login"} replace />;
   }
 
-  if (!isManager) {
+  if (!user?.isManager) {
     return <Navigate to={path} replace />;
   }
 

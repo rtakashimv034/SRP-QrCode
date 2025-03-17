@@ -1,9 +1,10 @@
 import { api } from "@/api/axios";
 import { AuthSplashScreen } from "@/components/AuthSplashScreen";
 import { SplashScreen } from "@/components/SplashScreen";
+import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { AuthContext, AuthContextData } from "./context";
+import { AuthContext, AuthContextData, UserPayload } from "./context";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
@@ -13,13 +14,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       const { data } = await api.post("/login", { email, password });
-      const { token, user } = data;
+      const { token } = data;
 
       localStorage.setItem("authToken", token);
-      localStorage.setItem("userId", user.id);
 
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser(user);
+
+      const userJWT: UserPayload = jwtDecode(token);
+      setUser(userJWT);
+      setLoading(false);
     } catch (error) {
       console.error("Erro ao fazer login:", error);
       throw new Error("Email ou senha inválidos");
@@ -32,40 +35,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     api.defaults.headers.authorization = "";
   };
 
-  const fetchUserData = async (userId: string) => {
-    try {
-      const { data } = await api.get(`/users/${userId}`);
-      setUser(data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      signOut(); // If we can't fetch user data, sign out
-    }
-  };
-
   useEffect(() => {
+    const fetchUserData = async ({ id }: UserPayload) => {
+      try {
+        const { data } = await api.get<UserPayload>(`/users/${id}`);
+        setUser(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        signOut(); // If we can't fetch user data, sign out
+      }
+    };
+
     const initAuth = async () => {
       const token = localStorage.getItem("authToken");
-      const userId = localStorage.getItem("userId");
+      if (!token) {
+        console.log("token não existe");
+        setLoading(false);
+        return;
+      }
 
-      if (token && userId) {
-        try {
-          api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-          await fetchUserData(userId);
-        } catch (error) {
-          console.error("Error initializing auth:", error);
-          signOut();
-        }
+      try {
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        const userJWT: UserPayload = jwtDecode(token);
+        await fetchUserData(userJWT);
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+        signOut();
       }
       setLoading(false);
     };
-
     initAuth();
   }, []);
 
   if (loading) {
     const loginSplash =
-      localStorage.getItem("authToken") &&
-      !(pathname === "/" || pathname === "/login");
+      localStorage.getItem("authToken") && !(pathname === "/login");
     return loginSplash ? <SplashScreen /> : <AuthSplashScreen />;
   }
 
@@ -73,8 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
-        isManager: user?.isManager || false,
         signIn,
         signOut,
       }}
