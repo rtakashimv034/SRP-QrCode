@@ -1,17 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { Sector } from "@/types/sectors";
 import { Edit2Icon, EyeIcon, FileChartPie, TrashIcon } from "lucide-react";
-import { CreationWorkstationProps } from "./WorkstationCard";
-
-export type CreationSectorProps = {
-  name: string;
-  amountTrays: number;
-  workstations: CreationWorkstationProps[] | [];
-};
 
 type Props = {
-  data: CreationSectorProps;
+  data: Sector;
   disabled?: boolean;
   onDelete?: () => void;
   onShowQrcode?: () => void;
@@ -43,7 +37,7 @@ export function SectorCard({
           </div>
           <div className="flex mb-2 flex-row gap-x-4 items-center">
             <p className="font-semibold whitespace-nowrap text-xs opacity-70">
-              Total de Ocorrências:
+              Total de Ocorrências: {data.defectivePaths?.length || 0}
             </p>
             <Button
               disabled={disabled}

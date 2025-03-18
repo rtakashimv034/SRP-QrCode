@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
-import { io } from "../server";
+import { io, onlineUsers } from "../server";
 interface QueryParams {
   order?: "asc" | "desc";
   isManager?: string;
@@ -84,6 +84,7 @@ export async function getAllUsers(req: Request, res: Response) {
         isManager: condition,
       },
     });
+    io.emit("online-users", Array.from(onlineUsers.keys()));
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: `Server error: ${error}` });

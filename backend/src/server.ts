@@ -43,11 +43,30 @@ const server = createServer(app);
 // Configura o Socket.IO para usar o mesmo servidor HTTP
 export const io = new Server(server, { cors: corsSettings });
 
-io.on("connect", (socket) => {
+// Manipula status dos usuários online (Socket.IO)
+export const onlineUsers = new Map<string, string>();
+io.on("connection", (socket) => {
   console.log("Novo cliente conectado:", socket.id);
 
+  socket.emit("online-users", Array.from(onlineUsers.keys()));
+
+  socket.on("user-online", (userId: string) => {
+    onlineUsers.set(userId, socket.id);
+    io.emit("user-status", { userId, isOnline: true });
+  });
+  socket.on("user-offline", (userId: string) => {
+    onlineUsers.delete(userId);
+    io.emit("user-status", { userId, isOnline: false });
+  });
+  // Limpa o usuario da lista quando ele faz logout
   socket.on("disconnect", () => {
-    console.log("Cliente desconectado:", socket.id);
+    for (const [userId, socketId] of onlineUsers.entries()) {
+      if (socketId === socket.id) {
+        onlineUsers.delete(userId);
+        io.emit("user-status", { userId, isOnline: false });
+        break;
+      }
+    }
   });
 });
 server.listen(PORT, "0.0.0.0", () =>

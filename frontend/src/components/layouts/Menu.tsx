@@ -1,3 +1,4 @@
+import { useAuth } from "@/hooks/useAuth";
 import { Factory, LogOut, StickyNote, UsersRound } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
@@ -5,6 +6,12 @@ import { Button } from "../ui/button";
 export function Menu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { signOut } = useAuth();
+
+  const handleLogout = () => {
+    signOut();
+    navigate("/login");
+  };
 
   return (
     <div className="bg-white flex flex-col items-center justify-between p-8">
@@ -62,7 +69,7 @@ export function Menu() {
         <Button
           variant={"transparent"}
           className="opacity-70 hover:opacity-100 transition-all"
-          onClick={() => navigate("/login")}
+          onClick={handleLogout}
         >
           <LogOut /> Sair
         </Button>

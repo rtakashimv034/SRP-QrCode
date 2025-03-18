@@ -3,7 +3,7 @@ import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { CreationSectorProps, SectorCard } from "../cards/SectorCard";
+import { SectorCard } from "../cards/SectorCard";
 import {
   LocalWorkstationProps,
   WorkstationCard,
@@ -21,7 +21,7 @@ import {
 import { Label } from "../ui/label";
 
 import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
-import { LocalWorkstation } from "@/types/sectors";
+import { LocalWorkstation, Sector } from "@/types/sectors";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function CreateSector() {
@@ -77,7 +77,7 @@ export function CreateSector() {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      const data: CreationSectorProps = { name, workstations, amountTrays };
+      const data: Sector = { name, workstations, amountTrays };
       const { status } = await api.post("/sectors", data);
       if (status === 201) {
         setIsModalOpen(true);
