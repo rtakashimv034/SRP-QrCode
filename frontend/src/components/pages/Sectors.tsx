@@ -40,7 +40,7 @@ export function Sectors() {
       if (inMemorySectorCache) {
         setSectors(inMemorySectorCache);
       }
-      // Verifica o cache no localStorage
+      // Verifica o cache no sessionStorage
       const cachedSectors = getCache();
       if (cachedSectors) {
         setSectors(cachedSectors);
@@ -75,10 +75,6 @@ export function Sectors() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleUpdate = (name: string) => {
-    navigator(`edit-sector/${name}`);
   };
 
   const filteredSectors = sectors.filter((s) =>
@@ -161,7 +157,7 @@ export function Sectors() {
                   setSectorName(data.name); // Define o setor a ser deletado
                   setIsModalOpen(true); // Abre o modal
                 }}
-                onUpdate={() => handleUpdate(data.name)}
+                onUpdate={() => navigator(data.name)}
               />
             ))}
           </div>
