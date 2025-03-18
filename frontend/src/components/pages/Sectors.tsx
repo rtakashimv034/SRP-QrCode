@@ -155,8 +155,8 @@ export function Sectors() {
           <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
             {filteredSectors.map((data, index) => (
               <SectorCard
-                data={data}
                 key={index}
+                data={data}
                 onDelete={() => {
                   setSectorName(data.name); // Define o setor a ser deletado
                   setIsModalOpen(true); // Abre o modal
