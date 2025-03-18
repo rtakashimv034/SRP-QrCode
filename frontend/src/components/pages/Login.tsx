@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as z from "zod";
-import { Checkbox } from "../ui/checkbox";
 import { PasswordField } from "../ui/passwordfield";
 
 const loginSchema = z.object({
@@ -72,13 +71,7 @@ export function Login() {
                 </p>
               )}
             </div>
-            <div className="flex items-center w-full justify-between">
-              <div className="flex items-center gap-2">
-                <Checkbox className="border-none bg-white" />
-                <span className="text-white opacity-75 text-xs">
-                  Manter-me conectado
-                </span>
-              </div>
+            <div className="flex items-center w-full justify-end">
               <span className="text-white opacity-70 underline text-xs cursor-pointer hover:opacity-90">
                 Esqueceu a senha?
               </span>

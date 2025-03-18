@@ -5,7 +5,27 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { AuthContext, AuthContextData, UserPayload } from "./context";
+
+import { createContext } from "react";
+
+export type UserPayload = {
+  id: string;
+  name: string;
+  surName: string;
+  avatar: string | null;
+  isManager: boolean;
+  email: string;
+};
+
+type AuthContextData = {
+  user: UserPayload | null;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => void;
+};
+
+export const AuthContext = createContext<AuthContextData>(
+  {} as AuthContextData
+);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
@@ -22,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { token } = data;
 
-      localStorage.setItem("authToken", token);
+      sessionStorage.setItem("authToken", token);
 
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
@@ -42,8 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       socket.emit("user-offline", user.id);
     }
-    localStorage.clear();
-    console.log(localStorage);
+    sessionStorage.clear();
     setUser(null);
     api.defaults.headers.authorization = "";
   };
@@ -63,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const initAuth = async () => {
-      const token = localStorage.getItem("authToken");
+      const token = sessionStorage.getItem("authToken");
       if (!token) {
         setLoading(false);
         return;
@@ -91,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     const loginSplash =
-      localStorage.getItem("authToken") && !(pathname === "/login");
+      sessionStorage.getItem("authToken") && !(pathname === "/login");
     return loginSplash ? <SplashScreen /> : <AuthSplashScreen />;
   }
 
@@ -107,5 +126,3 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
-
-export { AuthContext } from "./context";

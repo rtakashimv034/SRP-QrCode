@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from "react-router";
+import { AuthProvider } from "./auth/AuthProvider";
 import { ForgotPassword } from "./components/ForgotPassword";
 import { CreateSector } from "./components/pages/CreateSector";
 import { EditSector } from "./components/pages/EditSector";
@@ -9,38 +10,80 @@ import { Sectors } from "./components/pages/Sectors";
 import { Users } from "./components/pages/Users";
 import { ProtectedRoutes } from "./components/ProtectedRoutes";
 import { TrayManagment } from "./components/TrayManagment";
-import { AuthProvider } from "./contexts/AuthProvider";
 
 function App() {
   const { pathname } = useLocation();
+
+  // Redirect to /login if the path is "/"
   if (pathname === "/") {
     return <Navigate to={"/login"} replace />;
   }
+
   return (
     <AuthProvider>
       <Routes>
-        <Route index path="/login" element={<Login />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/sectors" element={<Sectors />} />
+        {/* Public route */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected routes */}
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoutes>
+              <Reports />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/sectors"
+          element={
+            <ProtectedRoutes>
+              <Sectors />
+            </ProtectedRoutes>
+          }
+        />
         <Route
           path="/sectors/create-sector"
           element={
-            <ProtectedRoutes path="/sectors">
+            <ProtectedRoutes previousPath="/sectors">
               <CreateSector />
             </ProtectedRoutes>
           }
         />
         <Route
-          path="/sectors/edit-sector/:name" // Rota dinâmica para edição
+          path="/sectors/:name"
           element={
-            <ProtectedRoutes path="/sectors">
+            <ProtectedRoutes previousPath="/sectors">
               <EditSector />
             </ProtectedRoutes>
           }
         />
-        <Route path="/users" element={<Users />} />
-        <Route path="/tray-managment" element={<TrayManagment />} />
-        <Route path="/retrive-password" element={<ForgotPassword />} />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoutes>
+              <Users />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/tray-managment"
+          element={
+            <ProtectedRoutes>
+              <TrayManagment />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/retrive-password"
+          element={
+            <ProtectedRoutes>
+              <ForgotPassword />
+            </ProtectedRoutes>
+          }
+        />
+
+        {/* Catch-all route for 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AuthProvider>

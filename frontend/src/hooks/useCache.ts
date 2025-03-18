@@ -23,8 +23,8 @@ export function useCache<T>({ expirationTime = 5, key }: CacheOptions) {
   };
 
   const getCache = (): T | null => {
-    const cachedData = localStorage.getItem(key);
-    const cacheTimestamp = localStorage.getItem(`${key}-timestamp`);
+    const cachedData = sessionStorage.getItem(key);
+    const cacheTimestamp = sessionStorage.getItem(`${key}-timestamp`);
 
     if (cachedData && cacheTimestamp) {
       const isValid =
@@ -38,13 +38,13 @@ export function useCache<T>({ expirationTime = 5, key }: CacheOptions) {
 
   const setCache = (data: T) => {
     const encryptedData = encryptData(data);
-    localStorage.setItem(key, encryptedData);
-    localStorage.setItem(`${key}-timestamp`, Date.now().toString());
+    sessionStorage.setItem(key, encryptedData);
+    sessionStorage.setItem(`${key}-timestamp`, Date.now().toString());
   };
 
   const clearCache = () => {
-    localStorage.removeItem(key);
-    localStorage.removeItem(`${key}-timestamp`);
+    sessionStorage.removeItem(key);
+    sessionStorage.removeItem(`${key}-timestamp`);
   };
 
   return { getCache, setCache, clearCache };
