@@ -6,19 +6,11 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
+import { User } from "@/types/user";
 import { createContext } from "react";
 
-export type UserPayload = {
-  id: string;
-  name: string;
-  surName: string;
-  avatar: string | null;
-  isManager: boolean;
-  email: string;
-};
-
 type AuthContextData = {
-  user: UserPayload | null;
+  user: User | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
 };
@@ -46,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      const userJWT: UserPayload = jwtDecode(token);
+      const userJWT: User = jwtDecode(token);
       setUser(userJWT);
 
       socket.emit("user-online", userJWT.id);
@@ -68,9 +60,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const fetchUserData = async ({ id }: UserPayload) => {
+    const fetchUserData = async ({ id }: User) => {
       try {
-        const { data, status } = await api.get<UserPayload>(`/users/${id}`);
+        const { data, status } = await api.get<User>(`/users/${id}`);
         if (status === 200) {
           setUser(data);
           socket.emit("user-online", id);
@@ -90,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        const userJWT: UserPayload = jwtDecode(token);
+        const userJWT: User = jwtDecode(token);
         await fetchUserData(userJWT);
       } catch (error) {
         console.error("Error initializing auth:", error);

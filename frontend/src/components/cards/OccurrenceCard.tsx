@@ -1,12 +1,15 @@
-import { FileChartPie } from "lucide-react";
-import { MonthOccurrenceChart } from "../charts/MonthOccurrenceChart";
+import { DefectivePathsProps } from "@/types/defectivePaths";
+import { PathsProps } from "@/types/paths";
+import { Sector } from "@/types/sectors";
+import { ChevronDown, FileChartPie } from "lucide-react"; // Importe o ícone de seta
+import { useState } from "react";
 import { SectorOccurrenceChart } from "../charts/SectorOccurrenceChart";
-import { DefectivePathsProps, PathsProps, SectorProps } from "../pages/Reports";
+import { TimeOccurrenceChart } from "../charts/TimeOccurrenceChart";
 import { Button } from "../ui/button";
 
 type ChartData = {
   paths: PathsProps[];
-  sectors: SectorProps[];
+  sectors: Sector[];
   defectivePaths: DefectivePathsProps[];
 };
 
@@ -16,7 +19,11 @@ type Props = {
   data: ChartData;
 };
 
+export type Schedule = "Mensal" | "Anual" | "Diário";
+
 export function OccurrenceCard({ icon, type, data }: Props) {
+  const [schedule, setSchedule] = useState<Schedule>("Diário");
+
   return (
     <div className="flex flex-col flex-grow gap-5">
       <header className="flex items-center gap-2">
@@ -24,17 +31,38 @@ export function OccurrenceCard({ icon, type, data }: Props) {
         <h1 className="flex-grow text-2xl font-bold">
           Ocorrência por {type === "sector" ? "setor" : "tempo"}
         </h1>
-        <Button className="bg-transparent border border-gray-400 text-gray-700 rounded-2xl h-7 text-xs hover:bg-green-300">
-          <FileChartPie className="text-gray-700 mr-1" size={15} />
-          Gerar Relatório
-        </Button>
+        <div className="flex gap-8 justify-end flex-row items-center">
+          {type === "time" && (
+            <div className="flex flex-row items-center gap-2">
+              <label className="text-sm font-medium">{schedule}</label>
+              <div className="relative flex flex-row items-center">
+                <select
+                  className="border border-black hover:cursor-pointer hover:brightness-95 transition-all rounded-md size-5 child:text-sm appearance-none p-2"
+                  onChange={(e) => setSchedule(e.target.value as Schedule)}
+                >
+                  <option value="Diário">Diário</option>
+                  <option value="Mensal">Mensal</option>
+                  <option value="Anual">Anual</option>
+                </select>
+                <div className="absolute flex justify-center right-[2px] top-[3px] items-center pointer-events-none">
+                  <ChevronDown className="size-4" />
+                </div>
+              </div>
+            </div>
+          )}
+          <Button className="bg-transparent border border-gray-400 text-gray-700 rounded-2xl h-7 text-xs hover:bg-green-300">
+            <FileChartPie className="text-gray-700 mr-1" size={15} />
+            Gerar Relatório
+          </Button>
+        </div>
       </header>
       {/* Gráfico */}
-      <div className="border border-gray-900 rounded-lg">
+      <div className="border border-gray-900 relative rounded-lg">
         {type === "sector" ? (
           <SectorOccurrenceChart sectors={data.sectors} />
         ) : (
-          <MonthOccurrenceChart
+          <TimeOccurrenceChart
+            schedule={schedule}
             paths={data.paths}
             defectivePaths={data.defectivePaths}
           />

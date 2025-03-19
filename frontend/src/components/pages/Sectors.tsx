@@ -55,7 +55,6 @@ export function Sectors() {
       }
     } catch (error) {
       console.error("Erro ao buscar setores:", error);
-      alert("Erro ao carregar setores");
     }
   };
 
@@ -70,8 +69,7 @@ export function Sectors() {
         fetchSectors(); // Atualiza a lista de setores
       }
     } catch (error) {
-      alert("Erro ao deletar setor");
-      console.log(error);
+      console.log("Erro ao deletar setor: " + error);
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +168,7 @@ export function Sectors() {
           <DialogHeader>
             <DialogTitle>Deletar Setor</DialogTitle>
             <DialogDescription>
-              Você tem certeza que deseja deletar o Setor "{sectorName}"? (Suas
+              Você tem certeza que deseja deletar o setor "{sectorName}"? (Suas
               respectivas estações também serão excluídas).
             </DialogDescription>
           </DialogHeader>

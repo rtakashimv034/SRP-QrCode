@@ -1,5 +1,6 @@
 import { baseURL } from "@/api";
 import { api } from "@/api/axios";
+import { User } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Camera, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -16,20 +17,8 @@ type ModalProps = {
   setIsOpen: (value: boolean) => void;
 };
 
-export type UserProps = {
-  id?: string;
-  name: string;
-  surname?: string;
-  email: string;
-  password?: string;
-  isManager: boolean;
-  avatar?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
 type Props = {
-  user: UserProps | null;
+  user: User | null;
   modal: ModalProps;
   fetchUsers: () => void;
 };
@@ -220,11 +209,6 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
                 type="text"
                 className="border p-2 rounded-md w-full bg-gray-input"
               />
-              {errors.surname && (
-                <span className="text-red-500 text-sm">
-                  {errors.surname.message}
-                </span>
-              )}
             </div>
           </div>
 

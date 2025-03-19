@@ -3,40 +3,16 @@ import { socket } from "@/api/socket";
 import HistoryIcon from "@/assets/Icon awesome-history.svg";
 import ClockIcon from "@/assets/Icon material-access-time.svg";
 import ReportIcon from "@/assets/Icon_simple_everplaces.svg";
+import { DefectivePathsProps } from "@/types/defectivePaths";
+import { PathsProps } from "@/types/paths";
+import { Sector } from "@/types/sectors";
 import { useEffect, useState } from "react";
 import { OccurrenceCard } from "../cards/OccurrenceCard";
-import { WorkstationProps } from "../cards/WorkstationCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { DefectiveProductProps, ProductsTable } from "../ProductsTable";
 
-export type PathsProps = {
-  id: number;
-  stationId: number;
-  prodSN: string;
-  sectorName: string;
-  registeredAt: string;
-};
-
-export type DefectivePathsProps = {
-  id: number;
-  stationId: number;
-  defProdId: number;
-  sectorName: string;
-  registeredAt: string;
-};
-
-export type SectorProps = {
-  id: number;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-  workstations: WorkstationProps[];
-  paths: PathsProps[];
-  defectivePaths: DefectivePathsProps[];
-};
-
 export function Reports() {
-  const [sectors, setSectors] = useState<SectorProps[]>([]);
+  const [sectors, setSectors] = useState<Sector[]>([]);
   const [paths, setPaths] = useState<PathsProps[]>([]);
   const [defectiveProducts, setDefectiveProducts] = useState<
     DefectiveProductProps[]
@@ -47,12 +23,11 @@ export function Reports() {
 
   const fetchSectors = async () => {
     try {
-      const { data, status } = await api.get<SectorProps[]>("/sectors");
+      const { data, status } = await api.get<Sector[]>("/sectors");
       if (status === 200) {
         setSectors(data);
       }
     } catch (error) {
-      alert("Error fetch deferred paths: " + error);
       console.error("Error fetch defective paths: ", error);
     }
   };
@@ -70,7 +45,6 @@ export function Reports() {
         setPaths(pathsRes.data);
       }
     } catch (error) {
-      alert("Error fetching paths: " + error);
       console.error("Error fetch paths: ", error);
     }
   };
@@ -84,7 +58,6 @@ export function Reports() {
         setDefectiveProducts(data);
       }
     } catch (error) {
-      alert("Error fetching products: " + error);
       console.error("Error fetch products: ", error);
     }
   };
@@ -103,17 +76,17 @@ export function Reports() {
         setDefectiveProducts((prev) => [...prev, newDefProd]);
       }
     );
-    socket.on("create-sector", (sector: SectorProps) => {
+    socket.on("create-sector", (sector: Sector) => {
       setSectors((prev) => [...prev, sector]);
     });
-    socket.on("update-sector", (updatedSector: SectorProps) => {
+    socket.on("update-sector", (updatedSector: Sector) => {
       setSectors((prev) =>
         prev.map((sector) =>
           sector.name === updatedSector.name ? updatedSector : sector
         )
       );
     });
-    socket.on("delete-sector", (sector: SectorProps) => {
+    socket.on("delete-sector", (sector: Sector) => {
       setSectors((prev) => prev.filter((s) => s.name !== sector.name));
     });
     // Limpa os listeners ao desmontar o componente

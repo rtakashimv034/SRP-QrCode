@@ -1,17 +1,12 @@
 import { baseURL } from "@/api";
 import defaultAvatar from "@/assets/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
+import { User } from "@/types/user";
 import { Edit2Icon, TrashIcon } from "lucide-react";
-import { UserProps } from "../UserModal";
 import { Card, CardContent } from "../ui/card";
 
-type LocalUserProps = Pick<
-  UserProps,
-  "avatar" | "name" | "id" | "isManager" | "surname"
->;
-
 type Props = {
-  user: LocalUserProps;
+  user: User;
   onUpdate?: () => void;
   onDelete?: () => void;
   isOnline: boolean;

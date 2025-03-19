@@ -3,6 +3,7 @@ import { socket } from "@/api/socket";
 import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
 import { useOnlineUsers } from "@/hooks/useOnlineUsers";
+import { User } from "@/types/user";
 import { Plus, Search, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,9 +19,9 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Input } from "../ui/input";
-import { UserModal, UserProps } from "../UserModal";
+import { UserModal } from "../UserModal";
 
-type Props = UserProps[];
+type Props = User[];
 
 // Cache em memória para dados sensíveis
 let inMemoryUserCache: Props | null = null;
@@ -28,7 +29,7 @@ let inMemoryUserCache: Props | null = null;
 export function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState<Props>([]);
-  const [user, setUser] = useState<UserProps | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { getCache, setCache, clearCache } = useCache<Props>({
     key: "users-cache",
@@ -59,7 +60,6 @@ export function Users() {
         inMemoryUserCache = data;
       }
     } catch (error) {
-      alert(`Erro ao deletar usuário: ${error}`);
       console.error("Erro ao buscar usuários:", error);
     }
   };
@@ -78,8 +78,7 @@ export function Users() {
         }
       }
     } catch (error) {
-      alert(`Erro ao deletar usuário: ${error}`);
-      console.log(error);
+      console.log(`Erro ao deletar usuário: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -90,17 +89,17 @@ export function Users() {
   );
 
   useEffect(() => {
-    socket.on("create-user", (user: UserProps) => {
+    socket.on("create-user", (user: User) => {
       setUsers((prevUsers) => [...prevUsers, user]);
     });
-    socket.on("update-user", (updatedUser: UserProps) => {
+    socket.on("update-user", (updatedUser: User) => {
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === updatedUser.id ? updatedUser : user
         )
       );
     });
-    socket.on("delete-user", (deletedUser: UserProps) => {
+    socket.on("delete-user", (deletedUser: User) => {
       setUsers((prevUsers) =>
         prevUsers.filter((user) => user.id !== deletedUser.id)
       );
