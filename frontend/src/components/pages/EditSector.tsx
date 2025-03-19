@@ -1,10 +1,6 @@
 import { api } from "@/api/axios";
-import {
-  CreationSector,
-  LocalWorkstation,
-  UpdateSector,
-  Workstation,
-} from "@/types/sectors";
+import { CreationSector, UpdateSector } from "@/types/sectors";
+import { Workstation } from "@/types/workstation";
 import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -26,9 +22,7 @@ import { Label } from "../ui/label";
 export function EditSector() {
   const { name } = useParams<{ name: string }>(); // Acessa o nome do setor da rota
   const [sectorName, setSectorName] = useState("");
-  const [localWorkstations, setLocalWorkstations] = useState<
-    LocalWorkstation[]
-  >([]);
+  const [localWorkstations, setLocalWorkstations] = useState<Workstation[]>([]);
   const [workstations, setWorkstations] = useState<Workstation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,7 +36,7 @@ export function EditSector() {
       );
       if (status === 200) {
         setSectorName(data.name);
-        const localStations: LocalWorkstation[] = data.workstations.map(
+        const localStations: Workstation[] = data.workstations.map(
           (station) => ({
             name: station.name,
             localId: uuidv4(),
@@ -64,10 +58,20 @@ export function EditSector() {
       .filter((e) => e.trim().length)
       .join("").length < 3;
 
-  const isDisabled = invalidSectorName || workstations.length < 3;
+  const invalidWsName = localWorkstations.some((ws) => {
+    return (
+      ws.name
+        .split("")
+        .filter((e) => e.trim().length)
+        .join("").length < 2
+    );
+  });
+
+  const isDisabled =
+    invalidSectorName || workstations.length < 3 || invalidWsName;
 
   const handleAddingStation = () => {
-    const newStation: LocalWorkstation = {
+    const newStation: Workstation = {
       name: "",
       localId: uuidv4(),
     };
@@ -162,7 +166,7 @@ export function EditSector() {
                         key={station.localId}
                         station={station}
                         isLatest={i === localWorkstations.length - 1}
-                        onDelete={() => handleDeleteStation(station.localId)}
+                        onDelete={() => handleDeleteStation(station.localId!)}
                         name={station.name}
                         onNameChange={handleNameChange}
                       />
@@ -215,10 +219,10 @@ export function EditSector() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Setor Atualizado com Sucesso!</DialogTitle>
+            <DialogTitle>Setor atualizado!</DialogTitle>
             <DialogDescription>
-              O setor foi atualizado com sucesso. Clique em "Fechar" para voltar
-              à lista de setores.
+              O setor "{sectorName}" foi atualizado com sucesso. Clique em
+              "Fechar" para voltar à lista de setores.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

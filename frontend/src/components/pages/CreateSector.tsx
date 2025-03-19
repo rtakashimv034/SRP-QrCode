@@ -4,10 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { SectorCard } from "../cards/SectorCard";
-import {
-  LocalWorkstationProps,
-  WorkstationCard,
-} from "../cards/WorkstationCard";
+import { WorkstationCard } from "../cards/WorkstationCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Button } from "../ui/button";
 import {
@@ -21,17 +18,17 @@ import {
 import { Label } from "../ui/label";
 
 import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
-import { LocalWorkstation, Sector } from "@/types/sectors";
+import { Sector } from "@/types/sectors";
+import { Workstation } from "@/types/workstation";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function CreateSector() {
-  const [name, setSectorName] = useState("");
-  const [workstations, setWorkstations] = useState<LocalWorkstation[]>([]);
+  const [name, setName] = useState("");
+  const [workstations, setWorkstations] = useState<Workstation[]>([]);
   const [amountTrays, setAmountTrays] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { generateAndDownloadZip, isGenerating } = useQRCodeGenerator();
-
   const navigate = useNavigate();
 
   const invalidSectorName =
@@ -56,7 +53,7 @@ export function CreateSector() {
     amountTrays < 1;
 
   const handleAddingStation = () => {
-    const newStation: LocalWorkstationProps = {
+    const newStation: Workstation = {
       name: "",
       localId: uuidv4(),
     };
@@ -82,7 +79,6 @@ export function CreateSector() {
       if (status === 201) {
         setIsModalOpen(true);
         setWorkstations([]);
-        setSectorName("");
         await generateTrays(amountTrays);
       }
     } catch (error) {
@@ -132,7 +128,7 @@ export function CreateSector() {
                   type="text"
                   placeholder="Lorem Ipsum"
                   className="rounded-md w-full px-3 py-1 font-medium bg-gray-input placeholder:text-gray-placeholder placeholder:font-normal"
-                  onChange={(e) => setSectorName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                   value={name}
                 />
               </div>
@@ -145,7 +141,7 @@ export function CreateSector() {
                         key={station.localId}
                         station={station}
                         isLatest={i === workstations.length - 1}
-                        onDelete={() => handleDeleteStation(station.localId)}
+                        onDelete={() => handleDeleteStation(station.localId!)}
                         name={station.name} // Pass name
                         onNameChange={handleNameChange} // Pass onNameChange
                       />
@@ -217,10 +213,9 @@ export function CreateSector() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Setor Criado com Sucesso!</DialogTitle>
+            <DialogTitle>Setor cadastrado com Sucesso!</DialogTitle>
             <DialogDescription>
-              Setor cadastrado com sucesso. Clique em "Fechar" para voltar à
-              lista de setores.
+              Clique em "Fechar" para voltar à lista de setores.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

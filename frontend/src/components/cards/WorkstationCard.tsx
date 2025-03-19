@@ -1,23 +1,9 @@
+import { Workstation } from "@/types/workstation";
 import { Edit2Icon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-export type LocalWorkstationProps = {
-  name: string;
-  localId: string;
-};
-
-export type CreationWorkstationProps = Pick<LocalWorkstationProps, "name">;
-
-export type WorkstationProps = {
-  id?: number;
-  sectorName?: string;
-  name: string;
-  updatedAt?: string;
-  createdAt?: string;
-};
-
 type Props = {
-  station: LocalWorkstationProps;
+  station: Workstation;
   isLatest: boolean;
   onDelete: (id: string) => void;
   name: string; // Add name as a prop
@@ -57,7 +43,7 @@ export function WorkstationCard({
           }`}
           required
           value={name}
-          onChange={(e) => onNameChange(station.localId, e.target.value)} // Call onNameChange
+          onChange={(e) => onNameChange(station.localId!, e.target.value)} // Call onNameChange
           disabled={!isEnabled}
           onBlur={() => setIsEnabled(false)}
         />
@@ -70,7 +56,7 @@ export function WorkstationCard({
           </button>
           <button
             className=" flex h-5 w-5 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
-            onClick={() => onDelete(station.localId)}
+            onClick={() => onDelete(station.localId!)}
           >
             <TrashIcon className="fill-black" />
           </button>
