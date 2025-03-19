@@ -1,18 +1,49 @@
+import { DefectiveProductProps } from "@/types/defectiveProducts";
 import { FileChartPie } from "lucide-react";
-import { DefectivePathsProps } from "./pages/Reports";
 import { Button } from "./ui/button";
 
-export type DefectiveProductProps = {
-  id: number;
-  createdAt: string;
-  defectivePaths: DefectivePathsProps[];
-};
-
 type Props = {
-  data: DefectiveProductProps[];
+  products: DefectiveProductProps[];
 };
 
-export function ProductsTable({ data }: Props) {
+export function ProductsTable({ products }: Props) {
+  const handleGenerateReport = (product: DefectiveProductProps) => {
+    const fileName = `RELATÓRIO_DPROD-${product.id}.txt`;
+    const paths = product.defectivePaths?.sort(
+      (a, b) =>
+        new Date(a.registeredAt).getTime() - new Date(b.registeredAt).getTime()
+    );
+
+    let reportContent = `[+] Relatório do produto defeituoso Nº${product.id}\n\n`;
+    reportContent += `  - Data e Hora: ${product.createdAt}\n`;
+    if (paths && paths.length > 0) {
+      reportContent += `  - Histórico de tráfego:\n`;
+      paths.forEach((path, index) => {
+        reportContent += `    ${index + 1}. Passou ${
+          path.sectorName
+            ? `${
+                path.stationId ? `na estação #${path.stationId} do` : "pelo"
+              } setor "${path.sectorName}"`
+            : "por algum setor"
+        } às ${path.registeredAt};\n`;
+      });
+    } else {
+      reportContent += `  [ERRO]: O histórico de tráfego do produto foi perdido.\n`;
+    }
+
+    const blob = new Blob([reportContent], {
+      type: "text/plain;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <table className="w-full text-center border-separate border-spacing-0">
       <thead>
@@ -27,12 +58,12 @@ export function ProductsTable({ data }: Props) {
         </tr>
       </thead>
       <tbody className="child:text-sm child:child:px-1">
-        {data.length > 0 ? (
-          data.map((product, i) => (
+        {products.length > 0 ? (
+          products.map((product, i) => (
             <tr key={i}>
               <td
                 className={`border ${
-                  i === data.length - 1 && "rounded-bl-lg"
+                  i === products.length - 1 && "rounded-bl-lg"
                 } border-gray-900 border-t-0 border-l py-2`}
               >
                 #{product.id}
@@ -42,10 +73,13 @@ export function ProductsTable({ data }: Props) {
               </td>
               <td
                 className={`border ${
-                  i === data.length - 1 && "rounded-br-lg"
+                  i === products.length - 1 && "rounded-br-lg"
                 } border-gray-900 border-t-0 border-l-0 py-2`}
               >
-                <Button className="bg-transparent border border-gray-400 text-gray-700 rounded-2xl h-7 text-xs hover:bg-green-300">
+                <Button
+                  className="bg-transparent border border-gray-400 text-gray-700 rounded-2xl h-7 text-xs hover:brightness-90 transition-all"
+                  onClick={() => handleGenerateReport(product)}
+                >
                   <FileChartPie className="text-gray-700" size={15} />
                   Gerar Relatório
                 </Button>

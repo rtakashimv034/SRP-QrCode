@@ -4,12 +4,13 @@ import HistoryIcon from "@/assets/Icon awesome-history.svg";
 import ClockIcon from "@/assets/Icon material-access-time.svg";
 import ReportIcon from "@/assets/Icon_simple_everplaces.svg";
 import { DefectivePathsProps } from "@/types/defectivePaths";
+import { DefectiveProductProps } from "@/types/defectiveProducts";
 import { PathsProps } from "@/types/paths";
 import { Sector } from "@/types/sectors";
 import { useEffect, useState } from "react";
 import { OccurrenceCard } from "../cards/OccurrenceCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { DefectiveProductProps, ProductsTable } from "../ProductsTable";
+import { ProductsTable } from "../ProductsTable";
 
 export function Reports() {
   const [sectors, setSectors] = useState<Sector[]>([]);
@@ -73,7 +74,19 @@ export function Reports() {
     socket.on(
       "create-defective-product",
       (newDefProd: DefectiveProductProps) => {
-        setDefectiveProducts((prev) => [...prev, newDefProd]);
+        setDefectiveProducts((prev) => {
+          const existingProductIndex = prev.findIndex(
+            (p) => p.id === newDefProd.id
+          );
+          // Se o produto já existe, atualize-o
+          if (existingProductIndex !== -1) {
+            const updatedProducts = [...prev];
+            updatedProducts[existingProductIndex] = newDefProd;
+            return updatedProducts;
+          } else {
+            return [...prev, newDefProd];
+          }
+        });
       }
     );
     socket.on("create-sector", (sector: Sector) => {
@@ -138,7 +151,7 @@ export function Reports() {
 
           {/* Tabela de Histórico */}
           <div className="overflow-x-auto">
-            <ProductsTable data={defectiveProducts} />
+            <ProductsTable products={defectiveProducts} />
           </div>
         </div>
       </div>

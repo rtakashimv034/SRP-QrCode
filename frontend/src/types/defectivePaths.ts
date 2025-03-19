@@ -1,7 +1,7 @@
 export type DefectivePathsProps = {
   id: number;
-  stationId: number;
+  stationId?: number;
   defProdId: number;
-  sectorName: string;
+  sectorName?: string;
   registeredAt: string;
 };
