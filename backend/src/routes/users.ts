@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
 import { io, onlineUsers } from "../server";
+import { sendEmail } from "../services/emailService";
 interface QueryParams {
   order?: "asc" | "desc";
   isManager?: string;
@@ -53,6 +54,17 @@ export async function createUser(req: Request, res: Response) {
     };
 
     const newUser = await prisma.users.create({ data });
+
+    // Envia um e-mail com a senha para o usuário
+    await sendEmail({
+      to: email,
+      destName: `${newUser.name} ${newUser.surname}`,
+      subject: "Bem-vindo ao Sistema!",
+      text: `Olá ${name}, sua conta foi criada com sucesso. Sua senha é: ${password}`,
+      html: `<p>Olá <strong>${name}</strong>,</p>
+             <p>Sua conta foi criada com sucesso. Sua senha é: <strong>${password}</strong></p>
+             <p>Recomendamos que você altere sua senha após o primeiro login.</p>`,
+    });
 
     io.emit("create-user", data);
 
