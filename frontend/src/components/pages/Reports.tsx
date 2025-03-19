@@ -3,9 +3,9 @@ import { socket } from "@/api/socket";
 import HistoryIcon from "@/assets/Icon awesome-history.svg";
 import ClockIcon from "@/assets/Icon material-access-time.svg";
 import ReportIcon from "@/assets/Icon_simple_everplaces.svg";
+import { Sector } from "@/types/sectors";
 import { useEffect, useState } from "react";
 import { OccurrenceCard } from "../cards/OccurrenceCard";
-import { WorkstationProps } from "../cards/WorkstationCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { DefectiveProductProps, ProductsTable } from "../ProductsTable";
 
@@ -25,18 +25,8 @@ export type DefectivePathsProps = {
   registeredAt: string;
 };
 
-export type SectorProps = {
-  id: number;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-  workstations: WorkstationProps[];
-  paths: PathsProps[];
-  defectivePaths: DefectivePathsProps[];
-};
-
 export function Reports() {
-  const [sectors, setSectors] = useState<SectorProps[]>([]);
+  const [sectors, setSectors] = useState<Sector[]>([]);
   const [paths, setPaths] = useState<PathsProps[]>([]);
   const [defectiveProducts, setDefectiveProducts] = useState<
     DefectiveProductProps[]
@@ -47,7 +37,7 @@ export function Reports() {
 
   const fetchSectors = async () => {
     try {
-      const { data, status } = await api.get<SectorProps[]>("/sectors");
+      const { data, status } = await api.get<Sector[]>("/sectors");
       if (status === 200) {
         setSectors(data);
       }
@@ -103,17 +93,17 @@ export function Reports() {
         setDefectiveProducts((prev) => [...prev, newDefProd]);
       }
     );
-    socket.on("create-sector", (sector: SectorProps) => {
+    socket.on("create-sector", (sector: Sector) => {
       setSectors((prev) => [...prev, sector]);
     });
-    socket.on("update-sector", (updatedSector: SectorProps) => {
+    socket.on("update-sector", (updatedSector: Sector) => {
       setSectors((prev) =>
         prev.map((sector) =>
           sector.name === updatedSector.name ? updatedSector : sector
         )
       );
     });
-    socket.on("delete-sector", (sector: SectorProps) => {
+    socket.on("delete-sector", (sector: Sector) => {
       setSectors((prev) => prev.filter((s) => s.name !== sector.name));
     });
     // Limpa os listeners ao desmontar o componente

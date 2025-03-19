@@ -1,10 +1,10 @@
+import { Sector } from "@/types/sectors";
 import { ApexOptions } from "apexcharts";
 import { useEffect, useRef } from "react"; // Importe useRef e useEffect
 import Chart from "react-apexcharts";
-import { SectorProps } from "../pages/Reports";
 
 type Props = {
-  sectors: SectorProps[];
+  sectors: Sector[];
 };
 
 export function SectorOccurrenceChart({ sectors }: Props) {
@@ -15,11 +15,11 @@ export function SectorOccurrenceChart({ sectors }: Props) {
   const initialSeries: ApexAxisChartSeries = [
     {
       name: "Caminhos normais",
-      data: sectors.map((s) => s.paths.length),
+      data: sectors.map((s) => s.paths?.length || 0),
     },
     {
       name: "Caminhos de despacho",
-      data: sectors.map((s) => s.defectivePaths.length),
+      data: sectors.map((s) => s.defectivePaths?.length || 0),
     },
   ];
 
@@ -75,11 +75,11 @@ export function SectorOccurrenceChart({ sectors }: Props) {
       const newSeries = [
         {
           name: "Caminhos normais",
-          data: sectors.map((s) => s.paths.length),
+          data: sectors.map((s) => s.paths?.length),
         },
         {
           name: "Caminhos de despacho",
-          data: sectors.map((s) => s.defectivePaths.length),
+          data: sectors.map((s) => s.defectivePaths?.length),
         },
       ];
 

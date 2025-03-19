@@ -14,7 +14,7 @@ export type Sector = {
   name: string;
   amountTrays: number;
   workstations: Workstation[];
-  paths?: PathsProps;
+  paths?: PathsProps[];
   defectivePaths?: PathsProps[];
 };
 

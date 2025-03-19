@@ -203,7 +203,7 @@ export function MonthOccurrenceChart({ paths, defectivePaths }: Props) {
           onChange={(e) => setSelectedYear(Number(e.target.value))}
         >
           {/* Exemplo: opções de anos de 2020 a 2030 */}
-          {Array.from({ length: 11 }, (_, i) => 2020 + i).map((year) => (
+          {Array.from({ length: 11 }, (_, i) => 2025 + i).map((year) => (
             <option key={year} value={year}>
               {year}
             </option>
