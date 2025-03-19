@@ -19,12 +19,12 @@ export function ProductsTable({ products }: Props) {
     if (paths && paths.length > 0) {
       reportContent += `  - Histórico de tráfego:\n`;
       paths.forEach((path, index) => {
-        reportContent += `    ${index + 1}. Passou ${
+        reportContent += `    ${index + 1}. O produto passou ${
           path.sectorName
             ? `${
                 path.stationId ? `na estação #${path.stationId} do` : "pelo"
               } setor "${path.sectorName}"`
-            : "por algum setor"
+            : "por alguma estação"
         } às ${path.registeredAt};\n`;
       });
     } else {

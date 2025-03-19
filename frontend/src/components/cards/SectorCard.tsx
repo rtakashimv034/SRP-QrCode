@@ -32,7 +32,7 @@ export function SectorCard({
               {data.amountTrays} Bandejas Linkadas
             </p>
             <p className="text-xs opacity-50">
-              Nº de estações: {data.workstations.length}
+              Nº de estações: {data.workstations?.length}
             </p>
           </div>
           <div className="flex mb-2 flex-row gap-x-4 items-center">
