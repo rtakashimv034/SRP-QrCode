@@ -12,7 +12,9 @@ import pygame
 pygame.mixer.init()
 
 # Carregar o arquivo de áudio
-pygame.mixer.music.load("beep-08b.wav")
+bandeja = pygame.mixer.Sound("beep-08b.wav")
+produto = pygame.mixer.Sound("beep-01a.wav")
+
 
 # Variável global para armazenar os QR codes lidos
 qrcodes = []  # Lista única para todas as câmeras
@@ -99,7 +101,7 @@ def read_qr_code(camera_index):
                         print(
                             f"Câmera {camera_index}: BDJ detectado - {data} ({timestamp})")
                         # Reproduzir o som de forma não bloqueante
-                        pygame.mixer.music.play()
+                        bandeja.play()
 
         if found_bdj and found_produto:
             with lock:
@@ -164,7 +166,7 @@ def read_qr_code(camera_index):
                         # Verifica a resposta da API
                         if response.status_code == 201:
                             print("Post criado com sucesso!")
-                            pygame.mixer.music.play()
+                            produto.play()
                             # Exibe a resposta JSON
                             print("Resposta do servidor:", response.json())
                         else:
@@ -244,7 +246,7 @@ def read_qr_code(camera_index):
                     # Verificando a resposta
                     if response.status_code == 201:
                         print("Post criado com sucesso!")
-                        pygame.mixer.music.play()
+                        produto.play()
                         # Exibe a resposta JSON
                         print("Resposta do servidor:", response.json())
                     else:
@@ -266,14 +268,37 @@ def read_qr_code(camera_index):
     cap.release()
     cv2.destroyWindow(window_name)
 
+def detect_cameras():
+    camera_indices = []
+    i = 0
 
-# Verifica quais câmeras estão disponíveis
-camera_indices = []
-for i in range(2):  # Verifica apenas as câmeras 0 e 1
-    cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
-    if cap.isOpened():
+    while True:
+        # Tenta abrir a câmera com o índice atual
+        cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
+        
+        # Verifica se a câmera foi aberta com sucesso
+        if not cap.isOpened():
+            break  # Sai do loop se não houver mais câmeras
+        
+        # Tenta capturar um frame para verificar se a câmera está funcionando
+        ret, frame = cap.read()
+        if not ret:
+            # Se não conseguir capturar um frame, a câmera não está funcionando
+            cap.release()
+            break
+        
+        # Adiciona o índice da câmera à lista
         camera_indices.append(i)
+        
+        # Libera a câmera
         cap.release()
+        
+        # Incrementa o índice para verificar a próxima câmera
+        i += 1
+
+    return camera_indices
+
+camera_indices = detect_cameras()
 
 # Inicia as threads para cada câmera disponível
 threads = []
