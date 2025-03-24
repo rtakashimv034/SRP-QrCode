@@ -69,6 +69,17 @@ io.on("connection", (socket) => {
     }
   });
 });
+
+import { z } from "zod";
+
+const dateSchema = z.string().transform((val) => new Date(val).toISOString());
+
+// Testando a conversão
+const input = "2025-03-24T11:05:46.890Z";
+const result = dateSchema.parse(input);
+
+console.log(result); // Saída: Date object correspondente
+
 server.listen(PORT, "0.0.0.0", () =>
   console.log(`[+] Server is running at http://${domain}:${PORT}/api/v1`)
 );

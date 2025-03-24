@@ -62,7 +62,7 @@ model Users {
 
 model Products {
   SN        String   @id
-  createdAt DateTime @default(now())
+  createdAt DateTime
   paths     Paths[]
 
   @@map("products")
@@ -70,7 +70,7 @@ model Products {
 
 model DefectiveProducts {
   id             Int              @id @default(autoincrement())
-  createdAt      DateTime         @default(now())
+  createdAt      DateTime
   defectivePaths DefectivePaths[]
 
   @@map("defective_products")
@@ -84,7 +84,7 @@ model Paths {
   Sectors      Sectors?      @relation(fields: [sectorName], references: [name])
   prodSN       String
   product      Products      @relation(fields: [prodSN], references: [SN])
-  registeredAt DateTime      @default(now())
+  registeredAt DateTime
 
   @@map("paths")
 }
@@ -97,7 +97,7 @@ model DefectivePaths {
   defectiveProduct DefectiveProducts @relation(fields: [defProdId], references: [id])
   sectorName       String?
   Sectors          Sectors?          @relation(fields: [sectorName], references: [name])
-  registeredAt     DateTime          @default(now())
+  registeredAt     DateTime
 
   @@map("defective_paths")
 }

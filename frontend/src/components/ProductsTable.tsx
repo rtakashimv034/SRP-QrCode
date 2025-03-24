@@ -28,7 +28,7 @@ export function ProductsTable({ products }: Props) {
         } às ${path.registeredAt};\n`;
       });
     } else {
-      reportContent += `  [ERRO]: O histórico de tráfego do produto foi perdido.\n`;
+      reportContent += `  [ERRO]: Não foi possível resgatar o histórico do produto.\n`;
     }
 
     const blob = new Blob([reportContent], {
