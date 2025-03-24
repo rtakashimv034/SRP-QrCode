@@ -43,21 +43,28 @@ export function TimeOccurrenceChart({
     return grouped;
   };
 
-  const startYear = 2020;
-  const lastPathsYear =
-    paths
-      .map((item) => new Date(item.registeredAt).getFullYear())
-      .sort((a, b) => a - b)
-      .pop() || 0;
-  const lastDefectivePathsYear =
-    defectivePaths
-      .map((item) => new Date(item.registeredAt).getFullYear())
-      .sort((a, b) => a - b)
-      .pop() || 0;
+  const currentYear = new Date().getFullYear();
+
+  const pathsYear = paths
+    .map((item) => new Date(item.registeredAt).getFullYear())
+    .sort((a, b) => a - b);
+  const firstPathsYear = pathsYear[0] || currentYear;
+  const lastPathsYear = pathsYear.pop() || currentYear;
+
+  const defectivePathsYear = defectivePaths
+    .map((item) => new Date(item.registeredAt).getFullYear())
+    .sort((a, b) => a - b);
+  const firstDefectivePathsYear = defectivePathsYear[0] || currentYear;
+  const lastDefectivePathsYear = pathsYear.pop() || currentYear;
+
+  const startYear =
+    [firstPathsYear, firstDefectivePathsYear].sort((a, b) => a - b)[0] ||
+    currentYear;
 
   const endYear =
-    [lastDefectivePathsYear, lastPathsYear].sort((a, b) => a - b).pop() || 0;
-  console.log(endYear);
+    [lastDefectivePathsYear, lastPathsYear].sort((a, b) => a - b).pop() ||
+    currentYear;
+
   // Função para agrupar e acumular ocorrências por ano
   const groupByYear = (data: (PathsProps | DefectivePathsProps)[]) => {
     const grouped: { [key: string]: number } = {};
@@ -130,12 +137,10 @@ export function TimeOccurrenceChart({
   if (schedule === "Anual") {
     // Para o modo anual, exibe dados de 2025 a 2035
     filteredPaths = paths.filter((item) => {
-      const year = new Date(item.registeredAt).getFullYear();
-      return year >= startYear && year <= 2035;
+      return new Date(item.registeredAt).getFullYear();
     });
     filteredDefectivePaths = defectivePaths.filter((item) => {
-      const year = new Date(item.registeredAt).getFullYear();
-      return year >= startYear && year <= 2035;
+      return new Date(item.registeredAt).getFullYear();
     });
   } else if (schedule === "Mensal") {
     // Para o modo mensal, filtra pelo ano selecionado
