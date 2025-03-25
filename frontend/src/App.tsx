@@ -2,14 +2,12 @@ import { Navigate, Route, Routes, useLocation } from "react-router";
 import { AuthProvider } from "./auth/AuthProvider";
 import { ForgotPassword } from "./components/ForgotPassword";
 import { CreateSector } from "./components/pages/CreateSector";
-import { EditSector } from "./components/pages/EditSector";
 import { Login } from "./components/pages/Login";
 import { NotFound } from "./components/pages/NotFound";
 import { Reports } from "./components/pages/Reports";
 import { Sectors } from "./components/pages/Sectors";
 import { Users } from "./components/pages/Users";
 import { ProtectedRoutes } from "./components/ProtectedRoutes";
-import { TrayManagment } from "./components/TrayManagment";
 
 function App() {
   const { pathname } = useLocation();
@@ -51,26 +49,10 @@ function App() {
           }
         />
         <Route
-          path="/sectors/:name"
-          element={
-            <ProtectedRoutes previousPath="/sectors">
-              <EditSector />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
           path="/users"
           element={
             <ProtectedRoutes previousPath="/reports">
               <Users />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/tray-managment"
-          element={
-            <ProtectedRoutes>
-              <TrayManagment />
             </ProtectedRoutes>
           }
         />

@@ -8,6 +8,15 @@ import { v4 as uuidv4 } from "uuid";
 
 export type FormatTypesProps = "png" | "svg" | "jpeg";
 
+type QRCodeProps = {
+  format: FormatTypesProps;
+  amount: number;
+  prefix: string;
+  fileName: string;
+  folderName: string;
+  content?: string;
+};
+
 const useQRCodeGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -52,30 +61,38 @@ const useQRCodeGenerator = () => {
     return typeof dataUrl === "string" ? dataUrl : "";
   };
 
-  const generateAndDownloadZip = async (
-    amount: number,
-    prefix: string,
-    format: FormatTypesProps
-  ) => {
+  const generateAndDownloadZip = async ({
+    amount,
+    fileName,
+    folderName,
+    format,
+    prefix,
+    content,
+  }: QRCodeProps) => {
     setIsGenerating(true);
 
     const zip = new JSZip();
-    const folder = zip.folder("bandejas");
+    const folder = zip.folder(folderName);
 
     for (let i = 0; i < amount; i++) {
-      const uuid = uuidv4();
-      const content = `${prefix}-${uuid}`;
-      const qrCodeUrl = await generateQRCode(content, format);
+      const subContent = content ? content : uuidv4();
+      const rawContent = `${prefix}-${subContent}`;
+      const qrCodeUrl = await generateQRCode(rawContent, format);
 
       // Converte a URL da imagem em um Blob
       const response = await fetch(qrCodeUrl);
       const blob = await response.blob();
 
-      folder?.file(`bandeja-${i + 1}.${format}`, blob);
+      folder?.file(
+        `${fileName}-${
+          content ? content : `${i + 1}-${subContent.slice(0, 8)}`
+        }.${format}`,
+        blob
+      );
     }
 
     const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "bandejas");
+    saveAs(zipBlob, fileName);
 
     setIsGenerating(false);
   };

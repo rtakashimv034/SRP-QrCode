@@ -9,8 +9,8 @@ import { PathsProps } from "@/types/paths";
 import { Sector } from "@/types/sectors";
 import { useEffect, useState } from "react";
 import { OccurrenceCard } from "../cards/OccurrenceCard";
+import { DefectiveProductsTable } from "../DefectiveProductsTable";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { ProductsTable } from "../ProductsTable";
 
 export function Reports() {
   const [sectors, setSectors] = useState<Sector[]>([]);
@@ -151,7 +151,7 @@ export function Reports() {
 
           {/* Tabela de Histórico */}
           <div className="overflow-x-auto">
-            <ProductsTable products={defectiveProducts} />
+            <DefectiveProductsTable products={defectiveProducts} />
           </div>
         </div>
       </div>

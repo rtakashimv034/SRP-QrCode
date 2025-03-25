@@ -73,7 +73,13 @@ export function CreateSector() {
   };
 
   const generateTrays = async (amountTrays: number) => {
-    await generateAndDownloadZip(amountTrays, "BDJ", format);
+    await generateAndDownloadZip({
+      amount: amountTrays,
+      prefix: "BDJ",
+      fileName: "bandeja",
+      format,
+      folderName: `bandejas-${format}`,
+    });
   };
 
   const handleSubmit = async () => {

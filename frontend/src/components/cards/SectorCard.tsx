@@ -8,7 +8,7 @@ type Props = {
   data: Sector;
   disabled?: boolean;
   onDelete?: () => void;
-  onShowQrcode?: () => void;
+  onViewSector?: () => void;
   onUpdate?: () => void;
 };
 
@@ -16,7 +16,7 @@ export function SectorCard({
   data,
   disabled = false,
   onDelete,
-  onShowQrcode,
+  onViewSector,
   onUpdate,
 }: Props) {
   const { user } = useAuth();
@@ -59,7 +59,7 @@ export function SectorCard({
             </button>
           )}
           <button
-            onClick={onShowQrcode}
+            onClick={onViewSector}
             disabled={disabled}
             className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-blue-300"
           >
