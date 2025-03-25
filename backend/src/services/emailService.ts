@@ -31,7 +31,6 @@ export async function sendEmail(options: EmailOptions) {
     });
 
     const response = await request;
-    console.log("E-mail enviado com sucesso:", response.body);
     return response.body;
   } catch (error) {
     console.error("Erro ao enviar e-mail:", error);
