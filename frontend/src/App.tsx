@@ -61,7 +61,7 @@ function App() {
         <Route
           path="/users"
           element={
-            <ProtectedRoutes>
+            <ProtectedRoutes previousPath="/reports">
               <Users />
             </ProtectedRoutes>
           }

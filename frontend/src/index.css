@@ -9,7 +9,7 @@
 
 @layer utilities {
   .bg-img {
-    background-image: url("./assets/bg.png");
+    background-image: url("./assets/images/bg.png");
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;

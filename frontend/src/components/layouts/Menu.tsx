@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 export function Menu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   const handleLogout = () => {
     signOut();
@@ -48,22 +48,26 @@ export function Menu() {
                 : "text-white fill-black"
             }`}
           />
-          <span className="font-normal">Setores</span>
+          <span className="font-normal">
+            {user?.isManager ? "Setores" : "Linhas de Produção"}
+          </span>
         </Button>
-        <Button
-          variant={pathname.includes("/users") ? "submit" : "outline"}
-          className={`justify-start px-2 child:font-normal child:transition-all`}
-          onClick={() => navigate("/users")}
-        >
-          <UsersRound
-            className={`size-7 ${
-              pathname.includes("/users")
-                ? "fill-white text-white"
-                : "fill-black text-black"
-            }`}
-          />
-          <span className="font-normal">Usuários</span>
-        </Button>
+        {user?.isManager && (
+          <Button
+            variant={pathname.includes("/users") ? "submit" : "outline"}
+            className={`justify-start px-2 child:font-normal child:transition-all`}
+            onClick={() => navigate("/users")}
+          >
+            <UsersRound
+              className={`size-7 ${
+                pathname.includes("/users")
+                  ? "fill-white text-white"
+                  : "fill-black text-black"
+              }`}
+            />
+            <span className="font-normal">Usuários</span>
+          </Button>
+        )}
       </div>
       <div className="flex w-full">
         <Button

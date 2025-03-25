@@ -35,7 +35,7 @@ export async function createPath(req: Request, res: Response) {
 
     const product = await prisma.products.upsert({
       where: { SN: prodSN },
-      update: {},
+      update: { createdAt: registeredAt },
       create: { SN: prodSN, createdAt: registeredAt },
     });
 
@@ -110,7 +110,7 @@ export async function createDefectivePath(req: Request, res: Response) {
 
     const defectiveProduct = await prisma.defectiveProducts.upsert({
       where: { id: defProdId },
-      update: {},
+      update: { createdAt: registeredAt },
       create: { id: defProdId, createdAt: registeredAt },
     });
 

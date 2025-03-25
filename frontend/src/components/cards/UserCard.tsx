@@ -1,5 +1,5 @@
 import { baseURL } from "@/api";
-import defaultAvatar from "@/assets/default_avatar.png";
+import defaultAvatar from "@/assets/images/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
 import { User } from "@/types/user";
 import { Edit2Icon, TrashIcon } from "lucide-react";
