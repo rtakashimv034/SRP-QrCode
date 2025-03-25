@@ -1,16 +1,16 @@
 import { api } from "@/api/axios";
 import { socket } from "@/api/socket";
-import HistoryIcon from "@/assets/Icon awesome-history.svg";
-import ClockIcon from "@/assets/Icon material-access-time.svg";
-import ReportIcon from "@/assets/Icon_simple_everplaces.svg";
+import HistoryIcon from "@/assets/icons/Icon awesome-history.svg";
+import ClockIcon from "@/assets/icons/Icon material-access-time.svg";
+import ReportIcon from "@/assets/icons/Icon_simple_everplaces.svg";
 import { DefectivePathsProps } from "@/types/defectivePaths";
 import { DefectiveProductProps } from "@/types/defectiveProducts";
 import { PathsProps } from "@/types/paths";
 import { Sector } from "@/types/sectors";
 import { useEffect, useState } from "react";
 import { OccurrenceCard } from "../cards/OccurrenceCard";
+import { DefectiveProductsTable } from "../DefectiveProductsTable";
 import { DefaultLayout } from "../layouts/DefaultLayout";
-import { ProductsTable } from "../ProductsTable";
 
 export function Reports() {
   const [sectors, setSectors] = useState<Sector[]>([]);
@@ -151,7 +151,7 @@ export function Reports() {
 
           {/* Tabela de Histórico */}
           <div className="overflow-x-auto">
-            <ProductsTable products={defectiveProducts} />
+            <DefectiveProductsTable products={defectiveProducts} />
           </div>
         </div>
       </div>

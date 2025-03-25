@@ -8,7 +8,7 @@ type Props = {
   data: Sector;
   disabled?: boolean;
   onDelete?: () => void;
-  onShowQrcode?: () => void;
+  onViewSector?: () => void;
   onUpdate?: () => void;
 };
 
@@ -16,13 +16,13 @@ export function SectorCard({
   data,
   disabled = false,
   onDelete,
-  onShowQrcode,
+  onViewSector,
   onUpdate,
 }: Props) {
   const { user } = useAuth();
 
   return (
-    <Card className="overflow-hidden rounded-xl bg-gray-card h-28 shadow-md w-full flex">
+    <Card className="overflow-hidden rounded-xl bg-gray-card border-none h-28 shadow-md w-full flex">
       <div className="bg-green-light shrink-0 w-4" />
       <CardContent className="flex flex-row w-full p-2 relative">
         <div className="flex flex-col justify-between">
@@ -48,8 +48,8 @@ export function SectorCard({
             </Button>
           </div>
         </div>
-        {user?.isManager && (
-          <div className="right-1.5 top-1.5 absolute flex flex-col gap-1.5">
+        <div className="right-1.5 top-1.5 absolute flex flex-col gap-1.5">
+          {user?.isManager && (
             <button
               onClick={onUpdate}
               disabled={disabled}
@@ -57,13 +57,15 @@ export function SectorCard({
             >
               <Edit2Icon className="fill-black" />
             </button>
-            <button
-              onClick={onShowQrcode}
-              disabled={disabled}
-              className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-blue-300"
-            >
-              <EyeIcon className="fill-black text-white" />
-            </button>
+          )}
+          <button
+            onClick={onViewSector}
+            disabled={disabled}
+            className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-blue-300"
+          >
+            <EyeIcon className="fill-black text-white" />
+          </button>
+          {user?.isManager && (
             <button
               disabled={disabled}
               className="flex h-4 w-4 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
@@ -71,8 +73,8 @@ export function SectorCard({
             >
               <TrashIcon className="fill-black" />
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   );

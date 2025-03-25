@@ -1,3 +1,4 @@
+import logo from "@/assets/icons/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -41,9 +42,10 @@ export function Login() {
     <div className="flex overflow-hidden items-center justify-center h-screen bg-img bg-transparent bg-[100%] bg-cover bg-no-repeat">
       <Card className="flex p-32 flex-col justify-center items-center w-2/3 md:w-[40%] h-[90%] bg-white/25 bg-no-repeat backdrop-blur-[11px] border-none">
         <CardHeader className="flex w-full">
-          <div className="bg-white w-full h-36 text-4xl italic flex justify-center items-center">
-            LOGO
-          </div>
+          <img
+            src={logo}
+            className="bg-transparent w-full h-36 text-4xl italic flex justify-center items-center"
+          ></img>
         </CardHeader>
         <CardContent className="w-full mt-8">
           <form

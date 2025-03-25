@@ -3,7 +3,7 @@ import { EllipsisVertical } from "lucide-react";
 type Props = {
   avatar?: string;
   name: string;
-  surName: string;
+  surName?: string;
 };
 
 export function UserAsideCard({ avatar, name, surName }: Props) {

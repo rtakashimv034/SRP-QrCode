@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SectorCard } from "../cards/SectorCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
+import { SectorModal } from "../SectorModal";
 
 type Props = Sector[];
 
@@ -31,7 +32,9 @@ export function Sectors() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sectorName, setSectorName] = useState<string | null>(null); // Armazena o nome do setor a ser deletado
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [sector, setSector] = useState<Sector | null>(null);
   const { user } = useAuth();
 
   const fetchSectors = async () => {
@@ -59,11 +62,11 @@ export function Sectors() {
   };
 
   const handleDeleteSector = async () => {
-    if (!sectorName) return; // Verifica se há um setor para deletar
+    if (!sector) return; // Verifica se há um setor para deletar
 
     try {
       setIsLoading(true);
-      const { status } = await api.delete(`/sectors/${sectorName}`);
+      const { status } = await api.delete(`/sectors/${sector.name}`);
       if (status === 204) {
         setIsModalOpen(false); // Fecha o modal
         fetchSectors(); // Atualiza a lista de setores
@@ -152,10 +155,17 @@ export function Sectors() {
                 key={index}
                 data={data}
                 onDelete={() => {
-                  setSectorName(data.name); // Define o setor a ser deletado
+                  setSector(data); // Define o setor a ser deletado
                   setIsModalOpen(true); // Abre o modal
                 }}
-                onUpdate={() => navigator(data.name)}
+                onUpdate={() => {
+                  setSector(data);
+                  setIsEditModalOpen(true);
+                }}
+                onViewSector={() => {
+                  setSector(data);
+                  setIsViewModalOpen(true);
+                }}
               />
             ))}
           </div>
@@ -168,8 +178,8 @@ export function Sectors() {
           <DialogHeader>
             <DialogTitle>Deletar Setor</DialogTitle>
             <DialogDescription>
-              Você tem certeza que deseja deletar o setor "{sectorName}"? (Suas
-              respectivas estações também serão excluídas).
+              Você tem certeza que deseja deletar o setor "{sector?.name}"?
+              (Suas respectivas estações também serão excluídas).
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -186,6 +196,24 @@ export function Sectors() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <SectorModal
+        mode="view"
+        sector={sector}
+        open={isViewModalOpen}
+        onOpenChange={setIsViewModalOpen}
+        onDelete={() => {
+          setSector(sector);
+          setIsModalOpen(true);
+        }}
+      />
+
+      <SectorModal
+        mode="edit"
+        sector={sector}
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        onSuccess={fetchSectors}
+      />
     </DefaultLayout>
   );
 }

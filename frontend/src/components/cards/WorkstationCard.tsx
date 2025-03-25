@@ -1,10 +1,12 @@
+import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
 import { Workstation } from "@/types/workstation";
-import { Edit2Icon, TrashIcon } from "lucide-react";
+import { Edit2Icon, QrCodeIcon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 type Props = {
   station: Workstation;
   isLatest: boolean;
+  readOnly?: boolean;
   onDelete: (id: string) => void;
   name: string; // Add name as a prop
   onNameChange: (id: string, name: string) => void; // Add onNameChange as a prop
@@ -15,9 +17,23 @@ export function WorkstationCard({
   onDelete,
   station,
   name,
+  readOnly = false,
   onNameChange,
 }: Props) {
   const [isEnabled, setIsEnabled] = useState(false);
+  const { generateAndDownloadZip } = useQRCodeGenerator();
+
+  const handleGenerateQRCode = async (id: number) => {
+    await generateAndDownloadZip({
+      amount: 1,
+      fileName: "estação",
+      format: "png",
+      prefix: "ET",
+      content: String(id),
+      folderName: `ET-${id}-qrcode`,
+    });
+  };
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEdit = () => {
@@ -48,18 +64,29 @@ export function WorkstationCard({
           onBlur={() => setIsEnabled(false)}
         />
         <div className="absolute right-2 top-1.5 items-center flex flex-row gap-1.5">
-          <button
-            className=" flex h-5 w-5 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
-            onClick={() => handleEdit()}
-          >
-            <Edit2Icon className="fill-black " />
-          </button>
-          <button
-            className=" flex h-5 w-5 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
-            onClick={() => onDelete(station.localId!)}
-          >
-            <TrashIcon className="fill-black" />
-          </button>
+          {!readOnly ? (
+            <>
+              <button
+                className=" flex h-5 w-5 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-yellow-300"
+                onClick={() => handleEdit()}
+              >
+                <Edit2Icon className="fill-black " />
+              </button>
+              <button
+                className=" flex h-5 w-5 items-center justify-center opacity-60 border-black rounded-sm border p-[1px] hover:bg-red-300"
+                onClick={() => onDelete(station.localId!)}
+              >
+                <TrashIcon className="fill-black" />
+              </button>
+            </>
+          ) : (
+            <button
+              className="flex h-5 w-5 items-center justify-center border-black rounded-sm border p-[1px] hover:bg-blue-300"
+              onClick={() => handleGenerateQRCode(station.id!)}
+            >
+              <QrCodeIcon />
+            </button>
+          )}
         </div>
 
         {!isLatest && (

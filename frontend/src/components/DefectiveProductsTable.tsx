@@ -6,7 +6,7 @@ type Props = {
   products: DefectiveProductProps[];
 };
 
-export function ProductsTable({ products }: Props) {
+export function DefectiveProductsTable({ products }: Props) {
   const handleGenerateReport = (product: DefectiveProductProps) => {
     const fileName = `RELATÓRIO_DPROD-${product.id}.txt`;
     const paths = product.defectivePaths?.sort(

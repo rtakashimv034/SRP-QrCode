@@ -14,10 +14,6 @@ const sectorSchema = z.object({
   workstations: z.array(workstationSchema),
 });
 
-const updateSectorSchema = sectorSchema.omit({
-  amountTrays: true,
-});
-
 export async function getAllsectors(req: Request, res: Response) {
   try {
     const sectors = await prisma.sectors.findMany({
@@ -107,7 +103,7 @@ export async function createSector(req: Request, res: Response) {
 }
 
 export async function updateSector(req: Request, res: Response) {
-  const { name, workstations } = updateSectorSchema.parse(req.body);
+  const { name, workstations, amountTrays } = sectorSchema.parse(req.body);
   const sectorName = req.params.name;
 
   if (!sectorName) {
@@ -134,6 +130,7 @@ export async function updateSector(req: Request, res: Response) {
 
     const data = {
       name,
+      amountTrays,
       workstations: {
         deleteMany: {}, // Delete all workstations in this sector
         create: workstations,

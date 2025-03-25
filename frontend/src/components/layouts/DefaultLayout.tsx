@@ -1,5 +1,5 @@
 import { baseURL } from "@/api";
-import defaultAvatar from "@/assets/default_avatar.png";
+import defaultAvatar from "@/assets/images/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { SplashScreen } from "../SplashScreen";
@@ -29,7 +29,7 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
             user.avatar ? `${baseURL}/uploads/${user.avatar}` : defaultAvatar
           }
           name={user.name}
-          surName={user.surName}
+          surName={user.surname}
         />
         <Menu />
       </aside>
