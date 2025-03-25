@@ -22,7 +22,7 @@ export function SectorCard({
   const { user } = useAuth();
 
   return (
-    <Card className="overflow-hidden rounded-xl bg-gray-card h-28 shadow-md w-full flex">
+    <Card className="overflow-hidden rounded-xl bg-gray-card border-none h-28 shadow-md w-full flex">
       <div className="bg-green-light shrink-0 w-4" />
       <CardContent className="flex flex-row w-full p-2 relative">
         <div className="flex flex-col justify-between">

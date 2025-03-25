@@ -15,7 +15,7 @@ type Props = {
 export function UserCard({ user, onDelete, onUpdate, isOnline }: Props) {
   const authData = useAuth();
   return (
-    <Card className="relative overflow-hidden rounded-xl bg-gray-card h-28 shadow-md w-full flex">
+    <Card className="relative overflow-hidden rounded-xl bg-gray-card h-28 shadow-md w-full flex border-none">
       <div className="bg-green-light shrink-0 w-4" />
       <CardContent className="flex flex-row w-full p-2">
         <div className="w-full gap-3 flex flex-row items-center p-2">

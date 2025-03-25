@@ -17,10 +17,13 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 
-import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
+import useQRCodeGenerator, {
+  FormatTypesProps,
+} from "@/hooks/useQRCodeGenerator";
 import { Sector } from "@/types/sectors";
 import { Workstation } from "@/types/workstation";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { Input } from "../ui/input";
 
 export function CreateSector() {
   const [name, setName] = useState("");
@@ -30,6 +33,8 @@ export function CreateSector() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { generateAndDownloadZip, isGenerating } = useQRCodeGenerator();
   const navigate = useNavigate();
+
+  const [format, setFormat] = useState<FormatTypesProps>("png");
 
   const invalidSectorName =
     name
@@ -68,7 +73,7 @@ export function CreateSector() {
   };
 
   const generateTrays = async (amountTrays: number) => {
-    await generateAndDownloadZip(amountTrays, "BDJ");
+    await generateAndDownloadZip(amountTrays, "BDJ", format);
   };
 
   const handleSubmit = async () => {
@@ -103,7 +108,7 @@ export function CreateSector() {
 
   return (
     <DefaultLayout>
-      <div className="flex flex-row items-center justify-start gap-2">
+      <div className=" flex flex-row items-center justify-start gap-2">
         <ArrowLeft
           onClick={() => navigate(-1)}
           className="size-7 text-black hover:cursor-pointer"
@@ -112,100 +117,141 @@ export function CreateSector() {
           Cadastrar Setor
         </h1>
       </div>
-      <div className="flex-1 grid grid-cols-[55%_45%] pt-2">
-        <div className="flex flex-col justify-between gap-4 items-center pr-4">
-          {/* sector card */}
-          <div className="rounded-xl child:px-4 w-full h-full overflow-hidden border-2 flex flex-col border-green-light">
-            <div className="bg-green-light shrink-0 flex items-center w-full h-10">
-              <h1 className="text-white font-semibold text-lg">
-                Dados do setor
-              </h1>
-            </div>
-            <div className="flex-1 flex justify-evenly pb-2 flex-col gap-2">
-              <div className="flex flex-col gap-1">
-                <Label className="font-normal text-base">Nome do Setor</Label>
-                <input
-                  type="text"
-                  placeholder="Lorem Ipsum"
-                  className="rounded-md w-full px-3 py-1 font-medium bg-gray-input placeholder:text-gray-placeholder placeholder:font-normal"
-                  onChange={(e) => setName(e.target.value)}
-                  value={name}
-                />
+      <div className="flex-1 grid grid-rows-[80%_20%]">
+        <div className="flex-1 grid grid-cols-[60%_40%] items-center justify-start">
+          <div className="flex flex-col justify-between gap-4 items-center pr-4">
+            {/* sector card */}
+            <div className="rounded-xl child:px-4 w-full max-h-96 overflow-hidden border-2 flex flex-col border-green-light">
+              <div className="bg-green-light shrink-0 flex items-center w-full h-10">
+                <h1 className="text-white font-semibold text-lg">
+                  Dados do setor
+                </h1>
               </div>
-              <div className="flex flex-col gap-1">
-                <div className="flex flex-col gap-0.5">
-                  <Label className="font-normal text-base">Estações</Label>
-                  <div className="flex flex-col h-40 overflow-y-auto custom-scrollbar">
-                    {workstations.map((station, i) => (
-                      <WorkstationCard
-                        key={station.localId}
-                        station={station}
-                        isLatest={i === workstations.length - 1}
-                        onDelete={() => handleDeleteStation(station.localId!)}
-                        name={station.name} // Pass name
-                        onNameChange={handleNameChange} // Pass onNameChange
-                      />
-                    ))}
+              <div className="flex-1 flex flex-row p-3 gap-4">
+                {/* Sector Section */}
+                <div className=" basis-3/4 flex flex-col justify-evenly gap-6">
+                  <div className="flex flex-col gap-1">
+                    <Label className="font-normal text-base">
+                      Nome do Setor
+                    </Label>
+                    <input
+                      type="text"
+                      placeholder="Lorem Ipsum"
+                      className="rounded-md w-full px-3 py-1 font-medium bg-gray-input placeholder:text-gray-placeholder placeholder:font-normal"
+                      onChange={(e) => setName(e.target.value)}
+                      value={name}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-0.5">
+                      <Label className="font-normal text-base">Estações</Label>
+                      <div className="flex flex-col h-40 overflow-y-auto custom-scrollbar">
+                        {workstations.map((station, i) => (
+                          <WorkstationCard
+                            key={station.localId}
+                            station={station}
+                            isLatest={i === workstations.length - 1}
+                            onDelete={() =>
+                              handleDeleteStation(station.localId!)
+                            }
+                            name={station.name} // Pass name
+                            onNameChange={handleNameChange} // Pass onNameChange
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <button
+                      className="rounded-md py-2 text-xs child:text-gray-dark hover:brightness-90 transition-all gap-2 w-full flex flex-row items-center justify-center font-normal bg-gray-input"
+                      onClick={handleAddingStation}
+                    >
+                      <CirclePlus className="size-4" />
+                      <span>Adicionar estação</span>
+                    </button>
                   </div>
                 </div>
-                <button
-                  className="rounded-md py-2 text-xs child:text-gray-dark hover:brightness-90 transition-all gap-2 w-full flex flex-row items-center justify-center font-normal bg-gray-input"
-                  onClick={handleAddingStation}
-                >
-                  <CirclePlus className="size-4" />
-                  <span>Adicionar estação</span>
-                </button>
+                {/* Tray Section */}
+                <div className=" basis-1/4 flex flex-col gap-[23px]">
+                  <div className="flex flex-col gap-1">
+                    <h1 className="text-base">Nº de Bandejas</h1>
+                    <div className="w-full flex flex-col items-center justify-between">
+                      <div className="w-full relative">
+                        <input
+                          type="number"
+                          min={1}
+                          value={amountTrays}
+                          onChange={(e) =>
+                            setAmountTrays(Number(e.target.value))
+                          }
+                          className="custom-number-input rounded-md border border-gray-500 font-medium px-3 text-center py-1 bg-gray-200 w-full"
+                        />
+                        <div className="chevron-buttons border-l border-l-gray-500 flex w-8 flex-col shrink h-8 items-center absolute top-[1px] right-[1px]">
+                          <ChevronUp className=" bg-transparent rounded-tr-[5px] size-5 text-gray-700 border-b border-b-gray-500 w-full" />
+                          <ChevronDown className="size-5 rounded-br-[5px] text-gray-700 w-full" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className=" flex flex-col gap-1">
+                    <h1>Formato</h1>
+                    <div className="child:child:text-sm flex flex-col gap-1">
+                      <div className="flex items-center gap-1">
+                        <Input
+                          className="size-4 hover:cursor-pointer"
+                          type="checkbox"
+                          checked={format === "png"}
+                          onChange={() => setFormat("png")}
+                        />
+                        <span>PNG (.zip)</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Input
+                          className="size-4 hover:cursor-pointer"
+                          type="checkbox"
+                          checked={format === "jpeg"}
+                          onChange={() => setFormat("jpeg")}
+                        />
+                        <span>JPEG (.zip)</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Input
+                          className="size-4 hover:cursor-pointer"
+                          type="checkbox"
+                          checked={format === "svg"}
+                          onChange={() => setFormat("svg")}
+                        />
+                        <span>SVG (.zip)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          {/* Tray card */}
-          <div className="rounded-xl child:px-4 w-full h-full overflow-hidden border-2 flex flex-col basis-1/3 border-green-light">
-            <div className="bg-green-light shrink-0 flex items-center w-full h-10">
-              <h1 className="text-white font-semibold text-lg">
-                Adicionar Bandejas
-              </h1>
-            </div>
-            <div className="h-full flex flex-col justify-center items-center">
-              <div className=" h-full py-1.5 flex flex-col items-center justify-between">
-                <h1 className="text-base leading-none">Bandejas Disponíveis</h1>
-                <div className="relative">
-                  <input
-                    type="number"
-                    min={1}
-                    value={amountTrays}
-                    onChange={(e) => setAmountTrays(Number(e.target.value))}
-                    className="custom-number-input rounded-md border border-gray-500 font-medium pr-1 pl-3 py-1 bg-gray-200 w-24"
+          {/* Sector Card Section */}
+          <div className="h-full max-h-[372px] flex justify-center items-center pl-4">
+            <div className="w-full h-full flex flex-col justify-center items-center">
+              <div className="flex flex-col h-full w-full border-2 rounded-lg border-green-light py-2 px-4">
+                <h1 className="flex font-bold text-xl">Visualização:</h1>
+                <div className="flex-1 flex justify-center items-center px-8">
+                  <SectorCard
+                    disabled={true}
+                    data={{ name, workstations, amountTrays }}
                   />
-                  <div className="chevron-buttons border-l border-l-gray-500 flex w-8 flex-col shrink h-8 items-center absolute top-[1px] right-[1px]">
-                    <ChevronUp className=" bg-transparent rounded-tr-[5px] size-5 text-gray-700 border-b border-b-gray-500 w-full" />
-                    <ChevronDown className="size-5 rounded-br-[5px] text-gray-700 w-full" />
-                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex-1 flex justify-center items-center pl-4">
-          <div className="w-full h-full max-h-96 flex flex-col justify-center items-center">
-            <div className="flex flex-col h-full w-full border-2 rounded-lg border-green-light py-2 px-4">
-              <h1 className="flex font-bold text-xl">Visualização:</h1>
-              <div className="flex-1 flex justify-center items-center px-8">
-                <SectorCard
-                  disabled={true}
-                  data={{ name, workstations, amountTrays }}
-                />
-              </div>
-            </div>
-            <div className="flex justify-center items-center h-52">
-              <Button
-                disabled={isDisabled || isLoading}
-                variant={"submit"}
-                onClick={handleSubmit}
-              >
-                {isLoading || isGenerating ? "Salvando..." : "Salvar Setor"}
-              </Button>
-            </div>
-          </div>
+        <div className="flex flex-1 justify-center items-center">
+          <Button
+            disabled={isDisabled || isLoading}
+            variant={"submit"}
+            onClick={handleSubmit}
+            size={"lg"}
+            className="text-lg"
+          >
+            {isLoading || isGenerating ? "Salvando..." : "Salvar Setor"}
+          </Button>
         </div>
       </div>
 

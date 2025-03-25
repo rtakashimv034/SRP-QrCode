@@ -1,5 +1,5 @@
 import { api } from "@/api/axios";
-import { CreationSector, UpdateSector } from "@/types/sectors";
+import { Sector } from "@/types/sectors";
 import { Workstation } from "@/types/workstation";
 import { ArrowLeft, CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -31,9 +31,7 @@ export function EditSector() {
 
   const fetchSectorData = async () => {
     try {
-      const { data, status } = await api.get<CreationSector>(
-        `/sectors/${name}`
-      );
+      const { data, status } = await api.get<Sector>(`/sectors/${name}`);
       if (status === 200) {
         setSectorName(data.name);
         const localStations: Workstation[] = data.workstations.map(
@@ -44,7 +42,7 @@ export function EditSector() {
         );
         setLocalWorkstations(localStations);
         setWorkstations(data.workstations);
-        setAmountTrays(data.amountTrays);
+        setAmountTrays(data.amountTrays || 0);
       }
     } catch (error) {
       console.error("Erro ao carregar setor:", error);
@@ -97,7 +95,7 @@ export function EditSector() {
         })
       );
 
-      const data: UpdateSector = {
+      const data: Sector = {
         name: sectorName,
         workstations: workstationsForApi,
       };
