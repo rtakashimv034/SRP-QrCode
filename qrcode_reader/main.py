@@ -1,13 +1,19 @@
-from flask import Flask, request, jsonify
 import cv2
 from pyzbar import pyzbar
 import threading
-from flask_cors import CORS
 import signal
 import sys
 from datetime import datetime
 import requests
-import json
+import pygame
+import time
+
+# Inicializar o mixer do pygame
+pygame.mixer.init()
+
+# Carregar o arquivo de áudio
+bandeja = pygame.mixer.Sound("beep-08b.wav")
+produto = pygame.mixer.Sound("beep-01a.wav")
 
 
 # Variável global para armazenar os QR codes lidos
@@ -15,16 +21,14 @@ qrcodes = []  # Lista única para todas as câmeras
 product_path = []  # Lista para armazenar os caminhos dos produtos
 defective_product_path = []  # Lista para armazenar os produtos defeituosos
 PUBLIC = 'srpapp.duckdns.org'
+IP = '187.99.230.13'
 lock = threading.Lock()  # Para evitar problemas de concorrência
+running = True # Sinalizador para controlar a execução das threads
+caps = {} # Variável para armazenar as capturas de vídeo
 
-# Sinalizador para controlar a execução das threads
-running = True
-
-app = Flask(__name__)
-CORS(app)
-
-# Variável para armazenar as capturas de vídeo
-caps = {}
+blocked_bdjs = {}  # Formato: { "BDJ123": timestamp_do_bloqueio }   
+blocked_lock = threading.Lock()  # Lock para acesso thread-safe
+BLOCK_TIME = 1.5  # Tempo de bloqueio em segundos (ajuste conforme necessário)
 
 
 def read_qr_code(camera_index):
@@ -91,12 +95,27 @@ def read_qr_code(camera_index):
 
                 elif not data.startswith('E') and not data.startswith('P'):
                     now = datetime.now()
-                    timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+                    timestamp = now.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+                    current_time = time.time()  # Timestamp em segundos
+
+                    with blocked_lock:
+                        # Verifica se a BDJ está bloqueada
+                        if data in blocked_bdjs:
+                            time_since_block = current_time - blocked_bdjs[data]
+                            if time_since_block < BLOCK_TIME:
+                                print(f"BDJ {data} bloqueada ({BLOCK_TIME - time_since_block:.1f}s restantes)...")
+                                continue  # Ignora se ainda está no período de bloqueio
+                            else:
+                                del blocked_bdjs[data]  # Remove se o tempo já passou
+
+
                     bdj_entry = {"data": data, "timestamp": timestamp}
                     if not any(bdj["data"] == data for bdj in camera_entry["BDJ"]):
                         camera_entry["BDJ"].append(bdj_entry)
                         print(
                             f"Câmera {camera_index}: BDJ detectado - {data} ({timestamp})")
+                        # Reproduzir o som de forma não bloqueante
+                        bandeja.play()
 
         if found_bdj and found_produto:
             with lock:
@@ -133,11 +152,6 @@ def read_qr_code(camera_index):
                         f"Timestamps das bandejas: {[caminho[2] for caminho in novos_caminhos]}")
                     print("Caminho do produto atualizado:", product_path)
 
-                # Remove o BDJ detectado de todas as câmeras
-                for entry in qrcodes:
-                    entry["BDJ"] = [bdj for bdj in entry["BDJ"]
-                                    if bdj["data"] != found_bdj]
-
             # Itera sobre cada caminho no product_path
             for path in product_path:
                 # Verifica se o caminho tem pelo menos 3 elementos (produto, estação e timestamp)
@@ -153,7 +167,7 @@ def read_qr_code(camera_index):
                     try:
                         # Envia a requisição POST para a API
                         response = requests.post(
-                            f'http://20.10.70.151:3333/api/v1/camera/path',
+                            f'http://{PUBLIC}:3333/api/v1/camera/path',
                             json=dicionario,  # Passa o dicionário diretamente
                             timeout=10
                         )
@@ -161,6 +175,17 @@ def read_qr_code(camera_index):
                         # Verifica a resposta da API
                         if response.status_code == 201:
                             print("Post criado com sucesso!")
+
+                            # Remove o BDJ detectado de todas as câmeras
+                            for entry in qrcodes:
+                                entry["BDJ"] = [bdj for bdj in entry["BDJ"]
+                                                if bdj["data"] != found_bdj]
+                                
+                            # (após POST bem-sucedido):
+                            with blocked_lock:
+                                blocked_bdjs[found_bdj] = time.time()  # Bloqueia a BDJ por BLOCK_TIME segundos
+                                print(f"BDJ {found_bdj} bloqueada por {BLOCK_TIME}s")
+
                             # Exibe a resposta JSON
                             print("Resposta do servidor:", response.json())
                         else:
@@ -176,8 +201,11 @@ def read_qr_code(camera_index):
                     except Exception as e:
                         # Captura outros erros inesperados
                         print("Ocorreu um erro inesperado:", str(e))
+            
+            if found_bdj in blocked_bdjs:
+                produto.play()
 
-            qq = []
+            product_path = []
             found_produto = None
 
         if found_bdj and found_defective_produto:
@@ -216,11 +244,6 @@ def read_qr_code(camera_index):
                     print("Caminho do produto atualizado:",
                           defective_product_path)
 
-                # Remove o BDJ detectado de todas as câmeras
-                for entry in qrcodes:
-                    entry["BDJ"] = [bdj for bdj in entry["BDJ"]
-                                    if bdj["data"] != found_bdj]
-
             for path in defective_product_path:
 
                 if len(path) >= 2:
@@ -230,16 +253,24 @@ def read_qr_code(camera_index):
                         "registeredAt": path[2],
                     }
 
-                # Converte o dicionário em JSON
-                data = json.dumps(dicionario, indent=4)
-                print(data)
                 try:
                     response = requests.post(
-                        f'http://20.10.70.151:3333/api/v1/camera/defective-path', json=data)  # caminho defeituoso
+                        f'http://{PUBLIC}:3333/api/v1/camera/defective-path', json=dicionario)  # caminho defeituoso
 
                     # Verificando a resposta
                     if response.status_code == 201:
                         print("Post criado com sucesso!")
+
+                        # Remove o BDJ detectado de todas as câmeras
+                        for entry in qrcodes:
+                            entry["BDJ"] = [bdj for bdj in entry["BDJ"]
+                                            if bdj["data"] != found_bdj]
+                            
+                        # (após POST bem-sucedido):
+                        with blocked_lock:
+                            blocked_bdjs[found_bdj] = time.time()  # Bloqueia a BDJ por BLOCK_TIME segundos
+                            print(f"BDJ {found_bdj} bloqueada por {BLOCK_TIME}s")
+
                         # Exibe a resposta JSON
                         print("Resposta do servidor:", response.json())
                     else:
@@ -248,6 +279,9 @@ def read_qr_code(camera_index):
                         print("Detalhes:", response.text)
                 except:
                     print("ocorreu um erro para passar os dados para o banco")
+            
+            if found_bdj in blocked_bdjs:
+                produto.play()
 
             defective_product_path = []
             found_defective_produto = None
@@ -261,14 +295,37 @@ def read_qr_code(camera_index):
     cap.release()
     cv2.destroyWindow(window_name)
 
+def detect_cameras():
+    camera_indices = []
+    i = 0
 
-# Verifica quais câmeras estão disponíveis
-camera_indices = []
-for i in range(2):  # Verifica apenas as câmeras 0 e 1
-    cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
-    if cap.isOpened():
+    while True:
+        # Tenta abrir a câmera com o índice atual
+        cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
+        
+        # Verifica se a câmera foi aberta com sucesso
+        if not cap.isOpened():
+            break  # Sai do loop se não houver mais câmeras
+        
+        # Tenta capturar um frame para verificar se a câmera está funcionando
+        ret, frame = cap.read()
+        if not ret:
+            # Se não conseguir capturar um frame, a câmera não está funcionando
+            cap.release()
+            break
+        
+        # Adiciona o índice da câmera à lista
         camera_indices.append(i)
+        
+        # Libera a câmera
         cap.release()
+        
+        # Incrementa o índice para verificar a próxima câmera
+        i += 1
+
+    return camera_indices
+
+camera_indices = detect_cameras()
 
 # Inicia as threads para cada câmera disponível
 threads = []
@@ -278,38 +335,8 @@ for index in camera_indices:
     thread.start()
     threads.append(thread)
 
-# # Rota para retornar os QR codes lidos
-# @app.route('/api/camera_path')
-# def get_qr_codes():
-#     global qrcodes, product_path
-
-#     print("Acessando /api/camera_path...")  # Debug
-#     print("Conteúdo atual de qrcodes:", qrcodes)  # Debug
-#     print("Caminho dos produtos:", product_path)  # Debug
-
-#     result = {
-#         "qrcodes": [],
-#         "product_path": product_path
-#     }
-
-#     for entry in qrcodes:
-#         if entry.get("ET") is not None:  # Garante que ET existe e não é None
-#             result["qrcodes"].append({
-#                 "camera": entry["camera"],
-#                 "ET": entry["ET"],
-#                 "BDJ": entry.get("BDJ", [])  # Evita erro se BDJ não existir
-#             })
-
-#     if result["qrcodes"] or result["product_path"]:
-#         print("Retornando dados encontrados:", result)  # Debug
-#         return jsonify(result)
-#     else:
-#         print("Nenhum dado encontrado.")  # Debug
-#         return jsonify({"error": "Nenhum dado encontrado"})
 
 # Função para encerrar o servidor corretamente
-
-
 def shutdown(signum, frame):
     global running
 
@@ -334,6 +361,6 @@ def shutdown(signum, frame):
 # Captura o sinal de interrupção (Ctrl+C)
 signal.signal(signal.SIGINT, shutdown)
 
-# Inicia o servidor Flask
-if __name__ == '__main__':
-    app.run(debug=False)
+# Mantém o programa em execução
+while running:
+    pass
