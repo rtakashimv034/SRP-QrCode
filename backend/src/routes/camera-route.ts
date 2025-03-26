@@ -33,40 +33,44 @@ export async function createPath(req: Request, res: Response) {
       return;
     }
 
-    const product = await prisma.products.upsert({
+    await prisma.products.upsert({
       where: { SN: prodSN },
       update: { createdAt: registeredAt },
       create: { SN: prodSN, createdAt: registeredAt },
     });
 
-    const data = {
-      prodSN: product.SN,
-      stationId,
-      registeredAt,
-      sectorName: station.sectorName,
-    };
-
-    // Cria o caminho
-    await prisma.paths.create({
-      data,
-    });
-
-    // Busca os dados atualizados do setor
-    const sector = await prisma.sectors.findUnique({
-      where: { name: station.sectorName },
+    const newPath = await prisma.paths.create({
+      data: {
+        prodSN,
+        stationId,
+        registeredAt,
+        sectorName: station.sectorName,
+      },
       include: {
-        paths: true,
-        defectivePaths: true,
+        product: {
+          include: {
+            paths: true,
+          },
+        },
+        Sectors: {
+          where: {
+            name: station.sectorName,
+          },
+          include: {
+            paths: true,
+            workstations: {
+              include: {
+                paths: true,
+              },
+            },
+          },
+        },
       },
     });
 
     // Emite o evento para atualizar o setor
-    if (sector) {
-      io.emit("update-sector", sector);
-    }
-
-    io.emit("create-product", product);
-    io.emit("create-path", data);
+    io.emit("update-sector", newPath.Sectors);
+    io.emit("create-path", newPath);
     res.status(201).json({ message: "Paths registered successfully" });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -108,37 +112,46 @@ export async function createDefectivePath(req: Request, res: Response) {
       return;
     }
 
-    const defectiveProduct = await prisma.defectiveProducts.upsert({
+    // crio ou atualizo produto defeituoso
+    await prisma.defectiveProducts.upsert({
       where: { id: defProdId },
       update: { createdAt: registeredAt },
       create: { id: defProdId, createdAt: registeredAt },
     });
 
-    const data = {
-      defProdId: defectiveProduct.id,
-      stationId,
-      registeredAt,
-      sectorName: station.sectorName,
-    };
-
     // Cria o caminho defeituoso
-    await prisma.defectivePaths.create({ data });
-
-    // Busca os dados atualizados do setor
-    const sector = await prisma.sectors.findUnique({
-      where: { name: station.sectorName },
+    const newDefectivePath = await prisma.defectivePaths.create({
+      data: {
+        defProdId,
+        stationId,
+        registeredAt,
+        sectorName: station.sectorName,
+      },
       include: {
-        paths: true,
-        defectivePaths: true,
+        defectiveProduct: {
+          include: {
+            defectivePaths: true,
+          },
+        },
+        Sectors: {
+          where: {
+            name: station.sectorName,
+          },
+          include: {
+            defectivePaths: true,
+            workstations: {
+              include: {
+                defectivePaths: true,
+              },
+            },
+          },
+        },
       },
     });
 
     // Emite o evento para atualizar o setor
-    if (sector) {
-      io.emit("update-sector", sector);
-    }
-    io.emit("create-defective-product", defectiveProduct);
-    io.emit("create-defective-path", data);
+    io.emit("update-sector", newDefectivePath.Sectors);
+    io.emit("create-defective-path", newDefectivePath);
     res
       .status(201)
       .json({ message: "Defective Paths registered successfully" });

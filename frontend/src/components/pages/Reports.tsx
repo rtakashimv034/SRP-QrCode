@@ -70,25 +70,24 @@ export function Reports() {
     });
     socket.on("create-defective-path", (newDefPath: DefectivePathsProps) => {
       setDefectivePaths((prev) => [...prev, newDefPath]);
-    });
-    socket.on(
-      "create-defective-product",
-      (newDefProd: DefectiveProductProps) => {
-        setDefectiveProducts((prev) => {
+      setDefectiveProducts((prev) => {
+        if (newDefPath.defectiveProduct) {
           const existingProductIndex = prev.findIndex(
-            (p) => p.id === newDefProd.id
+            (p) => p.id === newDefPath.defProdId
           );
           // Se o produto já existe, atualize-o
           if (existingProductIndex !== -1) {
             const updatedProducts = [...prev];
-            updatedProducts[existingProductIndex] = newDefProd;
+            updatedProducts[existingProductIndex] = newDefPath.defectiveProduct;
             return updatedProducts;
           } else {
-            return [...prev, newDefProd];
+            return [...prev, newDefPath.defectiveProduct];
           }
-        });
-      }
-    );
+        } else {
+          return [...prev];
+        }
+      });
+    });
     socket.on("create-sector", (sector: Sector) => {
       setSectors((prev) => [...prev, sector]);
     });
@@ -106,7 +105,6 @@ export function Reports() {
     return () => {
       socket.off("create-path");
       socket.off("create-defective-path");
-      socket.off("create-defective-product");
       socket.off("create-sector");
       socket.off("update-sector");
       socket.off("delete-sector");

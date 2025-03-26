@@ -1,5 +1,6 @@
 import { api } from "@/api/axios";
 import { socket } from "@/api/socket";
+import { PathsProps } from "@/types/paths";
 import { ProductProps } from "@/types/products";
 import { Box, ChevronDown, Search } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -115,22 +116,28 @@ export function Products() {
   }, []);
 
   useEffect(() => {
-    socket.on("create-product", (newProd: ProductProps) => {
+    socket.on("create-path", (path: PathsProps) => {
       setProducts((prev) => {
-        const existingProductIndex = prev.findIndex((p) => p.SN === newProd.SN);
-        // Se o produto já existe, atualize-o
-        if (existingProductIndex !== -1) {
-          const updatedProducts = [...prev];
-          updatedProducts[existingProductIndex] = newProd;
-          return updatedProducts;
+        if (path.product) {
+          const existingProductIndex = prev.findIndex(
+            (p) => p.SN === path.prodSN
+          );
+          // Se o produto já existe, atualize-o
+          if (existingProductIndex !== -1) {
+            const updatedProducts = [...prev];
+            updatedProducts[existingProductIndex] = path.product;
+            return updatedProducts;
+          } else {
+            return [...prev, path.product];
+          }
         } else {
-          return [...prev, newProd];
+          return [...prev];
         }
       });
     });
 
     return () => {
-      socket.off("create-product");
+      socket.off("create-path");
     };
   }, []);
 
