@@ -4,6 +4,7 @@ import { ForgotPassword } from "./components/ForgotPassword";
 import { CreateSector } from "./components/pages/CreateSector";
 import { Login } from "./components/pages/Login";
 import { NotFound } from "./components/pages/NotFound";
+import { Products } from "./components/pages/Products";
 import { Reports } from "./components/pages/Reports";
 import { Sectors } from "./components/pages/Sectors";
 import { Users } from "./components/pages/Users";
@@ -29,6 +30,14 @@ function App() {
           element={
             <ProtectedRoutes>
               <Reports />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <ProtectedRoutes>
+              <Products />
             </ProtectedRoutes>
           }
         />

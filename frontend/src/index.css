@@ -49,6 +49,18 @@
     scrollbar-color: gray #f1f1f1; /* Para Firefox */
   }
 
+  /* Ocultar setas no Chrome, Safari, Edge, Opera */
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Para Firefox */
+  .no-spinner {
+    -moz-appearance: textfield;
+  }
+
   /* Mantém os botões sempre visíveis */
   .custom-number-input {
     appearance: textfield; /* Remove estilo padrão */
