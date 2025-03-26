@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { AuthProvider } from "./auth/AuthProvider";
-import { ForgotPassword } from "./components/ForgotPassword";
 import { CreateSector } from "./components/pages/CreateSector";
 import { Login } from "./components/pages/Login";
 import { NotFound } from "./components/pages/NotFound";
@@ -62,14 +61,6 @@ function App() {
           element={
             <ProtectedRoutes previousPath="/reports">
               <Users />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/retrive-password"
-          element={
-            <ProtectedRoutes>
-              <ForgotPassword />
             </ProtectedRoutes>
           }
         />
