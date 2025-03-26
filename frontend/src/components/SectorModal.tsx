@@ -7,6 +7,7 @@ import { ChevronDown, ChevronUp, CirclePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { WorkstationCard } from "./cards/WorkstationCard";
+import { ErrorDialog } from "./ErrorDialog";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -45,6 +46,7 @@ export function SectorModal({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [format, setFormat] = useState<FormatTypesProps>("png");
   const { generateAndDownloadZip, isGenerating } = useQRCodeGenerator();
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
   const previousAmountTrays = useRef<number>(0);
 
@@ -128,6 +130,7 @@ export function SectorModal({
       }
     } catch (error) {
       console.error("Erro ao atualizar setor:", error);
+      setIsErrorModalOpen(true);
     } finally {
       setIsLoading(false);
     }
@@ -315,6 +318,12 @@ export function SectorModal({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ErrorDialog
+        action="atualizar setor"
+        isOpen={isErrorModalOpen}
+        setIsOpen={setIsErrorModalOpen}
+        additionalText="Certifique-se de que não exista nenhum outro setor com o mesmo nome."
+      />
     </>
   );
 }

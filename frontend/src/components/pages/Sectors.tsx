@@ -17,7 +17,9 @@ import { Factory, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SectorCard } from "../cards/SectorCard";
+import { ErrorDialog } from "../ErrorDialog";
 import { DefaultLayout } from "../layouts/DefaultLayout";
+import { Loading } from "../Loading";
 import { SectorModal } from "../SectorModal";
 
 type Props = SectorProps[];
@@ -37,8 +39,13 @@ export function Sectors() {
   const [sector, setSector] = useState<SectorProps | null>(null);
   const { user } = useAuth();
 
+  const [isPageLoading, setIsPageLoading] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [isErrorDeletion, setIsErrorDeletion] = useState(false);
+
   const fetchSectors = async () => {
     try {
+      setIsPageLoading(true);
       // Verifica o cache em memória primeiro
       if (inMemorySectorCache) {
         setSectors(inMemorySectorCache);
@@ -58,6 +65,9 @@ export function Sectors() {
       }
     } catch (error) {
       console.error("Erro ao buscar setores:", error);
+      setIsErrorModalOpen(true);
+    } finally {
+      setIsPageLoading(false);
     }
   };
 
@@ -73,6 +83,7 @@ export function Sectors() {
       }
     } catch (error) {
       console.log("Erro ao deletar setor: " + error);
+      setIsErrorDeletion(true);
     } finally {
       setIsLoading(false);
     }
@@ -112,74 +123,94 @@ export function Sectors() {
   }, []);
 
   return (
-    <DefaultLayout>
-      <header className="grid grid-cols-[50%_50%] items-center justify-between">
-        <div className="flex flex-row items-center gap-6">
-          <div className="flex flex-row items-center gap-3">
-            <Factory className="size-6 fill-black" />
-            <h1 className="text-lg font-bold whitespace-nowrap">
-              {user?.isManager ? "Painel de Setores" : "Linhas de Produção"}
-            </h1>
+    <>
+      <DefaultLayout>
+        <header className="grid grid-cols-[50%_50%] items-center justify-between">
+          <div className="flex flex-row items-center gap-6">
+            <div className="flex flex-row items-center gap-3">
+              <Factory className="size-6 fill-black" />
+              <h1 className="text-lg font-bold whitespace-nowrap">
+                {user?.isManager ? "Painel de Setores" : "Linhas de Produção"}
+              </h1>
+            </div>
+            <p className="text-sm text-gray-500 whitespace-nowrap">
+              {isPageLoading
+                ? "Carregando..."
+                : `${sectors.length} setores cadastrados.`}
+            </p>
           </div>
-          <p className="text-sm text-gray-500 whitespace-nowrap">
-            {sectors.length} setores cadastrados.
-          </p>
-        </div>
-        <div className="flex flex-row items-center gap-5">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-2 text-gray-400" size={20} />
-            <Input
-              type="text"
-              placeholder=" Buscar"
-              className="pl-10 rounded-2xl bg-gray-100"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          {user?.isManager && (
-            <Button
-              className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl"
-              onClick={() => navigator("create-sector")}
-            >
-              <Plus />
-              <span>Adicionar Setor</span>
-            </Button>
-          )}
-        </div>
-      </header>
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto no-scrollbar">
-          <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
-            {filteredSectors.map((data, index) => (
-              <SectorCard
-                key={index}
-                data={data}
-                onDelete={() => {
-                  setSector(data); // Define o setor a ser deletado
-                  setIsModalOpen(true); // Abre o modal
-                }}
-                onUpdate={() => {
-                  setSector(data);
-                  setIsEditModalOpen(true);
-                }}
-                onViewSector={() => {
-                  setSector(data);
-                  setIsViewModalOpen(true);
-                }}
+          <div className="flex flex-row items-center gap-5">
+            <div className="relative w-full">
+              <Search
+                className="absolute left-3 top-2 text-gray-400"
+                size={20}
               />
-            ))}
+              <Input
+                type="text"
+                placeholder=" Buscar"
+                className="pl-10 rounded-2xl bg-gray-100"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            {user?.isManager && (
+              <Button
+                className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl"
+                onClick={() => navigator("create-sector")}
+              >
+                <Plus />
+                <span>Adicionar Setor</span>
+              </Button>
+            )}
+          </div>
+        </header>
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto no-scrollbar">
+            <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
+              {isPageLoading ? (
+                <Loading amountCards={6} heightRem={28} />
+              ) : (
+                filteredSectors.map((data, index) => (
+                  <SectorCard
+                    key={index}
+                    data={data}
+                    onDelete={() => {
+                      setSector(data); // Define o setor a ser deletado
+                      setIsModalOpen(true); // Abre o modal
+                    }}
+                    onUpdate={() => {
+                      setSector(data);
+                      setIsEditModalOpen(true);
+                    }}
+                    onViewSector={() => {
+                      setSector(data);
+                      setIsViewModalOpen(true);
+                    }}
+                  />
+                ))
+              )}
+            </div>
           </div>
         </div>
-      </div>
-
+      </DefaultLayout>
       {/* Delete Confirmation Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog
+        open={isModalOpen}
+        onOpenChange={() => {
+          setIsModalOpen(false);
+          setIsErrorDeletion(false);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Deletar Setor</DialogTitle>
+            <DialogTitle>
+              {isErrorDeletion ? "Falha ao excluir setor" : "Excluir setor"}
+            </DialogTitle>
             <DialogDescription>
-              Você tem certeza que deseja deletar o setor "{sector?.name}"?
-              (Suas respectivas estações também serão excluídas).
+              {isErrorDeletion
+                ? "Ocorreu um erro ao tentar excluir o setor (verifique a sua conexão ou tente novamente mais tarde)."
+                : `Você tem certeza que deseja excluir o setor "${sector?.name}"?
+              (Suas respectivas estações também serão excluídas).`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -188,7 +219,11 @@ export function Sectors() {
               onClick={handleDeleteSector}
               disabled={isLoading}
             >
-              {isLoading ? "Deletando..." : "Sim"}
+              {isErrorDeletion
+                ? "Tentar novamente"
+                : isLoading
+                ? "Deletando..."
+                : "Sim"}
             </Button>
             <Button variant={"default"} onClick={() => setIsModalOpen(false)}>
               Cancelar
@@ -214,6 +249,12 @@ export function Sectors() {
         onOpenChange={setIsEditModalOpen}
         onSuccess={fetchSectors}
       />
-    </DefaultLayout>
+
+      <ErrorDialog
+        isOpen={isErrorModalOpen}
+        setIsOpen={setIsErrorModalOpen}
+        action="carrregar setores"
+      />
+    </>
   );
 }
