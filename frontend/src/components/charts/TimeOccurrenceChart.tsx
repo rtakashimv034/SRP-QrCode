@@ -1,10 +1,9 @@
-import { DefectivePathsProps } from "@/types/defectivePaths";
-import { PathsProps } from "@/types/paths";
+import { DefectivePathsProps, PathsProps } from "@/types";
+import { months } from "@/utils/months";
+import { Schedule } from "@/utils/schedule";
 import { ApexOptions } from "apexcharts";
 import { useEffect, useRef, useState } from "react";
 import Chart from "react-apexcharts";
-import { Schedule } from "../cards/OccurrenceCard";
-
 type Props = {
   paths: PathsProps[] | [];
   defectivePaths: DefectivePathsProps[] | [];
@@ -216,20 +215,6 @@ export function TimeOccurrenceChart({
   const yearNames = allYears.map((year) => year.toString());
 
   // Nomes dos meses para o eixo X (modo mensal)
-  const monthNames = [
-    "Jan",
-    "Fev",
-    "Mar",
-    "Abr",
-    "Mai",
-    "Jun",
-    "Jul",
-    "Ago",
-    "Set",
-    "Out",
-    "Nov",
-    "Dez",
-  ];
 
   // Nomes dos dias para o eixo X (modo diário)
   const dayNames = allDays.map((day) => day.toString());
@@ -289,7 +274,7 @@ export function TimeOccurrenceChart({
           ? yearNames
           : schedule === "Diário"
           ? dayNames
-          : monthNames, // Usa os nomes dos anos, dias ou meses como categorias
+          : months, // Usa os nomes dos anos, dias ou meses como categorias
       labels: {
         formatter: (value) => value, // Exibe os nomes dos anos, dias ou meses diretamente
       },
@@ -327,7 +312,7 @@ export function TimeOccurrenceChart({
           `;
         } else if (schedule === "Diário") {
           const day = dayNames[dataPointIndex]; // Dia selecionado
-          const month = monthNames[selectedMonth - 1]; // Mês selecionado
+          const month = months[selectedMonth - 1]; // Mês selecionado
           const year = selectedYear; // Ano selecionado
           return /*html*/ `
             <div
@@ -339,7 +324,7 @@ export function TimeOccurrenceChart({
             </div>
           `;
         } else {
-          const month = monthNames[dataPointIndex]; // Nome do mês
+          const month = months[dataPointIndex]; // Nome do mês
           const year = selectedYear; // Ano selecionado
           return /*html*/ `
             <div
@@ -411,7 +396,7 @@ export function TimeOccurrenceChart({
             {/* Opções de meses de 1 a 12 */}
             {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
               <option key={month} value={month}>
-                {monthNames[month - 1]}
+                {months[month - 1]}
               </option>
             ))}
           </select>

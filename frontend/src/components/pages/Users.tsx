@@ -3,12 +3,14 @@ import { socket } from "@/api/socket";
 import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
 import { useOnlineUsers } from "@/hooks/useOnlineUsers";
-import { User } from "@/types/user";
+import { UserProps } from "@/types";
 import { Plus, Search, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserCard } from "../cards/UserCard";
+import { ErrorDialog } from "../ErrorDialog";
 import { DefaultLayout } from "../layouts/DefaultLayout";
+import { Loading } from "../Loading";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -21,7 +23,7 @@ import {
 import { Input } from "../ui/input";
 import { UserModal } from "../UserModal";
 
-type Props = User[];
+type Props = UserProps[];
 
 // Cache em memória para dados sensíveis
 let inMemoryUserCache: Props | null = null;
@@ -29,7 +31,7 @@ let inMemoryUserCache: Props | null = null;
 export function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState<Props>([]);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserProps | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { getCache, setCache, clearCache } = useCache<Props>({
     key: "users-cache",
@@ -41,8 +43,13 @@ export function Users() {
   const navigate = useNavigate();
   const onlineUsers = useOnlineUsers();
 
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [isErrorDeletion, setIsErrorDeletion] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(false);
+
   const fetchUsers = async () => {
     try {
+      setIsPageLoading(true);
       // Verifica o cache em memória primeiro
       if (inMemoryUserCache) {
         setUsers(inMemoryUserCache);
@@ -61,6 +68,9 @@ export function Users() {
       }
     } catch (error) {
       console.error("Erro ao buscar usuários:", error);
+      setIsErrorModalOpen(true);
+    } finally {
+      setIsPageLoading(false);
     }
   };
 
@@ -79,6 +89,7 @@ export function Users() {
       }
     } catch (error) {
       console.log(`Erro ao deletar usuário: ${error}`);
+      setIsErrorDeletion(true);
     } finally {
       setIsLoading(false);
     }
@@ -89,17 +100,17 @@ export function Users() {
   );
 
   useEffect(() => {
-    socket.on("create-user", (user: User) => {
+    socket.on("create-user", (user: UserProps) => {
       setUsers((prevUsers) => [...prevUsers, user]);
     });
-    socket.on("update-user", (updatedUser: User) => {
+    socket.on("update-user", (updatedUser: UserProps) => {
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === updatedUser.id ? updatedUser : user
         )
       );
     });
-    socket.on("delete-user", (deletedUser: User) => {
+    socket.on("delete-user", (deletedUser: UserProps) => {
       setUsers((prevUsers) =>
         prevUsers.filter((user) => user.id !== deletedUser.id)
       );
@@ -117,65 +128,76 @@ export function Users() {
   }, []);
 
   return (
-    <DefaultLayout>
-      <header className="grid grid-cols-[50%_50%] items-center justify-between">
-        <div className="flex flex-row items-center gap-6">
-          <div className="flex flex-row items-center gap-3">
-            <UsersRound className="size-6 fill-black" />
-            <h1 className="text-lg font-bold whitespace-nowrap">
-              Painel de Usuários
-            </h1>
+    <>
+      <DefaultLayout>
+        <header className="grid grid-cols-[50%_50%] items-center justify-between">
+          <div className="flex flex-row items-center gap-6">
+            <div className="flex flex-row items-center gap-3">
+              <UsersRound className="size-6 fill-black" />
+              <h1 className="text-lg font-bold whitespace-nowrap">
+                Painel de Usuários
+              </h1>
+            </div>
+            <p className="text-sm text-gray-500 whitespace-nowrap">
+              {isPageLoading
+                ? "Carregando..."
+                : `${users.length} usuários cadastrados.`}
+            </p>
           </div>
-          <p className="text-sm text-gray-500 whitespace-nowrap">
-            {users.length} usuários cadastrados.
-          </p>
-        </div>
-        <div className="flex flex-row items-center gap-5">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-2 text-gray-400" size={20} />
-            <Input
-              type="text"
-              placeholder=" Buscar"
-              className="pl-10 rounded-2xl bg-gray-100"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          {currentUser?.isManager && (
-            <Button
-              className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl"
-              onClick={() => {
-                setUser(null);
-                setIsUserModalOpen(true);
-              }}
-            >
-              <Plus />
-              <span>Adicionar Usuário</span>
-            </Button>
-          )}
-        </div>
-      </header>
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto no-scrollbar">
-          <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
-            {filteredUsers.map((data) => (
-              <UserCard
-                user={data}
-                key={data.id}
-                isOnline={onlineUsers.includes(data.id!)}
-                onDelete={() => {
-                  setUser(data); // Define o usuario a ser deletado
-                  setIsModalOpen(true); // Abre o modal
-                }}
-                onUpdate={() => {
-                  setUser(data);
+          <div className="flex flex-row items-center gap-5">
+            <div className="relative w-full">
+              <Search
+                className="absolute left-3 top-2 text-gray-400"
+                size={20}
+              />
+              <Input
+                type="text"
+                placeholder=" Buscar"
+                className="pl-10 rounded-2xl bg-gray-100"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            {currentUser?.isManager && (
+              <Button
+                className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-2xl"
+                onClick={() => {
+                  setUser(null);
                   setIsUserModalOpen(true);
                 }}
-              />
-            ))}
+              >
+                <Plus />
+                <span>Adicionar Usuário</span>
+              </Button>
+            )}
+          </div>
+        </header>
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto no-scrollbar">
+            <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
+              {isPageLoading ? (
+                <Loading amountCards={6} heightRem={28} />
+              ) : (
+                filteredUsers.map((data) => (
+                  <UserCard
+                    user={data}
+                    key={data.id}
+                    isOnline={onlineUsers.includes(data.id!)}
+                    onDelete={() => {
+                      setUser(data); // Define o usuario a ser deletado
+                      setIsModalOpen(true); // Abre o modal
+                    }}
+                    onUpdate={() => {
+                      setUser(data);
+                      setIsUserModalOpen(true);
+                    }}
+                  />
+                ))
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </DefaultLayout>
       {/* User Forms Modal */}
       <UserModal
         user={user}
@@ -183,13 +205,25 @@ export function Users() {
         fetchUsers={fetchUsers}
       />
       {/* Delete Confirmation Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog
+        open={isModalOpen}
+        onOpenChange={() => {
+          setIsModalOpen(false);
+          setIsErrorDeletion(false);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Excluir Usuário</DialogTitle>
+            <DialogTitle>
+              {isErrorDeletion
+                ? "Falha ao tentar excluir o usário"
+                : "Excluir Usuário"}
+            </DialogTitle>
             <DialogDescription>
-              Você tem certeza que deseja deletar excluir o usuário "
-              {user?.name}" do sistema?
+              {isErrorDeletion
+                ? "Não foi possível excluir o usuário (verifique a sua conexão ou tente mais tarde)."
+                : `Você tem certeza que deseja deletar excluir o usuário
+              ${user?.name}" do sistema?`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -198,7 +232,11 @@ export function Users() {
               onClick={handleDeleteUser}
               disabled={isLoading}
             >
-              {isLoading ? "Deletando..." : "Sim"}
+              {isLoading
+                ? "Deletando..."
+                : isErrorDeletion
+                ? "Tentar novamente"
+                : "Sim"}
             </Button>
             <Button variant={"default"} onClick={() => setIsModalOpen(false)}>
               Cancelar
@@ -206,6 +244,11 @@ export function Users() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </DefaultLayout>
+      <ErrorDialog
+        isOpen={isErrorModalOpen}
+        setIsOpen={setIsErrorModalOpen}
+        action="carregar usuários"
+      />
+    </>
   );
 }

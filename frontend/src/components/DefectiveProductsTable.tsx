@@ -1,4 +1,4 @@
-import { DefectiveProductProps } from "@/types/defectiveProducts";
+import { DefectiveProductProps } from "@/types";
 import { FileChartPie } from "lucide-react";
 import { Button } from "./ui/button";
 

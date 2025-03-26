@@ -1,12 +1,12 @@
 import { baseURL } from "@/api";
 import defaultAvatar from "@/assets/images/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
-import { User } from "@/types/user";
+import { UserProps } from "@/types";
 import { Edit2Icon, TrashIcon } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 
 type Props = {
-  user: User;
+  user: UserProps;
   onUpdate?: () => void;
   onDelete?: () => void;
   isOnline: boolean;

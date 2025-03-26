@@ -3,17 +3,19 @@ import { socket } from "@/api/socket";
 import HistoryIcon from "@/assets/icons/Icon awesome-history.svg";
 import ClockIcon from "@/assets/icons/Icon material-access-time.svg";
 import ReportIcon from "@/assets/icons/Icon_simple_everplaces.svg";
-import { DefectivePathsProps } from "@/types/defectivePaths";
-import { DefectiveProductProps } from "@/types/defectiveProducts";
-import { PathsProps } from "@/types/paths";
-import { Sector } from "@/types/sectors";
+import {
+  DefectivePathsProps,
+  DefectiveProductProps,
+  PathsProps,
+  SectorProps,
+} from "@/types";
 import { useEffect, useState } from "react";
 import { OccurrenceCard } from "../cards/OccurrenceCard";
 import { DefectiveProductsTable } from "../DefectiveProductsTable";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 
 export function Reports() {
-  const [sectors, setSectors] = useState<Sector[]>([]);
+  const [sectors, setSectors] = useState<SectorProps[]>([]);
   const [paths, setPaths] = useState<PathsProps[]>([]);
   const [defectiveProducts, setDefectiveProducts] = useState<
     DefectiveProductProps[]
@@ -24,7 +26,7 @@ export function Reports() {
 
   const fetchSectors = async () => {
     try {
-      const { data, status } = await api.get<Sector[]>("/sectors");
+      const { data, status } = await api.get<SectorProps[]>("/sectors");
       if (status === 200) {
         setSectors(data);
       }
@@ -70,43 +72,41 @@ export function Reports() {
     });
     socket.on("create-defective-path", (newDefPath: DefectivePathsProps) => {
       setDefectivePaths((prev) => [...prev, newDefPath]);
-    });
-    socket.on(
-      "create-defective-product",
-      (newDefProd: DefectiveProductProps) => {
-        setDefectiveProducts((prev) => {
+      setDefectiveProducts((prev) => {
+        if (newDefPath.defectiveProduct) {
           const existingProductIndex = prev.findIndex(
-            (p) => p.id === newDefProd.id
+            (p) => p.id === newDefPath.defProdId
           );
           // Se o produto já existe, atualize-o
           if (existingProductIndex !== -1) {
             const updatedProducts = [...prev];
-            updatedProducts[existingProductIndex] = newDefProd;
+            updatedProducts[existingProductIndex] = newDefPath.defectiveProduct;
             return updatedProducts;
           } else {
-            return [...prev, newDefProd];
+            return [...prev, newDefPath.defectiveProduct];
           }
-        });
-      }
-    );
-    socket.on("create-sector", (sector: Sector) => {
+        } else {
+          return [...prev];
+        }
+      });
+    });
+    socket.on("create-sector", (sector: SectorProps) => {
       setSectors((prev) => [...prev, sector]);
     });
-    socket.on("update-sector", (updatedSector: Sector) => {
+    socket.on("update-sector", (updatedSector: SectorProps) => {
       setSectors((prev) =>
         prev.map((sector) =>
           sector.name === updatedSector.name ? updatedSector : sector
         )
       );
     });
-    socket.on("delete-sector", (sector: Sector) => {
+    socket.on("delete-sector", (sector: SectorProps) => {
       setSectors((prev) => prev.filter((s) => s.name !== sector.name));
     });
     // Limpa os listeners ao desmontar o componente
     return () => {
       socket.off("create-path");
       socket.off("create-defective-path");
-      socket.off("create-defective-product");
       socket.off("create-sector");
       socket.off("update-sector");
       socket.off("delete-sector");

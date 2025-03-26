@@ -1,10 +1,10 @@
-import { Sector } from "@/types/sectors";
+import { SectorProps } from "@/types";
 import { ApexOptions } from "apexcharts";
 import { useEffect, useRef } from "react"; // Importe useRef e useEffect
 import Chart from "react-apexcharts";
 
 type Props = {
-  sectors: Sector[];
+  sectors: SectorProps[];
 };
 
 export function SectorOccurrenceChart({ sectors }: Props) {

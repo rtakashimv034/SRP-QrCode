@@ -1,10 +1,10 @@
 import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
-import { Workstation } from "@/types/workstation";
+import { WorkstationProps } from "@/types";
 import { Edit2Icon, QrCodeIcon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 type Props = {
-  station: Workstation;
+  station: WorkstationProps;
   isLatest: boolean;
   readOnly?: boolean;
   onDelete: (id: string) => void;

@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { Sector } from "@/types/sectors";
+import { SectorProps } from "@/types";
 import { Edit2Icon, EyeIcon, FileChartPie, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Input } from "../ui/input";
 
 type Props = {
-  data: Sector;
+  data: SectorProps;
   disabled?: boolean;
   onDelete?: () => void;
   onViewSector?: () => void;
@@ -47,11 +47,10 @@ export function SectorCard({
           new Date(b.registeredAt).getTime()
       );
     }
-
     let reportContent = `[+] Relatório ${
       type === "normal" ? "ordinal" : "de ocorrências"
     } do setor "${data.name}"\n\n`;
-    reportContent += `  - Data de emissão: ${new Date().toISOString()}\n`;
+    reportContent += `  - Data de emissão: ${new Date().toLocaleString()}\n`;
     if (genericPaths && genericPaths.length > 0) {
       reportContent += `  - Histórico de ocorrências:\n`;
       genericPaths.forEach((path, index) => {
@@ -144,7 +143,7 @@ export function SectorCard({
                 Histórico do setor {data.name}
               </h1>
             </div>
-            <div className="flex-1 flex flex-col justify-center gap-1 py-5">
+            <div className="flex-1 flex flex-col justify-center gap-1 pb-3 pt-2">
               <h1 className="font-semibold text-lg">Tipo de histórico</h1>
               <div className="child:child:text-sm flex flex-col gap-1">
                 <div className="flex items-center gap-1.5">
