@@ -1,11 +1,10 @@
 import { DefectivePathsProps } from "@/types/defectivePaths";
 import { PathsProps } from "@/types/paths";
 import { Sector } from "@/types/sectors";
-import { ChevronDown, FileChartPie } from "lucide-react"; // Importe o ícone de seta
+import { ChevronDown } from "lucide-react"; // Importe o ícone de seta
 import { useState } from "react";
 import { SectorOccurrenceChart } from "../charts/SectorOccurrenceChart";
 import { TimeOccurrenceChart } from "../charts/TimeOccurrenceChart";
-import { Button } from "../ui/button";
 
 type ChartData = {
   paths: PathsProps[];
@@ -50,10 +49,10 @@ export function OccurrenceCard({ icon, type, data }: Props) {
               </div>
             </div>
           )}
-          <Button className="bg-transparent border border-gray-400 text-gray-700 rounded-2xl h-7 text-xs hover:bg-green-300">
+          {/* <Button className="bg-transparent border border-gray-400 text-gray-700 rounded-2xl h-7 text-xs hover:bg-green-300">
             <FileChartPie className="text-gray-700 mr-1" size={15} />
             Gerar Relatório
-          </Button>
+          </Button> */}
         </div>
       </header>
       {/* Gráfico */}
