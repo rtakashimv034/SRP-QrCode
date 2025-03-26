@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Factory, LogOut, StickyNote, UsersRound } from "lucide-react";
+import { Box, Factory, LogOut, StickyNote, UsersRound } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 
@@ -32,6 +32,23 @@ export function Menu() {
             }`}
           />
           <span className="font-normal">Relatórios</span>
+        </Button>
+        <Button
+          variant={pathname.includes("products") ? "submit" : "outline"}
+          className={`justify-start px-2 child:font-normal child:transition-all ${
+            pathname.includes("products") &&
+            "first:child:hover:text-yellow-light"
+          }`}
+          onClick={() => navigate("/products")}
+        >
+          <Box
+            className={`size-7 ${
+              pathname.includes("products")
+                ? "fill-white text-yellow-dark"
+                : "text-white fill-black "
+            }`}
+          />
+          <span className="font-normal">Produtos</span>
         </Button>
         <Button
           variant={pathname.includes("/sectors") ? "submit" : "outline"}

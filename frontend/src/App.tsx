@@ -1,9 +1,9 @@
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { AuthProvider } from "./auth/AuthProvider";
-import { ForgotPassword } from "./components/ForgotPassword";
 import { CreateSector } from "./components/pages/CreateSector";
 import { Login } from "./components/pages/Login";
 import { NotFound } from "./components/pages/NotFound";
+import { Products } from "./components/pages/Products";
 import { Reports } from "./components/pages/Reports";
 import { Sectors } from "./components/pages/Sectors";
 import { Users } from "./components/pages/Users";
@@ -33,6 +33,14 @@ function App() {
           }
         />
         <Route
+          path="/products"
+          element={
+            <ProtectedRoutes>
+              <Products />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
           path="/sectors"
           element={
             <ProtectedRoutes>
@@ -53,14 +61,6 @@ function App() {
           element={
             <ProtectedRoutes previousPath="/reports">
               <Users />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/retrive-password"
-          element={
-            <ProtectedRoutes>
-              <ForgotPassword />
             </ProtectedRoutes>
           }
         />

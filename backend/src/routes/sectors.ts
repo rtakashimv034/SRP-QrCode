@@ -128,27 +128,78 @@ export async function updateSector(req: Request, res: Response) {
       }
     }
 
-    const data = {
-      name,
-      amountTrays,
-      workstations: {
-        deleteMany: {}, // Delete all workstations in this sector
-        create: workstations,
-      },
-    };
-
-    // Delete all existing workstations and create new ones
-    await prisma.sectors.update({
+    // Get current workstations to compare
+    const currentSector = await prisma.sectors.findUnique({
       where: { name: sectorName },
-      data,
-      include: {
-        workstations: true,
-        paths: true,
-        defectivePaths: true,
-      },
+      include: { workstations: true },
     });
 
-    io.emit("update-sector", data);
+    if (!currentSector) {
+      res.status(404).json({ errors: "Sector not found" });
+      return;
+    }
+
+    // Separate operations for better clarity
+    const operations = [];
+
+    // 1. Identify workstations to delete (those that exist in DB but not in the update)
+    const workstationsToDelete = currentSector.workstations.filter(
+      (currentWs) => !workstations.some((ws) => ws.name === currentWs.name)
+    );
+
+    if (workstationsToDelete.length > 0) {
+      operations.push(
+        prisma.workstations.deleteMany({
+          where: {
+            id: { in: workstationsToDelete.map((ws) => ws.id) },
+            sectorName: sectorName,
+          },
+        })
+      );
+    }
+
+    // 2. Process each workstation from the request
+    for (const ws of workstations) {
+      const existingWs = currentSector.workstations.find(
+        (currentWs) => currentWs.name === ws.name
+      );
+
+      if (existingWs) {
+        // Update existing workstation
+        operations.push(
+          prisma.workstations.update({
+            where: { id: existingWs.id },
+            data: { name: ws.name },
+          })
+        );
+      } else {
+        // Create new workstation
+        operations.push(
+          prisma.workstations.create({
+            data: {
+              name: ws.name,
+              sectorName: name, // Use the new sector name if it was changed
+            },
+          })
+        );
+      }
+    }
+
+    // 3. Update the sector itself
+    operations.push(
+      prisma.sectors.update({
+        where: { name: sectorName },
+        data: {
+          name,
+          amountTrays,
+        },
+      })
+    );
+
+    // Execute all operations in a transaction
+    await prisma.$transaction(operations);
+
+    io.emit("update-sector", { name, amountTrays, workstations });
     res.status(200).json({ message: "Sector updated successfully" });
   } catch (error) {
     if (error instanceof z.ZodError) {

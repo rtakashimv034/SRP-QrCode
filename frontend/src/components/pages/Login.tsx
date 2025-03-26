@@ -73,11 +73,11 @@ export function Login() {
                 </p>
               )}
             </div>
-            <div className="flex items-center w-full justify-end">
+            {/* <div className="flex items-center w-full justify-end">
               <span className="text-white opacity-70 underline text-xs cursor-pointer hover:opacity-90">
                 Esqueceu a senha?
               </span>
-            </div>
+            </div> */}
             <Button
               type="submit"
               variant={"submit"}
