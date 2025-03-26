@@ -3,7 +3,7 @@ import { socket } from "@/api/socket";
 import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
 import { useOnlineUsers } from "@/hooks/useOnlineUsers";
-import { User } from "@/types/user";
+import { UserProps } from "@/types";
 import { Plus, Search, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ import {
 import { Input } from "../ui/input";
 import { UserModal } from "../UserModal";
 
-type Props = User[];
+type Props = UserProps[];
 
 // Cache em memória para dados sensíveis
 let inMemoryUserCache: Props | null = null;
@@ -29,7 +29,7 @@ let inMemoryUserCache: Props | null = null;
 export function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState<Props>([]);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserProps | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { getCache, setCache, clearCache } = useCache<Props>({
     key: "users-cache",
@@ -89,17 +89,17 @@ export function Users() {
   );
 
   useEffect(() => {
-    socket.on("create-user", (user: User) => {
+    socket.on("create-user", (user: UserProps) => {
       setUsers((prevUsers) => [...prevUsers, user]);
     });
-    socket.on("update-user", (updatedUser: User) => {
+    socket.on("update-user", (updatedUser: UserProps) => {
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === updatedUser.id ? updatedUser : user
         )
       );
     });
-    socket.on("delete-user", (deletedUser: User) => {
+    socket.on("delete-user", (deletedUser: UserProps) => {
       setUsers((prevUsers) =>
         prevUsers.filter((user) => user.id !== deletedUser.id)
       );

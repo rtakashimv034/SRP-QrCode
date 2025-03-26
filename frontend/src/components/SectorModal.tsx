@@ -2,8 +2,7 @@ import { api } from "@/api/axios";
 import useQRCodeGenerator, {
   FormatTypesProps,
 } from "@/hooks/useQRCodeGenerator";
-import { Sector } from "@/types/sectors";
-import { Workstation } from "@/types/workstation";
+import { SectorProps, WorkstationProps } from "@/types";
 import { ChevronDown, ChevronUp, CirclePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -22,7 +21,7 @@ import { Label } from "./ui/label";
 
 interface SectorModalProps {
   mode: "view" | "edit";
-  sector: Sector | null;
+  sector: SectorProps | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
@@ -38,7 +37,9 @@ export function SectorModal({
   onDelete,
 }: SectorModalProps) {
   const [sectorName, setSectorName] = useState(sector?.name || "");
-  const [localWorkstations, setLocalWorkstations] = useState<Workstation[]>([]);
+  const [localWorkstations, setLocalWorkstations] = useState<
+    WorkstationProps[]
+  >([]);
   const [amountTrays, setAmountTrays] = useState(sector?.amountTrays || 0);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -67,7 +68,7 @@ export function SectorModal({
     (invalidSectorName || localWorkstations.length < 3 || invalidWsName);
 
   const handleAddingStation = () => {
-    const newStation: Workstation = {
+    const newStation: WorkstationProps = {
       name: "",
       localId: uuidv4(),
     };
@@ -100,20 +101,17 @@ export function SectorModal({
 
   const handleSubmit = async () => {
     if (!sector) return;
-    console.log("amounttrays", amountTrays);
-    console.log("previous amount trays", previousAmountTrays.current);
-    // console.log("diff", amountTrays - previousAmountTrays.current);
     try {
       setIsLoading(true);
 
-      const workstationsForApi: Workstation[] = localWorkstations.map(
+      const workstationsForApi: WorkstationProps[] = localWorkstations.map(
         (station) => ({
           sectorName: sectorName,
           name: station.name,
         })
       );
 
-      const data: Sector = {
+      const data: SectorProps = {
         name: sectorName,
         workstations: workstationsForApi,
         amountTrays,
@@ -160,7 +158,7 @@ export function SectorModal({
               </h1>
             </div>
             <div className="flex-1 flex flex-row p-3 gap-4 overflow-y-auto">
-              {/* Sector Section */}
+              {/* SectorProps Section */}
               <div className="basis-3/4 flex flex-col justify-evenly gap-6">
                 <div className="flex flex-col gap-1">
                   <Label className="font-normal text-base">Nome do Setor</Label>

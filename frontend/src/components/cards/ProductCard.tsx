@@ -1,9 +1,9 @@
-import { ProductProps } from "@/types/products";
+import { ProductProps } from "@/types";
+import { months } from "@/utils/months";
+import { Schedule } from "@/utils/schedule";
 import { FileChartPie } from "lucide-react";
-import { monthNames } from "../pages/Products";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { Schedule } from "./OccurrenceCard";
 
 type Props = {
   product: ProductProps;
@@ -63,9 +63,7 @@ export function ProductCard({ product, schedule }: Props) {
             {schedule === "Diário"
               ? `Registrado no dia ${day} às ${hour}`
               : schedule === "Mensal"
-              ? `Registrado no dia ${day} de ${
-                  monthNames[month - 1]
-                } às ${hour}`
+              ? `Registrado no dia ${day} de ${months[month - 1]} às ${hour}`
               : `Registrado em ${day}/${month}/${year} às ${hour}`}
           </span>
         </div>

@@ -1,16 +1,16 @@
 import { api } from "@/api/axios";
 import { socket } from "@/api/socket";
-import { AuthSplashScreen } from "@/components/AuthSplashScreen";
-import { SplashScreen } from "@/components/SplashScreen";
+import { SplashScreen } from "@/components/screens/SplashScreen";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-import { User } from "@/types/user";
+import { PresentationSplashScreen } from "@/components/screens/PresentationSplashScreen";
+import { UserProps } from "@/types";
 import { createContext } from "react";
 
 type AuthContextData = {
-  user: User | null;
+  user: UserProps | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => void;
 };
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-      const userJWT: User = jwtDecode(token);
+      const userJWT: UserProps = jwtDecode(token);
       setUser(userJWT);
 
       socket.emit("user-online", userJWT.id);
@@ -60,9 +60,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const fetchUserData = async ({ id }: User) => {
+    const fetchUserData = async ({ id }: UserProps) => {
       try {
-        const { data, status } = await api.get<User>(`/users/${id}`);
+        const { data, status } = await api.get<UserProps>(`/users/${id}`);
         if (status === 200) {
           setUser(data);
           socket.emit("user-online", id);
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       try {
         api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        const userJWT: User = jwtDecode(token);
+        const userJWT: UserProps = jwtDecode(token);
         await fetchUserData(userJWT);
       } catch (error) {
         console.error("Error initializing auth:", error);
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   if (loading) {
     const loginSplash =
       sessionStorage.getItem("authToken") && !(pathname === "/login");
-    return loginSplash ? <SplashScreen /> : <AuthSplashScreen />;
+    return loginSplash ? <SplashScreen /> : <PresentationSplashScreen />;
   }
 
   return (

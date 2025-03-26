@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
-import { Sector } from "@/types/sectors";
+import { SectorProps } from "@/types";
 import { Factory, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +20,7 @@ import { SectorCard } from "../cards/SectorCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { SectorModal } from "../SectorModal";
 
-type Props = Sector[];
+type Props = SectorProps[];
 
 // Cache em memória para dados sensíveis
 let inMemorySectorCache: Props | null = null;
@@ -34,7 +34,7 @@ export function Sectors() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [sector, setSector] = useState<Sector | null>(null);
+  const [sector, setSector] = useState<SectorProps | null>(null);
   const { user } = useAuth();
 
   const fetchSectors = async () => {
@@ -83,17 +83,17 @@ export function Sectors() {
   );
 
   useEffect(() => {
-    socket.on("create-sector", (sector: Sector) => {
+    socket.on("create-sector", (sector: SectorProps) => {
       setSectors((prev) => [...prev, sector]);
     });
-    socket.on("update-sector", (updatedSector: Sector) => {
+    socket.on("update-sector", (updatedSector: SectorProps) => {
       setSectors((prev) =>
         prev.map((sector) =>
           sector.name === updatedSector.name ? updatedSector : sector
         )
       );
     });
-    socket.on("delete-sector", (sector: Sector) => {
+    socket.on("delete-sector", (sector: SectorProps) => {
       setSectors((prev) => prev.filter((s) => s.name !== sector.name));
     });
     // Limpa os listeners ao desmontar o componente
@@ -118,7 +118,7 @@ export function Sectors() {
           <div className="flex flex-row items-center gap-3">
             <Factory className="size-6 fill-black" />
             <h1 className="text-lg font-bold whitespace-nowrap">
-              Painel de Setores
+              {user?.isManager ? "Painel de Setores" : "Linhas de Produção"}
             </h1>
           </div>
           <p className="text-sm text-gray-500 whitespace-nowrap">

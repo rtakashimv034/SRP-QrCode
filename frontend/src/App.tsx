@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { AuthProvider } from "./auth/AuthProvider";
+import { ProtectedRoutes } from "./auth/ProtectedRoutes";
 import { CreateSector } from "./components/pages/CreateSector";
 import { Login } from "./components/pages/Login";
 import { NotFound } from "./components/pages/NotFound";
@@ -7,7 +8,6 @@ import { Products } from "./components/pages/Products";
 import { Reports } from "./components/pages/Reports";
 import { Sectors } from "./components/pages/Sectors";
 import { Users } from "./components/pages/Users";
-import { ProtectedRoutes } from "./components/ProtectedRoutes";
 
 function App() {
   const { pathname } = useLocation();

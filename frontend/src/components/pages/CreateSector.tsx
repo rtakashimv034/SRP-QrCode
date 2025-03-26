@@ -20,14 +20,13 @@ import { Label } from "../ui/label";
 import useQRCodeGenerator, {
   FormatTypesProps,
 } from "@/hooks/useQRCodeGenerator";
-import { Sector } from "@/types/sectors";
-import { Workstation } from "@/types/workstation";
+import { SectorProps, WorkstationProps } from "@/types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Input } from "../ui/input";
 
 export function CreateSector() {
   const [name, setName] = useState("");
-  const [workstations, setWorkstations] = useState<Workstation[]>([]);
+  const [workstations, setWorkstations] = useState<WorkstationProps[]>([]);
   const [amountTrays, setAmountTrays] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +57,7 @@ export function CreateSector() {
     amountTrays < 1;
 
   const handleAddingStation = () => {
-    const newStation: Workstation = {
+    const newStation: WorkstationProps = {
       name: "",
       localId: uuidv4(),
     };
@@ -85,7 +84,7 @@ export function CreateSector() {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      const data: Sector = { name, workstations, amountTrays };
+      const data: SectorProps = { name, workstations, amountTrays };
       const { status } = await api.post("/sectors", data);
       if (status === 201) {
         setIsModalOpen(true);

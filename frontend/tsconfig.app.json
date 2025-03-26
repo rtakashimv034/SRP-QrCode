@@ -30,7 +30,7 @@
   },
   "include": [
     "src",
-    "src/components/SplashScreen.tsx",
-    "public/AuthSplashScreen.tsx"
+    "src/components/screens/SplashScreen.tsx",
+    "src/components/screens/PresentationPlashScreen.tsx"
   ]
 }

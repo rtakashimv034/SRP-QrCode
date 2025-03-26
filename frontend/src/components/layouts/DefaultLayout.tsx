@@ -2,7 +2,7 @@ import { baseURL } from "@/api";
 import defaultAvatar from "@/assets/images/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
-import { SplashScreen } from "../SplashScreen";
+import { SplashScreen } from "../screens/SplashScreen";
 import { Menu } from "./Menu";
 import { UserAsideCard } from "./UserAsideCard";
 

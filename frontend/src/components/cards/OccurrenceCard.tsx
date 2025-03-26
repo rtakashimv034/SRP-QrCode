@@ -1,6 +1,5 @@
-import { DefectivePathsProps } from "@/types/defectivePaths";
-import { PathsProps } from "@/types/paths";
-import { Sector } from "@/types/sectors";
+import { DefectivePathsProps, PathsProps, SectorProps } from "@/types";
+import { Schedule } from "@/utils/schedule";
 import { ChevronDown } from "lucide-react"; // Importe o ícone de seta
 import { useState } from "react";
 import { SectorOccurrenceChart } from "../charts/SectorOccurrenceChart";
@@ -8,7 +7,7 @@ import { TimeOccurrenceChart } from "../charts/TimeOccurrenceChart";
 
 type ChartData = {
   paths: PathsProps[];
-  sectors: Sector[];
+  sectors: SectorProps[];
   defectivePaths: DefectivePathsProps[];
 };
 
@@ -17,8 +16,6 @@ type Props = {
   icon: string;
   data: ChartData;
 };
-
-export type Schedule = "Mensal" | "Anual" | "Diário";
 
 export function OccurrenceCard({ icon, type, data }: Props) {
   const [schedule, setSchedule] = useState<Schedule>("Diário");

@@ -1,41 +1,20 @@
 import { api } from "@/api/axios";
 import { socket } from "@/api/socket";
-import { PathsProps } from "@/types/paths";
-import { ProductProps } from "@/types/products";
+import { PathsProps, ProductProps } from "@/types";
+import { months } from "@/utils/months";
+import { Schedule } from "@/utils/schedule";
 import { Box, ChevronDown, Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Schedule } from "../cards/OccurrenceCard";
 import { ProductCard } from "../cards/ProductCard";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Input } from "../ui/input";
-
-export const monthNames = [
-  "Jan",
-  "Fev",
-  "Mar",
-  "Abr",
-  "Mai",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Set",
-  "Out",
-  "Nov",
-  "Dez",
-];
-
-const monthsMap = new Map<string, number>();
-
-monthNames.forEach((month, index) => {
-  monthsMap.set(month, index + 1);
-});
 
 export function Products() {
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductProps[]>([]);
   const [id, setId] = useState<string>("");
   const [schedule, setSchedule] = useState<Schedule>("Diário");
-  const [month, setMonth] = useState<string>(monthNames[new Date().getMonth()]);
+  const [month, setMonth] = useState<string>(months[new Date().getMonth()]);
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [day, setDay] = useState<string>("");
   const [availableYears, setAvailableYears] = useState<number[]>([]);
@@ -95,7 +74,7 @@ export function Products() {
 
         // Para "Diário", filtra também por mês
         if (schedule === "Diário") {
-          const selectedMonth = monthsMap.get(month);
+          const selectedMonth = months.indexOf(month) + 1;
           if (productMonth !== selectedMonth) return false;
 
           // E por dia se especificado
@@ -187,7 +166,7 @@ export function Products() {
                     className="rounded-md border border-gray-500 hover:cursor-pointer"
                     onChange={(e) => setMonth(e.target.value)}
                   >
-                    {monthNames.map((monthName, index) => (
+                    {months.map((monthName, index) => (
                       <option key={index} value={monthName}>
                         {monthName}
                       </option>
@@ -251,7 +230,7 @@ export function Products() {
       </header>
       <div className="flex-1 overflow-hidden">
         <div className=" h-full overflow-y-auto no-scrollbar">
-          <div className="flex flex-1 px-10 py-3 flex-col items-center gap-4">
+          <div className="grid grid-cols-2 gap-4 px-10 py-3 flex-col items-center">
             {filteredProducts.map((data) => (
               <ProductCard schedule={schedule} product={data} key={data.SN} />
             ))}

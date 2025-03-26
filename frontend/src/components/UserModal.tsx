@@ -1,6 +1,6 @@
 import { baseURL } from "@/api";
 import { api } from "@/api/axios";
-import { User } from "@/types/user";
+import { UserProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Camera, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ type ModalProps = {
 };
 
 type Props = {
-  user: User | null;
+  user: UserProps | null;
   modal: ModalProps;
   fetchUsers: () => void;
 };

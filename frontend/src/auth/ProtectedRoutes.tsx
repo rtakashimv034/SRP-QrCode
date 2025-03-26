@@ -1,7 +1,7 @@
+import { PresentationSplashScreen } from "@/components/screens/PresentationSplashScreen";
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { AuthSplashScreen } from "./AuthSplashScreen";
 
 type Props = {
   children: React.ReactNode;
@@ -17,7 +17,7 @@ export function ProtectedRoutes({ children, previousPath }: Props) {
   }
 
   if (!user) {
-    return <AuthSplashScreen />;
+    return <PresentationSplashScreen />;
   }
 
   if (!user?.isManager && previousPath) {
