@@ -77,16 +77,16 @@ export function SectorModal({
     setLocalWorkstations([...localWorkstations, newStation]);
   };
 
-  const handleDeleteStation = (id: string) => {
+  const handleDeleteStation = (localId: string) => {
     const updatedStations = localWorkstations.filter(
-      (station) => station.localId !== id
+      (station) => station.localId !== localId
     );
     setLocalWorkstations(updatedStations);
   };
 
-  const handleNameChange = (id: string, name: string) => {
+  const handleNameChange = (localId: string, name: string) => {
     const updatedStations = localWorkstations.map((station) =>
-      station.localId === id ? { ...station, name } : station
+      station.localId === localId ? { ...station, name } : station
     );
     setLocalWorkstations(updatedStations);
   };
@@ -108,6 +108,7 @@ export function SectorModal({
 
       const workstationsForApi: WorkstationProps[] = localWorkstations.map(
         (station) => ({
+          id: station.id,
           sectorName: sectorName,
           name: station.name,
         })
@@ -137,7 +138,7 @@ export function SectorModal({
   };
 
   useEffect(() => {
-    if (sector) {
+    if (sector && open) {
       setSectorName(sector.name);
       previousAmountTrays.current = sector.amountTrays || 0;
       setAmountTrays(sector.amountTrays || 0);
@@ -147,9 +148,14 @@ export function SectorModal({
           localId: uuidv4(),
         }))
       );
+    } else if (!open) {
+      // Resetar os estados quando o modal for fechado
+      setSectorName(sector?.name || "");
+      setLocalWorkstations([]);
+      setAmountTrays(sector?.amountTrays || 0);
+      setFormat("png"); // ou o formato padrão que você preferir
     }
-  }, [sector]);
-
+  }, [sector, open]);
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -167,7 +173,7 @@ export function SectorModal({
                   <Label className="font-normal text-base">Nome do Setor</Label>
                   <input
                     type="text"
-                    placeholder={sector?.name || ""}
+                    placeholder={"Nome único com pelo menos 3 caracteres..."}
                     className="rounded-md w-full px-3 py-1 font-medium bg-gray-input placeholder:text-gray-placeholder placeholder:font-normal"
                     value={sectorName}
                     onChange={(e) => setSectorName(e.target.value)}
@@ -176,7 +182,14 @@ export function SectorModal({
                 </div>
                 <div className="flex flex-col gap-1">
                   <div className="flex flex-col gap-0.5">
-                    <Label className="font-normal text-base">Estações</Label>
+                    <div className="flex items-center gap-2">
+                      <Label className="font-normal text-base">Estações</Label>
+                      {localWorkstations.length < 3 && (
+                        <span className="text-gray-400 text-xs">
+                          (Um setor deve ter pelo menos 3 estações)
+                        </span>
+                      )}
+                    </div>
                     <div className="flex flex-col h-40 overflow-y-auto custom-scrollbar">
                       {localWorkstations.map((station, i) => (
                         <WorkstationCard

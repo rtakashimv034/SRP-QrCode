@@ -145,7 +145,6 @@ export async function deleteUser(req: Request, res: Response) {
       // Verificar se o arquivo existe e deletá-lo
       if (fs.existsSync(avatarPath)) {
         fs.unlinkSync(avatarPath); // Deleta o arquivo
-        console.log(`[+] Avatar ${user.avatar} deleted successfully.`);
       } else {
         console.log(`[-] Avatar ${user.avatar} not found in uploads folder.`);
       }

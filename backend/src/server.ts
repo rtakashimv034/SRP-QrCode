@@ -46,8 +46,6 @@ export const io = new Server(server, { cors: corsSettings });
 // Manipula status dos usuários online (Socket.IO)
 export const onlineUsers = new Map<string, string>();
 io.on("connection", (socket) => {
-  console.log("Novo cliente conectado:", socket.id);
-
   socket.emit("online-users", Array.from(onlineUsers.keys()));
 
   socket.on("user-online", (userId: string) => {
@@ -69,16 +67,6 @@ io.on("connection", (socket) => {
     }
   });
 });
-
-import { z } from "zod";
-
-const dateSchema = z.string().transform((val) => new Date(val).toISOString());
-
-// Testando a conversão
-const input = "2025-03-24T11:05:46.890Z";
-const result = dateSchema.parse(input);
-
-console.log(result); // Saída: Date object correspondente
 
 server.listen(PORT, "0.0.0.0", () =>
   console.log(`[+] Server is running at http://${domain}:${PORT}/api/v1`)
