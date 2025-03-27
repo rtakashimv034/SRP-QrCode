@@ -28,7 +28,7 @@ export function useCache<T>({ expirationTime = 5, key }: CacheOptions) {
 
     if (cachedData && cacheTimestamp) {
       const isValid =
-        Date.now() - Number(cacheTimestamp) < expirationTime * 60 * 1000;
+        Date.now() - Number(cacheTimestamp) < expirationTime * 60 * 100;
       if (isValid) {
         return decryptData(cachedData);
       }
@@ -39,7 +39,7 @@ export function useCache<T>({ expirationTime = 5, key }: CacheOptions) {
   const setCache = (data: T) => {
     const encryptedData = encryptData(data);
     sessionStorage.setItem(key, encryptedData);
-    sessionStorage.setItem(`${key}-timestamp`, Date.now().toString());
+    sessionStorage.setItem(`${key}-timestamp`, Date.now().toLocaleString());
   };
 
   const clearCache = () => {
