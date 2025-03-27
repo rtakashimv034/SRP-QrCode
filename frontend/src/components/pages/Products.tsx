@@ -23,7 +23,7 @@ export function Products() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [day, setDay] = useState<string>("");
   const [availableYears, setAvailableYears] = useState<number[]>([]);
-  const { getCache, setCache } = useCache<ProductProps[]>({
+  const { getCache, setCache, clearCache } = useCache<ProductProps[]>({
     key: "products",
     expirationTime: 1,
   });
@@ -51,8 +51,11 @@ export function Products() {
       if (status === 200) {
         setProducts(data);
         setFilteredProducts(data);
-        inMemoryProductsCache = data;
-        setCache(data);
+        clearCache();
+        if (data.length > 0) {
+          inMemoryProductsCache = data;
+          setCache(data);
+        }
       }
 
       // Extrai anos dos produtos

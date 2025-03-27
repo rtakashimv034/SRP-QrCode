@@ -12,6 +12,8 @@ type Props = {
   isOnline: boolean;
 };
 
+const adminEmail = "admin@gmail.com";
+
 export function UserCard({ user, onDelete, onUpdate, isOnline }: Props) {
   const authData = useAuth();
   return (
@@ -44,10 +46,8 @@ export function UserCard({ user, onDelete, onUpdate, isOnline }: Props) {
             />
           </div>
           <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-normal text-lg overflow-hidden text-ellipsis">
-                {user.name}
-              </span>
+            <div className="flex items-center gap-1.5 child:overflow-hidden child:truncate">
+              <span className="font-normal text-lg">{user.name}</span>
               <span className="font-bold text-lg">{user.surname}</span>
             </div>
             <p className="text-xs opacity-70">
@@ -59,7 +59,7 @@ export function UserCard({ user, onDelete, onUpdate, isOnline }: Props) {
           </div>
         </div>
       </CardContent>
-      {authData.user?.isManager && (
+      {authData.user?.isManager && user.email !== adminEmail && (
         <div className="flex flex-col absolute top-1.5 right-1.5 gap-1.5">
           <button
             onClick={onUpdate}

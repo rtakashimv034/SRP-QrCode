@@ -1,6 +1,6 @@
 import useQRCodeGenerator from "@/hooks/useQRCodeGenerator";
 import { WorkstationProps } from "@/types";
-import { Edit2Icon, QrCodeIcon, TrashIcon } from "lucide-react";
+import { Edit2Icon, Hash, QrCodeIcon, TrashIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -49,11 +49,21 @@ export function WorkstationCard({
   return (
     <div className="relative pb-2 flex w-full">
       <div className="flex w-full overflow-hidden flex-row rounded-md">
-        <div className="bg-yellow-dark shrink-0 flex w-6" />
+        <div className="bg-yellow-dark shrink-0 flex justify-center items-center text-white text-xs w-8">
+          {station.id ? (
+            <span className="truncate px-[1.75px]">{String(station.id)}</span>
+          ) : (
+            <Hash size={16} />
+          )}
+        </div>
         <input
           ref={inputRef}
           type="text"
-          placeholder={!isEnabled ? "Sector Name" : "Set sector name"}
+          placeholder={
+            !isEnabled
+              ? "Nome da estação (obrigatório)"
+              : "Pelo menos 2 caracteres"
+          }
           className={`outline-none w-full px-3 py-1 font-medium bg-gray-input placeholder:text-gray-placeholder placeholder:font-normal ${
             !isEnabled && "opacity-50"
           }`}

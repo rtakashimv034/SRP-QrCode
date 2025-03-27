@@ -144,7 +144,7 @@ export function CreateSector() {
                       </Label>
                       <input
                         type="text"
-                        placeholder="Lorem Ipsum"
+                        placeholder="Nome único com pelo menos 3 caracteres..."
                         className="rounded-md w-full px-3 py-1 font-medium bg-gray-input placeholder:text-gray-placeholder placeholder:font-normal"
                         onChange={(e) => setName(e.target.value)}
                         value={name}
@@ -152,9 +152,16 @@ export function CreateSector() {
                     </div>
                     <div className="flex flex-col gap-1">
                       <div className="flex flex-col gap-0.5">
-                        <Label className="font-normal text-base">
-                          Estações
-                        </Label>
+                        <div className="flex items-center gap-2">
+                          <Label className="font-normal text-base">
+                            Estações
+                          </Label>
+                          {workstations.length < 3 && (
+                            <span className="text-gray-400 text-xs">
+                              (Um setor deve ter pelo menos 3 estações)
+                            </span>
+                          )}
+                        </div>
                         <div className="flex flex-col h-40 overflow-y-auto custom-scrollbar">
                           {workstations.map((station, i) => (
                             <WorkstationCard

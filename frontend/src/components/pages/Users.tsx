@@ -63,8 +63,11 @@ export function Users() {
       const { data, status } = await api.get<Props>("/users");
       if (status === 200) {
         setUsers(data);
-        setCache(data);
-        inMemoryUserCache = data;
+        clearCache();
+        if (data.length > 0) {
+          inMemoryUserCache = data;
+          setCache(data);
+        }
       }
     } catch (error) {
       console.error("Erro ao buscar usuários:", error);
@@ -80,12 +83,12 @@ export function Users() {
       const { status } = await api.delete(`/users/${user?.id}`);
       if (status === 204) {
         setIsModalOpen(false); // Fecha o modal
-        fetchUsers(); // Atualiza a lista de usuários
         if (user?.id === currentUser?.id) {
           clearCache();
           signOut();
           navigate("/login");
         }
+        fetchUsers(); // Atualiza a lista de usuários
       }
     } catch (error) {
       console.log(`Erro ao deletar usuário: ${error}`);

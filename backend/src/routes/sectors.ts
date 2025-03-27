@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma";
 import { io } from "../server";
 
 const workstationSchema = z.object({
+  id: z.number().int().optional(),
   name: z.string().min(2),
 });
 
@@ -139,12 +140,11 @@ export async function updateSector(req: Request, res: Response) {
       return;
     }
 
-    // Separate operations for better clarity
     const operations = [];
 
     // 1. Identify workstations to delete (those that exist in DB but not in the update)
     const workstationsToDelete = currentSector.workstations.filter(
-      (currentWs) => !workstations.some((ws) => ws.name === currentWs.name)
+      (currentWs) => !workstations.some((ws) => ws.id === currentWs.id)
     );
 
     if (workstationsToDelete.length > 0) {
@@ -152,7 +152,6 @@ export async function updateSector(req: Request, res: Response) {
         prisma.workstations.deleteMany({
           where: {
             id: { in: workstationsToDelete.map((ws) => ws.id) },
-            sectorName: sectorName,
           },
         })
       );
@@ -160,25 +159,22 @@ export async function updateSector(req: Request, res: Response) {
 
     // 2. Process each workstation from the request
     for (const ws of workstations) {
-      const existingWs = currentSector.workstations.find(
-        (currentWs) => currentWs.name === ws.name
-      );
-
-      if (existingWs) {
-        // Update existing workstation
+      // Workstation with ID - update
+      if (ws.id) {
         operations.push(
           prisma.workstations.update({
-            where: { id: existingWs.id },
+            where: { id: ws.id },
             data: { name: ws.name },
           })
         );
-      } else {
-        // Create new workstation
+      }
+      // Workstation without ID - create new
+      else {
         operations.push(
           prisma.workstations.create({
             data: {
               name: ws.name,
-              sectorName: name, // Use the new sector name if it was changed
+              sectorName: name,
             },
           })
         );

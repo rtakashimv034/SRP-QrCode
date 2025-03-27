@@ -30,7 +30,9 @@ let inMemorySectorCache: Props | null = null;
 export function Sectors() {
   const navigator = useNavigate();
   const [sectors, setSectors] = useState<Props>([]);
-  const { getCache, setCache } = useCache<Props>({ key: "sectors-cache" });
+  const { getCache, setCache, clearCache } = useCache<Props>({
+    key: "sectors-cache",
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,14 +56,17 @@ export function Sectors() {
       const cachedSectors = getCache();
       if (cachedSectors) {
         setSectors(cachedSectors);
-        inMemorySectorCache = cachedSectors; // Armazena em memória
+        inMemorySectorCache = cachedSectors;
       }
 
       const { data, status } = await api.get<Props>("/sectors");
       if (status === 200) {
         setSectors(data);
-        setCache(data);
-        inMemorySectorCache = data; // Armazena em memória
+        clearCache();
+        if (data.length > 0) {
+          setCache(data);
+          inMemorySectorCache = data;
+        }
       }
     } catch (error) {
       console.error("Erro ao buscar setores:", error);

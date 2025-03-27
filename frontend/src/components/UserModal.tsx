@@ -28,9 +28,9 @@ type Props = {
 const userSchema = z.object({
   name: z
     .string()
-    .min(3, "O nome deve ter pelo menos 3 caracteres")
+    .min(3, "Pelo menos 3 caracteres")
     .refine((value) => value.trim().length >= 3, {
-      message: "Espaços não contam como caracteres válidos",
+      message: "Espaços são inválidos",
     }),
   surname: z.string().optional(),
   email: z.string().email("Formato de e-mail inválido"),
@@ -161,7 +161,7 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
             </span>
           </div>
           <div className="flex flex-col justify-between gap-2 items-center mt-16">
-            <div className="size-36 border-2 border-gray-700 relative rounded-full p-0 flex items-center justify-center">
+            <div className="size-36 border-2 border-gray-700 hover:border-gray-500 child:hover:text-gray-500 transition-all child:transition-all relative rounded-full p-0 flex items-center justify-center">
               {avatarPreview ? (
                 <img
                   src={avatarPreview}
@@ -174,7 +174,7 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
               <input
                 id="avatarInput"
                 type="file"
-                className="absolute size-36 hover:cursor-pointer bg-red-400 rounded-full opacity-0"
+                className="absolute size-36 hover:cursor-pointer rounded-full opacity-0"
                 accept="image/png, image/jpeg"
                 onChange={handleAvatarChange}
               />
@@ -195,55 +195,78 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
           <form onSubmit={handleSubmit(onSubmit)} className="px-6 w-full">
             <div className="flex mt-4 gap-2">
               <div className="flex flex-col w-1/2">
-                <Label className="text-base font-normal">Nome:</Label>
+                <Label className="text-base font-normal">
+                  Nome <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   {...register("name")}
                   type="text"
-                  className="border p-2 rounded-md w-full bg-gray-input"
+                  placeholder={errors.name ? errors.name.message : "Davi"}
+                  className={`border p-2 rounded-md w-full bg-gray-input ${
+                    errors.name &&
+                    "placeholder:text-red-500 placeholder:text-xs"
+                  }`}
                 />
-                {errors.name && (
-                  <span className="text-red-500 text-sm">
-                    {errors.name.message}
-                  </span>
-                )}
               </div>
               <div className="flex flex-col w-1/2">
-                <Label className="text-base font-normal">Sobrenome:</Label>
+                <Label className="text-base font-normal">Sobrenome</Label>
                 <Input
                   {...register("surname")}
                   type="text"
+                  placeholder="Guilherme"
                   className="border p-2 rounded-md w-full bg-gray-input"
                 />
               </div>
             </div>
 
-            <div className="mt-2">
-              <Label className="text-base font-normal">Email:</Label>
+            <div className="mt-1">
+              <Label className="text-base font-normal">Email </Label>
+              <span className="text-red-500">*</span>
               <Input
                 {...register("email")}
                 type="email"
-                className="border p-2 rounded-md w-full bg-gray-input"
+                placeholder={
+                  errors.email ? errors.email.message : "exemplo@gmail.com"
+                }
+                className={`border p-2 rounded-md w-full bg-gray-input ${
+                  errors.email && "placeholder:text-red-500 placeholder:text-xs"
+                }`}
               />
-              {errors.email && (
-                <span className="text-red-500 text-sm">
-                  {errors.email.message}
-                </span>
-              )}
             </div>
             {!user && (
-              <div className="mt-4">
-                <Label className="text-base font-normal">Senha:</Label>
-                <PasswordField
-                  {...register("password")}
-                  placeholder="Set password"
-                  className="border p-2 rounded-md w-full bg-gray-input"
-                />
-                {errors.password && (
-                  <span className="text-red-500 text-sm">
-                    {errors.password.message}
-                  </span>
-                )}
-              </div>
+              <>
+                <div className="mt-2">
+                  <Label className="text-base font-normal">
+                    Senha <span className="text-red-500">*</span>
+                  </Label>
+                  <PasswordField
+                    {...register("password")}
+                    placeholder={
+                      errors.password
+                        ? errors.password.message
+                        : "Min 8 caracteres"
+                    }
+                    className={`border p-2 rounded-md w-full bg-gray-input ${
+                      errors.password &&
+                      "placeholder:text-red-500 placeholder:text-xs"
+                    }`}
+                  />
+                </div>
+                <div className="mt-1">
+                  <Label className="text-base font-normal">
+                    Confirmar senha <span className="text-red-500">*</span>
+                  </Label>
+                  <PasswordField
+                    placeholder="Deve ser a mesma senha"
+                    className="border p-2 rounded-md w-full bg-gray-input"
+                  />
+                  {errors.password && (
+                    <span className="text-red-500 text-xs">
+                      {errors.password.message}
+                    </span>
+                  )}
+                </div>
+              </>
             )}
             <div className="mt-2">
               <Label className="text-base font-normal ">Permissões:</Label>
