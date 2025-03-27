@@ -1,5 +1,6 @@
 import { api } from "@/api/axios";
 import { socket } from "@/api/socket";
+import { useCache } from "@/hooks/useCache";
 import { PathsProps, ProductProps } from "@/types";
 import { months } from "@/utils/months";
 import { Schedule } from "@/utils/schedule";
@@ -11,6 +12,8 @@ import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Loading } from "../Loading";
 import { Input } from "../ui/input";
 
+let inMemoryProductsCache: ProductProps[] | null = null;
+
 export function Products() {
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductProps[]>([]);
@@ -20,6 +23,10 @@ export function Products() {
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [day, setDay] = useState<string>("");
   const [availableYears, setAvailableYears] = useState<number[]>([]);
+  const { getCache, setCache } = useCache<ProductProps[]>({
+    key: "products",
+    expirationTime: 1,
+  });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,33 +34,48 @@ export function Products() {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
+
+      if (inMemoryProductsCache) {
+        setProducts(inMemoryProductsCache);
+        setFilteredProducts(inMemoryProductsCache);
+      }
+
+      const cachedProducts = getCache();
+      if (cachedProducts) {
+        setProducts(cachedProducts);
+        setFilteredProducts(cachedProducts);
+        inMemoryProductsCache = cachedProducts;
+      }
+
       const { data, status } = await api.get("/products");
       if (status === 200) {
         setProducts(data);
         setFilteredProducts(data);
-
-        // Extrai anos dos produtos
-        const productYears = data.map((product: ProductProps) => {
-          const date = new Date(product.createdAt);
-          return date.getFullYear();
-        });
-
-        // Se não houver produtos, usa o ano atual
-        const minYear =
-          productYears.length > 0
-            ? Math.min(...productYears)
-            : new Date().getFullYear();
-        const maxYear = new Date().getFullYear();
-
-        // Cria array de anos disponíveis
-        const years = [];
-        for (let y = minYear; y <= maxYear; y++) {
-          years.push(y);
-        }
-
-        setAvailableYears(years);
-        setYear(maxYear); // Define o ano atual como padrão
+        inMemoryProductsCache = data;
+        setCache(data);
       }
+
+      // Extrai anos dos produtos
+      const productYears = data.map((product: ProductProps) => {
+        const date = new Date(product.createdAt);
+        return date.getFullYear();
+      });
+
+      // Se não houver produtos, usa o ano atual
+      const minYear =
+        productYears.length > 0
+          ? Math.min(...productYears)
+          : new Date().getFullYear();
+      const maxYear = new Date().getFullYear();
+
+      // Cria array de anos disponíveis
+      const years = [];
+      for (let y = minYear; y <= maxYear; y++) {
+        years.push(y);
+      }
+
+      setAvailableYears(years);
+      setYear(maxYear); // Define o ano atual como padrão
     } catch (error) {
       setIsModalOpen(true);
       console.log(error);
