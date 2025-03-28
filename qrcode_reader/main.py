@@ -22,13 +22,15 @@ product_path = []  # Lista para armazenar os caminhos dos produtos
 defective_product_path = []  # Lista para armazenar os produtos defeituosos
 PUBLIC = 'srpapp.duckdns.org'
 IP = '187.99.230.13'
+CALLIDUS = '20.10.70.151'
+IP_GERAL = CALLIDUS
 lock = threading.Lock()  # Para evitar problemas de concorrência
 running = True # Sinalizador para controlar a execução das threads
 caps = {} # Variável para armazenar as capturas de vídeo
 
 blocked_bdjs = {}  # Formato: { "BDJ123": timestamp_do_bloqueio }   
 blocked_lock = threading.Lock()  # Lock para acesso thread-safe
-BLOCK_TIME = 1.5  # Tempo de bloqueio em segundos (ajuste conforme necessário)
+BLOCK_TIME = 2.5  # Tempo de bloqueio em segundos (ajuste conforme necessário)
 
 
 def read_qr_code(camera_index):
@@ -167,7 +169,7 @@ def read_qr_code(camera_index):
                     try:
                         # Envia a requisição POST para a API
                         response = requests.post(
-                            f'http://{PUBLIC}:3333/api/v1/camera/path',
+                            f'http://{IP_GERAL}:3333/api/v1/camera/path',
                             json=dicionario,  # Passa o dicionário diretamente
                             timeout=10
                         )
@@ -255,7 +257,7 @@ def read_qr_code(camera_index):
 
                 try:
                     response = requests.post(
-                        f'http://{PUBLIC}:3333/api/v1/camera/defective-path', json=dicionario)  # caminho defeituoso
+                        f'http://{IP_GERAL}:3333/api/v1/camera/defective-path', json=dicionario)  # caminho defeituoso
 
                     # Verificando a resposta
                     if response.status_code == 201:
