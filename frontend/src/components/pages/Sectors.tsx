@@ -15,6 +15,7 @@ import { useCache } from "@/hooks/useCache";
 import { SectorProps } from "@/types";
 import { Factory, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { SectorCard } from "../cards/SectorCard";
 import { ErrorDialog } from "../ErrorDialog";
@@ -85,6 +86,7 @@ export function Sectors() {
       if (status === 204) {
         setIsModalOpen(false); // Fecha o modal
         fetchSectors(); // Atualiza a lista de setores
+        toast.success("Setor excluído com sucesso!");
       }
     } catch (error) {
       console.log("Erro ao deletar setor: " + error);

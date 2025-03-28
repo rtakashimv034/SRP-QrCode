@@ -5,6 +5,7 @@ import useQRCodeGenerator, {
 import { SectorProps, WorkstationProps } from "@/types";
 import { ChevronDown, ChevronUp, CirclePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import { WorkstationCard } from "./cards/WorkstationCard";
 import { ErrorDialog } from "./ErrorDialog";
@@ -122,9 +123,13 @@ export function SectorModal({
 
       const res = await api.patch(`/sectors/${sector.name}`, data);
       if (res.status === 200) {
+        toast.success("Setor atualizado com sucesso!");
         const amount = amountTrays - previousAmountTrays.current;
         if (amount > 0) {
           await generateTrays(amount);
+          toast.success("Bandejas adicionadas com sucesso!");
+        } else if (amountTrays != previousAmountTrays.current) {
+          toast.success("Bandejas removidas com sucesso!");
         }
         onOpenChange(false);
         onSuccess?.();
