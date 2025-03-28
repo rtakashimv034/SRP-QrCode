@@ -46,7 +46,7 @@ export type SectorProps = {
   id?: number; // Opcional, pois pode não existir no frontend
   amountTrays?: number;
   paths?: PathsProps[];
-  defectivePaths?: PathsProps[];
+  defectivePaths?: DefectivePathsProps[];
 };
 
 export type WorkstationProps = {
