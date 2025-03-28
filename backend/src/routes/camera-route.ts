@@ -58,9 +58,11 @@ export async function createPath(req: Request, res: Response) {
           },
           include: {
             paths: true,
+            defectivePaths: true,
             workstations: {
               include: {
                 paths: true,
+                defectivePaths: true,
               },
             },
           },
@@ -139,9 +141,11 @@ export async function createDefectivePath(req: Request, res: Response) {
           },
           include: {
             defectivePaths: true,
+            paths: true,
             workstations: {
               include: {
                 defectivePaths: true,
+                paths: true,
               },
             },
           },

@@ -10,7 +10,7 @@ import { routes } from "./routes";
 dotenv.config();
 
 const PORT = 3333;
-const domain = process.env.LOCAL;
+const domain = process.env.CALLIDUS;
 const app = express();
 
 const corsSettings = {
