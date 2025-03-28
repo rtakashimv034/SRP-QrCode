@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import * as z from "zod";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../../lib/prisma";
 
 const secretKey = process.env.JWT_SECRET;
 

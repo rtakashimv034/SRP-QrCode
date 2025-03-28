@@ -22,26 +22,6 @@ export function TimeOccurrenceChart({
   // Estado para armazenar o mês selecionado pelo usuário (apenas para o modo diário)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Mês atual (1 a 12)
 
-  // Função para agrupar e acumular ocorrências por mês, mantendo o dia e o horário da ocorrência
-  const groupByMonthWithDayAndTime = (
-    data: (PathsProps | DefectivePathsProps)[]
-  ) => {
-    const grouped: { [key: string]: { count: number; timestamps: string[] } } =
-      {};
-
-    data.forEach((item) => {
-      const month = item.registeredAt.substring(0, 7); // Extrai o ano e mês (ex: "2025-03")
-      const timestamp = item.registeredAt; // Armazena o timestamp completo (ex: "2025-03-15T14:30:00")
-      if (!grouped[month]) {
-        grouped[month] = { count: 0, timestamps: [] };
-      }
-      grouped[month].count++;
-      grouped[month].timestamps.push(timestamp); // Armazena os timestamps das ocorrências
-    });
-
-    return grouped;
-  };
-
   const currentYear = new Date().getFullYear();
 
   const pathsYear = paths
@@ -64,44 +44,83 @@ export function TimeOccurrenceChart({
     [lastDefectivePathsYear, lastPathsYear].sort((a, b) => a - b).pop() ||
     currentYear;
 
-  // Função para agrupar e acumular ocorrências por ano
-  const groupByYear = (data: (PathsProps | DefectivePathsProps)[]) => {
-    const grouped: { [key: string]: number } = {};
+  const groupByYearWithProducts = (
+    data: (PathsProps | DefectivePathsProps)[]
+  ) => {
+    const grouped: { [key: string]: Set<string | number> } = {};
 
     data.forEach((item) => {
-      const year = new Date(item.registeredAt).getFullYear().toString(); // Extrai o ano
+      const year = new Date(item.registeredAt).getFullYear().toString();
+      const productId = "prodSN" in item ? item.prodSN : item.defProdId;
+
       if (!grouped[year]) {
-        grouped[year] = 0;
+        grouped[year] = new Set();
       }
-      grouped[year]++;
+
+      grouped[year].add(productId);
     });
 
-    return grouped;
+    // Converte para contagens de produtos por ano
+    return Object.fromEntries(
+      Object.entries(grouped).map(([year, productSet]) => [
+        year,
+        productSet.size,
+      ])
+    );
   };
 
-  // Função para agrupar e acumular ocorrências por dia
-  const groupByDay = (
+  const groupByMonthWithProducts = (
+    data: (PathsProps | DefectivePathsProps)[]
+  ) => {
+    const grouped: { [key: string]: Set<string | number> } = {};
+
+    data.forEach((item) => {
+      const month = item.registeredAt.substring(0, 7); // Formato: "YYYY-MM"
+      const productId = "prodSN" in item ? item.prodSN : item.defProdId;
+
+      if (!grouped[month]) {
+        grouped[month] = new Set();
+      }
+
+      grouped[month].add(productId);
+    });
+
+    return Object.fromEntries(
+      Object.entries(grouped).map(([month, productSet]) => [
+        month,
+        productSet.size,
+      ])
+    );
+  };
+
+  const groupByDayWithProducts = (
     data: (PathsProps | DefectivePathsProps)[],
     year: number,
     month: number
   ) => {
-    const grouped: { [key: string]: number } = {};
+    const grouped: { [key: string]: Set<string | number> } = {};
 
     data.forEach((item) => {
       const date = new Date(item.registeredAt);
       const itemYear = date.getFullYear();
       const itemMonth = date.getMonth() + 1;
-      const day = date.getDate(); // Extrai o dia (1 a 31)
+      const day = date.getDate();
+      const productId = "prodSN" in item ? item.prodSN : item.defProdId;
 
       if (itemYear === year && itemMonth === month) {
         if (!grouped[day]) {
-          grouped[day] = 0;
+          grouped[day] = new Set();
         }
-        grouped[day]++;
+        grouped[day].add(productId);
       }
     });
 
-    return grouped;
+    return Object.fromEntries(
+      Object.entries(grouped).map(([day, productSet]) => [
+        Number(day),
+        productSet.size,
+      ])
+    );
   };
 
   // Filtra os dados para o ano selecionado
@@ -159,28 +178,6 @@ export function TimeOccurrenceChart({
     );
   }
 
-  // Agrupa e acumula ocorrências normais e defeituosas por ano (apenas para o modo anual)
-  const normalGroupedByYear = groupByYear(filteredPaths);
-  const defectiveGroupedByYear = groupByYear(filteredDefectivePaths);
-
-  // Agrupa e acumula ocorrências normais e defeituosas por mês (apenas para o modo mensal)
-  const normalGroupedByMonth = groupByMonthWithDayAndTime(filteredPaths);
-  const defectiveGroupedByMonth = groupByMonthWithDayAndTime(
-    filteredDefectivePaths
-  );
-
-  // Agrupa e acumula ocorrências normais e defeituosas por dia (apenas para o modo diário)
-  const normalGroupedByDay = groupByDay(
-    filteredPaths,
-    selectedYear,
-    selectedMonth
-  );
-  const defectiveGroupedByDay = groupByDay(
-    filteredDefectivePaths,
-    selectedYear,
-    selectedMonth
-  );
-
   // Cria uma lista completa de anos (2025 a 2035)
   const allYears = Array.from(
     { length: endYear - startYear + 1 },
@@ -198,18 +195,40 @@ export function TimeOccurrenceChart({
   const allDays = Array.from({ length: daysInMonth }, (_, i) => i + 1); // Dias de 1 a 31
 
   // Prepara os dados para o gráfico, preenchendo com 0 para anos, meses ou dias sem registros
+  const normalGroupedByYear = groupByYearWithProducts(filteredPaths);
+  const defectiveGroupedByYear = groupByYearWithProducts(
+    filteredDefectivePaths
+  );
+
+  const normalGroupedByMonth = groupByMonthWithProducts(filteredPaths);
+  const defectiveGroupedByMonth = groupByMonthWithProducts(
+    filteredDefectivePaths
+  );
+
+  const normalGroupedByDay = groupByDayWithProducts(
+    filteredPaths,
+    selectedYear,
+    selectedMonth
+  );
+  const defectiveGroupedByDay = groupByDayWithProducts(
+    filteredDefectivePaths,
+    selectedYear,
+    selectedMonth
+  );
+
   const normalData =
     schedule === "Anual"
       ? allYears.map((year) => normalGroupedByYear[year.toString()] || 0)
       : schedule === "Diário"
       ? allDays.map((day) => normalGroupedByDay[day] || 0)
-      : allMonths.map((month) => normalGroupedByMonth[month]?.count || 0);
+      : allMonths.map((month) => normalGroupedByMonth[month] || 0);
+
   const defectiveData =
     schedule === "Anual"
       ? allYears.map((year) => defectiveGroupedByYear[year.toString()] || 0)
       : schedule === "Diário"
       ? allDays.map((day) => defectiveGroupedByDay[day] || 0)
-      : allMonths.map((month) => defectiveGroupedByMonth[month]?.count || 0);
+      : allMonths.map((month) => defectiveGroupedByMonth[month] || 0);
 
   // Nomes dos anos para o eixo X (modo anual)
   const yearNames = allYears.map((year) => year.toString());

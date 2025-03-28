@@ -271,19 +271,27 @@ export function Products() {
         </header>
         <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto no-scrollbar">
-            <div className="grid grid-cols-2 gap-4 px-10 py-3 flex-col items-center">
-              {isLoading ? (
-                <Loading amountCards={12} heightRem={14} />
-              ) : (
-                filteredProducts.map((data) => (
-                  <ProductCard
-                    schedule={schedule}
-                    product={data}
-                    key={data.SN}
-                  />
-                ))
-              )}
-            </div>
+            {products.length > 0 ? (
+              <div className="grid grid-cols-2 gap-4 px-10 py-3 flex-col items-center">
+                {isLoading ? (
+                  <Loading amountCards={12} heightRem={14} />
+                ) : (
+                  filteredProducts.map((data) => (
+                    <ProductCard
+                      schedule={schedule}
+                      product={data}
+                      key={data.SN}
+                    />
+                  ))
+                )}
+              </div>
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <p className="text-sm font-medium text-gray-500">
+                  Nenhum produto encontrado.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </DefaultLayout>

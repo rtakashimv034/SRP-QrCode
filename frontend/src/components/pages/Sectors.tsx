@@ -15,6 +15,7 @@ import { useCache } from "@/hooks/useCache";
 import { SectorProps } from "@/types";
 import { Factory, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { SectorCard } from "../cards/SectorCard";
 import { ErrorDialog } from "../ErrorDialog";
@@ -85,6 +86,7 @@ export function Sectors() {
       if (status === 204) {
         setIsModalOpen(false); // Fecha o modal
         fetchSectors(); // Atualiza a lista de setores
+        toast.success("Setor excluído com sucesso!");
       }
     } catch (error) {
       console.log("Erro ao deletar setor: " + error);
@@ -171,30 +173,38 @@ export function Sectors() {
         </header>
         <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto no-scrollbar">
-            <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
-              {isPageLoading ? (
-                <Loading amountCards={6} heightRem={28} />
-              ) : (
-                filteredSectors.map((data, index) => (
-                  <SectorCard
-                    key={index}
-                    data={data}
-                    onDelete={() => {
-                      setSector(data); // Define o setor a ser deletado
-                      setIsModalOpen(true); // Abre o modal
-                    }}
-                    onUpdate={() => {
-                      setSector(data);
-                      setIsEditModalOpen(true);
-                    }}
-                    onViewSector={() => {
-                      setSector(data);
-                      setIsViewModalOpen(true);
-                    }}
-                  />
-                ))
-              )}
-            </div>
+            {sectors.length > 0 ? (
+              <div className="grid grid-cols-3 gap-y-4 gap-x-3 py-4 w-full">
+                {isPageLoading ? (
+                  <Loading amountCards={6} heightRem={28} />
+                ) : (
+                  filteredSectors.map((data, index) => (
+                    <SectorCard
+                      key={index}
+                      data={data}
+                      onDelete={() => {
+                        setSector(data); // Define o setor a ser deletado
+                        setIsModalOpen(true); // Abre o modal
+                      }}
+                      onUpdate={() => {
+                        setSector(data);
+                        setIsEditModalOpen(true);
+                      }}
+                      onViewSector={() => {
+                        setSector(data);
+                        setIsViewModalOpen(true);
+                      }}
+                    />
+                  ))
+                )}
+              </div>
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <p className="text-sm font-medium text-gray-500">
+                  Nenhum setor encontrado.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </DefaultLayout>

@@ -11,15 +11,31 @@ export function SectorOccurrenceChart({ sectors }: Props) {
   // Crie uma referência para o gráfico
   const chartRef = useRef<Chart | null>(null);
 
-  // Prepare os dados iniciais do gráfico
-  const initialSeries: ApexAxisChartSeries = [
+  const countSectorOccurrences = (sectors: SectorProps[]): number[] => {
+    return sectors.map((sector) => {
+      const productCount = new Set(
+        sector.paths?.map((path) => path.prodSN) || []
+      ).size;
+      return productCount;
+    });
+  };
+  const countSectorDefetiveOccurrences = (sectors: SectorProps[]): number[] => {
+    return sectors.map((sector) => {
+      const productCount = new Set(
+        sector.defectivePaths?.map((path) => path.defProdId) || []
+      ).size;
+      return productCount;
+    });
+  };
+
+  const initialSeries = [
     {
       name: "Caminhos normais",
-      data: sectors.map((s) => s.paths?.length || 0),
+      data: countSectorOccurrences(sectors),
     },
     {
       name: "Caminhos de despacho",
-      data: sectors.map((s) => s.defectivePaths?.length || 0),
+      data: countSectorDefetiveOccurrences(sectors),
     },
   ];
 
@@ -36,7 +52,7 @@ export function SectorOccurrenceChart({ sectors }: Props) {
     xaxis: {
       type: "category",
       tickPlacement: "between",
-      categories: sectors.map((s) => `#${s.id}`),
+      categories: sectors.length > 0 ? sectors.map((s) => `#${s.id}`) : [""],
     },
     yaxis: {
       show: true,

@@ -1,5 +1,10 @@
 import express from "express";
 import { upload } from "../lib/multer";
+import {
+  forgotPassword,
+  resetPassword,
+  verifyResetToken,
+} from "../services/auth/retrivePassword";
 import { createDefectivePath, createPath } from "./camera-route";
 import { getAllDefectivePaths } from "./defectivePaths";
 import { getAllDefectiveProducts } from "./defectiveProducts";
@@ -28,8 +33,6 @@ routes.get("/users/:id", getUserById);
 routes.post("/users", upload.single("avatar"), createUser);
 routes.patch("/users/:id", upload.single("avatar"), updateUser);
 routes.delete("/users/:id", deleteUser);
-// login route
-routes.post("/login", login);
 //sector routes
 routes.get("/sectors", getAllsectors);
 routes.get("/sectors/:name", getSectorByName);
@@ -46,4 +49,9 @@ routes.get("/defective-paths", getAllDefectivePaths);
 // camera routes (NEW)
 routes.post("/camera/path", createPath);
 routes.post("/camera/defective-path", createDefectivePath);
+// recuperação de senha
+routes.post("/login", login);
+routes.post("/auth/forgot-password", forgotPassword);
+routes.post("/auth/reset-password", resetPassword);
+routes.post("/auth/verify-reset-token", verifyResetToken);
 export { routes };

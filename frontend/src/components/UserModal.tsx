@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Camera, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 import { z } from "zod";
 import { ErrorDialog } from "./ErrorDialog";
 import { Button } from "./ui/button";
@@ -12,7 +13,6 @@ import { Dialog, DialogContent } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { PasswordField } from "./ui/passwordfield";
-
 type ModalProps = {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
@@ -122,9 +122,10 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
           },
         });
         if (status === 200) {
+          setTimeout(() => window.location.reload(), 1000);
+          toast.success("Usuário atualizado com sucesso!");
           modal.setIsOpen(false);
           fetchUsers();
-          window.location.reload();
         }
       } else {
         const { status } = await api.post("/users", formData, {
@@ -133,6 +134,7 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
           },
         });
         if (status === 201) {
+          toast.success("Usuário criado com sucesso!");
           modal.setIsOpen(false);
           fetchUsers();
         }
@@ -257,19 +259,18 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
                   errors.email && "placeholder:text-red-500 placeholder:text-xs"
                 }`}
               />
-              {!user && (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    className="size-4 hover:cursor-pointer rounded-full"
-                    checked={notification}
-                    onChange={() => setNotification(!notification)}
-                  />
-                  <span className="text-xs text-gray-700">
-                    Mandar notificação de cadastro ao email inserido
-                  </span>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="size-4 hover:cursor-pointer rounded-full"
+                  checked={notification}
+                  onChange={() => setNotification(!notification)}
+                />
+                <span className="text-xs text-gray-700">
+                  Mandar notificação de {!user ? "cadastro" : "alteração"} ao
+                  email {!user ? "inserido" : "anterior"}
+                </span>
+              </div>
             </div>
             {!user && (
               <>

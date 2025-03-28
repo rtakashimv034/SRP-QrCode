@@ -47,8 +47,8 @@ export function SectorCard({
           new Date(b.registeredAt).getTime()
       );
     }
-    let reportContent = `[+] Relatório ${
-      type === "normal" ? "ordinal" : "de ocorrências"
+    let reportContent = `[+] Relatório de ocorrências ${
+      type === "normal" ? "normais" : "defectivas"
     } do setor "${data.name}"\n\n`;
     reportContent += `  - Data de emissão: ${new Date().toLocaleString()}\n`;
     if (genericPaths && genericPaths.length > 0) {
@@ -61,7 +61,11 @@ export function SectorCard({
         };\n`;
       });
     } else {
-      reportContent += `  [ERRO]: Não foi possível resgatar o histórico do produto.\n`;
+      reportContent += `  [ERRO]: Histórico de ocorrências ${
+        type === "normal" ? "normais" : "defectivas"
+      } do setor "${
+        data.name
+      }" indisponível (Se necessário, tente novamente mais tarde).\n`;
     }
 
     const blob = new Blob([reportContent], {
@@ -94,7 +98,10 @@ export function SectorCard({
             </div>
             <div className="flex mb-2 flex-row gap-x-4 items-center">
               <p className="font-semibold whitespace-nowrap text-xs opacity-70">
-                Total de Ocorrências: {data.defectivePaths?.length || 0}
+                Total de Ocorrências:{" "}
+                <span className="text-red-600">
+                  {data.defectivePaths?.length || 0}
+                </span>
               </p>
               <Button
                 disabled={disabled}

@@ -50,7 +50,7 @@ export function Login() {
             <img
               src={logo}
               className="bg-transparent w-full h-36 text-4xl italic flex justify-center items-center"
-            ></img>
+            />
           </CardHeader>
           <CardContent className="w-full mt-8">
             <form
@@ -78,11 +78,14 @@ export function Login() {
                   </p>
                 )}
               </div>
-              {/* <div className="flex items-center w-full justify-end">
-              <span className="text-white opacity-70 underline text-xs cursor-pointer hover:opacity-90">
-                Esqueceu a senha?
-              </span>
-            </div> */}
+              <div className="flex items-center w-full justify-end">
+                <span
+                  onClick={() => navigate("/retrive-password")}
+                  className="text-white opacity-70 underline text-xs cursor-pointer hover:opacity-90"
+                >
+                  Esqueceu a senha?
+                </span>
+              </div>
               <Button
                 type="submit"
                 variant={"submit"}

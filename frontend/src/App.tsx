@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { AuthProvider } from "./auth/AuthProvider";
 import { ProtectedRoutes } from "./auth/ProtectedRoutes";
@@ -6,6 +7,8 @@ import { Login } from "./components/pages/Login";
 import { NotFound } from "./components/pages/NotFound";
 import { Products } from "./components/pages/Products";
 import { Reports } from "./components/pages/Reports";
+import { ResetPassword } from "./components/pages/ResetPassword";
+import { RetrivePassword } from "./components/pages/RetrivePassword";
 import { Sectors } from "./components/pages/Sectors";
 import { Users } from "./components/pages/Users";
 
@@ -22,6 +25,8 @@ function App() {
       <Routes>
         {/* Public route */}
         <Route path="/login" element={<Login />} />
+        <Route path="/retrive-password" element={<RetrivePassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Protected routes */}
         <Route
@@ -68,6 +73,16 @@ function App() {
         {/* Catch-all route for 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Toaster
+        position="top-right" // Posição do toast (top-right, top-center, bottom-right, etc.)
+        toastOptions={{
+          duration: 2000, // Duração padrão (3 segundos)
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+        }}
+      />
     </AuthProvider>
   );
 }

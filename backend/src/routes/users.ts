@@ -174,8 +174,15 @@ export async function deleteUser(req: Request, res: Response) {
 
 export async function updateUser(req: Request, res: Response) {
   const id = req.params.id;
-  const { email, isManager, name, surname, password, removeAvatar } =
-    updateUserSchema.parse(req.body);
+  const {
+    email,
+    isManager,
+    name,
+    surname,
+    password,
+    removeAvatar,
+    notification,
+  } = updateUserSchema.parse(req.body);
   const avatar = req.file ? req.file.filename : null;
 
   let notifyPreviousEmail = false;
@@ -189,7 +196,6 @@ export async function updateUser(req: Request, res: Response) {
       res.status(404).json({ errors: "User not found" });
       return;
     }
-
     // Only check email if it's being updated
     if (email && email !== user.email) {
       const existingUser = await prisma.users.findFirst({
@@ -229,7 +235,7 @@ export async function updateUser(req: Request, res: Response) {
       data,
     });
 
-    if (notifyPreviousEmail) {
+    if (notifyPreviousEmail && notification === "true") {
       await sendEmail({
         to: user.email,
         destName: `${updatedUser.name} ${updatedUser.surname}`,

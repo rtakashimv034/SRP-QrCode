@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { authenticateUser, loginSchema } from "../services/authService";
+import { authenticateUser, loginSchema } from "../services/auth/loginService";
 export async function login(req: Request, res: Response) {
   const { email, password } = loginSchema.parse(req.body);
   if (!email || !password) {

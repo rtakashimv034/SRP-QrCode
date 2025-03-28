@@ -6,6 +6,7 @@ import { useOnlineUsers } from "@/hooks/useOnlineUsers";
 import { UserProps } from "@/types";
 import { Plus, Search, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { UserCard } from "../cards/UserCard";
 import { ErrorDialog } from "../ErrorDialog";
@@ -82,13 +83,16 @@ export function Users() {
       setIsLoading(true);
       const { status } = await api.delete(`/users/${user?.id}`);
       if (status === 204) {
+        toast.success(
+          `${user?.isManager ? "Gerente" : "Supervisor"} excluído com sucesso!`
+        );
         setIsModalOpen(false); // Fecha o modal
         if (user?.id === currentUser?.id) {
           clearCache();
           signOut();
           navigate("/login");
         }
-        fetchUsers(); // Atualiza a lista de usuários
+        fetchUsers();
       }
     } catch (error) {
       console.log(`Erro ao deletar usuário: ${error}`);
