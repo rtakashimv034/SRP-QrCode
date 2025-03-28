@@ -38,7 +38,7 @@ const userSchema = z.object({
     .string()
     .min(8, "A senha deve ter pelo menos 8 caracteres")
     .optional(),
-  avatar: z.any().optional(),
+  confirmPassword: z.string().optional(),
 });
 
 type UserFormData = z.infer<typeof userSchema>;
@@ -50,6 +50,9 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
     handleSubmit,
     reset,
     setValue,
+    setError,
+    clearErrors,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
@@ -61,12 +64,17 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
     },
   });
 
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
+
   const [isManager, setIsManager] = useState(user?.isManager || false);
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [removeAvatar, setRemoveAvatar] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+
+  const [notification, setNotification] = useState(false);
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -81,11 +89,20 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
   };
 
   const onSubmit: SubmitHandler<UserFormData> = async (data) => {
+    if (!user && data.password !== data.confirmPassword) {
+      setError("confirmPassword", {
+        type: "manual",
+        message: "As senhas não coincidem",
+      });
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("surname", data.surname || "");
       formData.append("email", data.email);
+      formData.append("notification", String(notification));
       formData.append("isManager", String(isManager)); // Convertendo para string
       if (avatarFile) {
         formData.append("avatar", avatarFile);
@@ -127,6 +144,17 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
       setIsErrorModalOpen(true);
     }
   };
+
+  useEffect(() => {
+    if (!user && password && confirmPassword && password !== confirmPassword) {
+      setError("confirmPassword", {
+        type: "manual",
+        message: "As senhas não coincidem",
+      });
+    } else {
+      clearErrors("confirmPassword");
+    }
+  }, [password, confirmPassword, user, setError, clearErrors]);
 
   // Preenche os valores do formulário quando o modal é aberto ou o usuário muda
   useEffect(() => {
@@ -195,13 +223,11 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
           <form onSubmit={handleSubmit(onSubmit)} className="px-6 w-full">
             <div className="flex mt-4 gap-2">
               <div className="flex flex-col w-1/2">
-                <Label className="text-base font-normal">
-                  Nome <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-base font-normal">Nome *</Label>
                 <Input
                   {...register("name")}
                   type="text"
-                  placeholder={errors.name ? errors.name.message : "Davi"}
+                  placeholder={errors.name ? errors.name.message : "Pedro"}
                   className={`border p-2 rounded-md w-full bg-gray-input ${
                     errors.name &&
                     "placeholder:text-red-500 placeholder:text-xs"
@@ -213,15 +239,14 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
                 <Input
                   {...register("surname")}
                   type="text"
-                  placeholder="Guilherme"
+                  placeholder="Yutaro"
                   className="border p-2 rounded-md w-full bg-gray-input"
                 />
               </div>
             </div>
 
-            <div className="mt-1">
-              <Label className="text-base font-normal">Email </Label>
-              <span className="text-red-500">*</span>
+            <div className="mt-1 gap-2 flex flex-col">
+              <Label className="text-base font-normal">Email *</Label>
               <Input
                 {...register("email")}
                 type="email"
@@ -232,13 +257,24 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
                   errors.email && "placeholder:text-red-500 placeholder:text-xs"
                 }`}
               />
+              {!user && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="size-4 hover:cursor-pointer rounded-full"
+                    checked={notification}
+                    onChange={() => setNotification(!notification)}
+                  />
+                  <span className="text-xs text-gray-700">
+                    Mandar notificação de cadastro ao email inserido
+                  </span>
+                </div>
+              )}
             </div>
             {!user && (
               <>
                 <div className="mt-2">
-                  <Label className="text-base font-normal">
-                    Senha <span className="text-red-500">*</span>
-                  </Label>
+                  <Label className="text-base font-normal">Senha *</Label>
                   <PasswordField
                     {...register("password")}
                     placeholder={
@@ -252,24 +288,30 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
                     }`}
                   />
                 </div>
-                <div className="mt-1">
-                  <Label className="text-base font-normal">
-                    Confirmar senha <span className="text-red-500">*</span>
-                  </Label>
-                  <PasswordField
-                    placeholder="Deve ser a mesma senha"
-                    className="border p-2 rounded-md w-full bg-gray-input"
-                  />
-                  {errors.password && (
-                    <span className="text-red-500 text-xs">
-                      {errors.password.message}
-                    </span>
-                  )}
-                </div>
+                {watch("password") && (
+                  <div className="mt-1">
+                    <Label className="text-base font-normal">
+                      Confirmar senha *
+                    </Label>
+                    <PasswordField
+                      {...register("confirmPassword")}
+                      placeholder="Confirme sua senha"
+                      className={`border p-2 rounded-md w-full bg-gray-input ${
+                        errors.confirmPassword &&
+                        "placeholder:text-red-500 placeholder:text-xs"
+                      }`}
+                    />
+                    {errors.confirmPassword && (
+                      <span className="text-red-500 text-xs">
+                        {errors.confirmPassword.message}
+                      </span>
+                    )}
+                  </div>
+                )}
               </>
             )}
             <div className="mt-2">
-              <Label className="text-base font-normal ">Permissões:</Label>
+              <Label className="text-base font-normal ">Permissões *</Label>
               <div className="flex gap-2 mt-2">
                 <Button
                   type="button"
@@ -280,7 +322,7 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
                       : "border-gray-600 text-black"
                   } border-2 rounded-lg px-4 py-2 bg-transparent hover:bg-gray-100`}
                 >
-                  Administrador
+                  Gerente
                 </Button>
                 <Button
                   type="button"
@@ -303,6 +345,9 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
                   reset();
                   setAvatarPreview(null);
                   setRemoveAvatar(true);
+                  if (!user) {
+                    setValue("confirmPassword", "");
+                  }
                 }}
               >
                 Limpar

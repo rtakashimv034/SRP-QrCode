@@ -19,6 +19,7 @@ const userSchema = z.object({
   email: z.string().email("Formato de e-mail inválido"),
   password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
   isManager: z.string(),
+  notification: z.string(),
   removeAvatar: z.string().optional(),
 });
 
@@ -26,9 +27,8 @@ const userSchema = z.object({
 const updateUserSchema = userSchema.partial();
 
 export async function createUser(req: Request, res: Response) {
-  const { email, isManager, name, password, surname } = userSchema.parse(
-    req.body
-  );
+  const { email, isManager, name, password, surname, notification } =
+    userSchema.parse(req.body);
   const avatar = req.file ? req.file.filename : null;
 
   try {
@@ -56,15 +56,21 @@ export async function createUser(req: Request, res: Response) {
     const newUser = await prisma.users.create({ data });
 
     // Envia um e-mail com a senha para o usuário
-    await sendEmail({
-      to: email,
-      destName: `${newUser.name} ${newUser.surname}`,
-      subject: "Bem-vindo ao Sistema!",
-      text: `Olá ${name}, sua conta foi criada com sucesso. Sua senha é: ${password}`,
-      html: `<p>Olá <strong>${name}</strong>,</p>
-             <p>Sua conta foi criada com sucesso. Sua senha é: <strong>${password}</strong></p>
-             <p>Recomendamos que você altere sua senha após o primeiro login.</p>`,
-    });
+    if (notification === "true") {
+      await sendEmail({
+        to: email,
+        destName: `${newUser.name} ${newUser.surname}`,
+        subject: "Bem-vindo ao Sistema!",
+        text: `Olá ${name}, sua conta foi criada com sucesso. Sua senha será mantida como: ${password}`,
+        html: `<p>Olá <strong>${name}</strong>,</p>
+               <p>Sua conta foi criada com sucesso. Sua senha será mantida como: <strong>${password}</strong></p>
+               ${
+                 !newUser.isManager
+                   ? `<p>Caso queira alterar alguma informação em sua conta, contate um Gerente.</p>`
+                   : `<p>Recomendamos que você permaneça com suas credenciais iniciais após o login.</p>`
+               }`,
+      });
+    }
 
     io.emit("create-user", data);
 
@@ -172,6 +178,8 @@ export async function updateUser(req: Request, res: Response) {
     updateUserSchema.parse(req.body);
   const avatar = req.file ? req.file.filename : null;
 
+  let notifyPreviousEmail = false;
+
   try {
     const user = await prisma.users.findFirst({
       where: { id },
@@ -191,6 +199,8 @@ export async function updateUser(req: Request, res: Response) {
         res.status(409).json({ errors: "user with same email already exists" });
         return;
       }
+
+      notifyPreviousEmail = true;
     }
 
     // Verifica se a foto deve ser removida
@@ -218,6 +228,18 @@ export async function updateUser(req: Request, res: Response) {
       where: { id },
       data,
     });
+
+    if (notifyPreviousEmail) {
+      await sendEmail({
+        to: user.email,
+        destName: `${updatedUser.name} ${updatedUser.surname}`,
+        subject: "Seu e-mail foi atualizado!",
+        text: `Olá ${updatedUser.name}, o e-mail da sua conta foi atualizado. Caso não tenha solicitado esta alteração, por favor entre em contato com o administrador do sistema.`,
+        html: `<p>Olá <strong>${updatedUser.name}</strong>,</p>
+               <p>O e-mail da sua conta foi atualizado para "<strong>${email}</strong>".</p>
+               <p>Caso não tenha solicitado esta alteração, por favor entre em contato com o administrador do sistema ou com algum gerente.</p>`,
+      });
+    }
 
     io.emit("update-user", { ...updatedUser, id: updatedUser.id });
 
