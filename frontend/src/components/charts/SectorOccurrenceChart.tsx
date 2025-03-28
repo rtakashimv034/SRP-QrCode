@@ -52,7 +52,7 @@ export function SectorOccurrenceChart({ sectors }: Props) {
     xaxis: {
       type: "category",
       tickPlacement: "between",
-      categories: sectors.map((s) => `#${s.id}`),
+      categories: sectors.length > 0 ? sectors.map((s) => `#${s.id}`) : [""],
     },
     yaxis: {
       show: true,
