@@ -1,8 +1,10 @@
 import { baseURL } from "@/api";
+import { socket } from "@/api/socket";
 import defaultAvatar from "@/assets/images/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
-import { SplashScreen } from "../screens/SplashScreen";
+import { UserProps } from "@/types";
+import { useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Menu } from "./Menu";
 import { UserAsideCard } from "./UserAsideCard";
 
@@ -11,14 +13,37 @@ type DefaultLayoutProps = {
 };
 
 export function DefaultLayout({ children }: DefaultLayoutProps) {
+  const navigator = useNavigate();
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      navigator("/login");
+    }
+    socket.on("update-user", (updatedUser: UserProps) => {
+      if (updatedUser.id === user?.id) {
+        user!.name = updatedUser.name;
+        user!.surname = updatedUser.surname;
+        user!.avatar = updatedUser.avatar;
+        user!.email = updatedUser.email;
+        user!.isManager = updatedUser.isManager;
+      }
+    });
+
+    socket.on("delete-user", (deletedUser: UserProps) => {
+      if (deletedUser.id === user?.id) {
+        navigator("/login");
+      }
+    });
+
+    return () => {
+      socket.off("update-user");
+      socket.off("delete-user");
+    };
+  }, [navigator, user]);
 
   if (!user) {
     return <Navigate to={"/login"} replace />;
-  }
-
-  if (!user) {
-    return <SplashScreen />;
   }
 
   return (

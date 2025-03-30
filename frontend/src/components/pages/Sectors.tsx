@@ -114,6 +114,12 @@ export function Sectors() {
     socket.on("delete-sector", (sector: SectorProps) => {
       setSectors((prev) => prev.filter((s) => s.name !== sector.name));
     });
+    socket.on("delete-products", () => {
+      setSectors((prev) => prev.map((s) => ({ ...s, paths: [] })));
+    });
+    socket.on("delete-defective-products", () => {
+      setSectors((prev) => prev.map((s) => ({ ...s, defectivePaths: [] })));
+    });
     // Limpa os listeners ao desmontar o componente
     return () => {
       socket.off("create-path");
@@ -122,6 +128,8 @@ export function Sectors() {
       socket.off("create-sector");
       socket.off("update-sector");
       socket.off("delete-sector");
+      socket.off("delete-products");
+      socket.off("delete-defective-products");
     };
   }, []);
 
@@ -240,7 +248,13 @@ export function Sectors() {
                 ? "Deletando..."
                 : "Sim"}
             </Button>
-            <Button variant={"default"} onClick={() => setIsModalOpen(false)}>
+            <Button
+              variant={"default"}
+              onClick={() => {
+                setIsModalOpen(false);
+                setIsErrorDeletion(false);
+              }}
+            >
               Cancelar
             </Button>
           </DialogFooter>

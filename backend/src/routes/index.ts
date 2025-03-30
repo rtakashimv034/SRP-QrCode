@@ -7,10 +7,13 @@ import {
 } from "../services/auth/retrivePassword";
 import { createDefectivePath, createPath } from "./camera-route";
 import { getAllDefectivePaths } from "./defectivePaths";
-import { getAllDefectiveProducts } from "./defectiveProducts";
+import {
+  deleteAllDefectiveProducts,
+  getAllDefectiveProducts,
+} from "./defectiveProducts";
 import { login } from "./login";
 import { getAllPaths } from "./paths";
-import { getAllProducts } from "./products";
+import { deleteAllProducts, getAllProducts } from "./products";
 import {
   createSector,
   deleteSector,
@@ -54,4 +57,7 @@ routes.post("/login", login);
 routes.post("/auth/forgot-password", forgotPassword);
 routes.post("/auth/reset-password", resetPassword);
 routes.post("/auth/verify-reset-token", verifyResetToken);
+// only admin routes
+routes.delete("/products", deleteAllProducts);
+routes.delete("/defective-products", deleteAllDefectiveProducts);
 export { routes };

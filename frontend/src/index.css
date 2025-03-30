@@ -11,6 +11,9 @@
   .bg-img {
     background-image: url("./assets/images/bg.png");
   }
+  .bg-img-calliu {
+    background-image: url("./assets/images/bg_calliu.png");
+  }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

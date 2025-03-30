@@ -70,12 +70,14 @@ export function RetrivePassword() {
                 <Input
                   type="email"
                   {...register("email", { required: "E-mail é obrigatório" })}
-                  placeholder="Digite seu e-mail"
-                  className="bg-white text-black"
+                  className={`bg-white text-black ${
+                    errors.email &&
+                    "placeholder:text-sm placeholder:text-red-500"
+                  }`}
+                  placeholder={
+                    errors.email ? errors.email.message : "Digite seu e-mail"
+                  }
                 />
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email.message}</p>
-                )}
                 <p className="text-white text-xs">
                   Digite seu e-mail cadastrado para receber as instruções de
                   recuperação de senha.

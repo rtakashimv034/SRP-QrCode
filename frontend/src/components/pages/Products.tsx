@@ -1,15 +1,26 @@
 import { api } from "@/api/axios";
 import { socket } from "@/api/socket";
+import { useAuth } from "@/hooks/useAuth";
 import { useCache } from "@/hooks/useCache";
 import { PathsProps, ProductProps } from "@/types";
 import { months } from "@/utils/months";
 import { Schedule } from "@/utils/schedule";
-import { Box, ChevronDown, Search } from "lucide-react";
+import { Box, ChevronDown, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { ProductCard } from "../cards/ProductCard";
 import { ErrorDialog } from "../ErrorDialog";
 import { DefaultLayout } from "../layouts/DefaultLayout";
 import { Loading } from "../Loading";
+import { Button } from "../ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 import { Input } from "../ui/input";
 
 let inMemoryProductsCache: ProductProps[] | null = null;
@@ -30,6 +41,29 @@ export function Products() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeletionLoading, setIsDeletionLoading] = useState(false);
+  const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const [isErrorDeletion, setIsErrorDeletion] = useState(false);
+
+  const { user } = useAuth();
+
+  const handleDeleteProducts = async () => {
+    try {
+      setIsDeletionLoading(true);
+      const { status } = await api.delete("/products");
+      if (status === 204) {
+        setIsLoading(true);
+        setIsClearModalOpen(false);
+        fetchProducts();
+        toast.success("Produtos excluídos com sucesso!");
+      }
+    } catch (error) {
+      setIsErrorDeletion(true);
+      console.log("erro ao deletar produtos: " + error);
+    } finally {
+      setIsDeletionLoading(false);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -125,6 +159,17 @@ export function Products() {
   };
 
   useEffect(() => {
+    socket.on("delete-products", () => {
+      inMemoryProductsCache = null;
+      clearCache();
+      setProducts([]);
+    });
+    return () => {
+      socket.off("delete-products");
+    };
+  }, []);
+
+  useEffect(() => {
     fetchProducts();
   }, []);
 
@@ -161,7 +206,7 @@ export function Products() {
   return (
     <>
       <DefaultLayout>
-        <header className="grid grid-cols-[40%_60%] pb-3 items-center justify-between">
+        <header className="grid grid-cols-[38%_62%] pb-3 items-center justify-between">
           <div className="flex flex-row items-center gap-6">
             <div className="flex flex-row items-center gap-2">
               <Box className="size-8 fill-black text-white" />
@@ -267,6 +312,17 @@ export function Products() {
                 onChange={(e) => setId(e.target.value)}
               />
             </div>
+            {user?.email === "admin@gmail.com" &&
+              user.isManager &&
+              products.length > 0 && (
+                <button
+                  className="hover:brightness-150 p-1.5 rounded-lg border-2 border-red-700"
+                  title="Apagar tudo"
+                  onClick={() => setIsClearModalOpen(true)}
+                >
+                  <Trash2 className="size-4 text-red-700" />
+                </button>
+              )}
           </div>
         </header>
         <div className="flex-1 overflow-hidden">
@@ -295,11 +351,57 @@ export function Products() {
           </div>
         </div>
       </DefaultLayout>
+
       <ErrorDialog
         action="carregar produtos"
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
       />
+
+      <Dialog
+        open={isClearModalOpen}
+        onOpenChange={() => {
+          setIsClearModalOpen(false);
+          setIsErrorDeletion(false);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {isErrorDeletion
+                ? "Falha ao tentar excluir produtos"
+                : "Excluir tudo"}
+            </DialogTitle>
+            <DialogDescription>
+              {isErrorDeletion
+                ? "Não foi possível excluir os produtos e seus respectivos caminhos (verifique a sua conexão ou tente mais tarde)."
+                : "Você tem certeza que deseja excluir >>TODOS<< os produtos e >>TODOS<< os seus respectivos caminhos do sistema inteiro? (após essa operação não será possível	recuperar os dados!)"}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant={"destructive"}
+              disabled={isDeletionLoading}
+              onClick={handleDeleteProducts}
+            >
+              {isDeletionLoading
+                ? "Deletando..."
+                : isErrorDeletion
+                ? "Tentar novamente"
+                : "Sim"}
+            </Button>
+            <Button
+              variant={"default"}
+              onClick={() => {
+                setIsClearModalOpen(false);
+                setIsErrorDeletion(false);
+              }}
+            >
+              Cancelar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

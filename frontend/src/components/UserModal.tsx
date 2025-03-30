@@ -122,7 +122,6 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
           },
         });
         if (status === 200) {
-          setTimeout(() => window.location.reload(), 1000);
           toast.success("Usuário atualizado com sucesso!");
           modal.setIsOpen(false);
           fetchUsers();
@@ -289,30 +288,28 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
                     }`}
                   />
                 </div>
-                {watch("password") && (
-                  <div className="mt-1">
-                    <Label className="text-base font-normal">
-                      Confirmar senha *
-                    </Label>
-                    <PasswordField
-                      {...register("confirmPassword")}
-                      placeholder="Confirme sua senha"
-                      className={`border p-2 rounded-md w-full bg-gray-input ${
-                        errors.confirmPassword &&
-                        "placeholder:text-red-500 placeholder:text-xs"
-                      }`}
-                    />
-                    {errors.confirmPassword && (
-                      <span className="text-red-500 text-xs">
-                        {errors.confirmPassword.message}
-                      </span>
-                    )}
-                  </div>
-                )}
+                <div className="mt-1">
+                  <Label className="text-base font-normal">
+                    Confirmar senha *
+                  </Label>
+                  <PasswordField
+                    {...register("confirmPassword")}
+                    placeholder="Confirme sua senha"
+                    className={`border p-2 rounded-md w-full bg-gray-input ${
+                      errors.confirmPassword &&
+                      "placeholder:text-red-500 placeholder:text-xs"
+                    }`}
+                  />
+                  {errors.confirmPassword && (
+                    <span className="text-red-500 text-xs">
+                      {errors.confirmPassword.message}
+                    </span>
+                  )}
+                </div>
               </>
             )}
             <div className="mt-2">
-              <Label className="text-base font-normal ">Permissões *</Label>
+              <Label className="text-base font-normal ">Permissão *</Label>
               <div className="flex gap-2 mt-2">
                 <Button
                   type="button"

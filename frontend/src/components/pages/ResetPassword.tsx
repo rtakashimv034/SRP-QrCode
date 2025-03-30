@@ -67,7 +67,10 @@ export function ResetPassword() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
-    if (!token) return;
+    if (!token) {
+      setIsErrorModalOpen(true);
+      return;
+    }
 
     try {
       await api.post("auth/reset-password", {
@@ -82,21 +85,28 @@ export function ResetPassword() {
   };
 
   if (isValidToken === null) {
-    return <div>Verificando token...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen w-screen bg-img bg-[100%] bg-cover bg-no-repeat text-4xl text-white font-bold">
+        Verificando token...
+      </div>
+    );
   }
 
   if (!isValidToken) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Card className="p-8 max-w-md">
+      <div className="flex items-center justify-center h-screen w-screen bg-img bg-[100%] bg-cover bg-no-repeat">
+        <Card className="p-8 max-w-md bg-white/25 backdrop-blur-md border-none">
           <CardHeader className="text-center">
-            <h2 className="text-2xl font-bold">Link inválido ou expirado</h2>
+            <h2 className="text-2xl font-bold text-white">
+              Link inválido ou expirado!
+            </h2>
           </CardHeader>
           <CardContent>
-            <p className="text-center mb-4">
+            <p className="text-center mb-4 text-white font-light">
               O link de redefinição de senha é inválido ou expirou.
             </p>
             <Button
+              variant={"submit"}
               onClick={() => navigate("/retrive-password")}
               className="w-full"
             >
@@ -129,25 +139,31 @@ export function ResetPassword() {
             >
               <div className="w-full space-y-4">
                 <PasswordField
-                  {...register("newPassword")}
-                  placeholder="Nova senha"
-                  className="bg-white text-black"
+                  {...register("newPassword", {
+                    required: "Senha é obrigatória",
+                  })}
+                  className={`bg-white text-black ${
+                    errors.newPassword &&
+                    "placeholder:text-sm placeholder:text-red-500"
+                  }`}
+                  placeholder={
+                    errors.newPassword
+                      ? errors.newPassword.message
+                      : "Nova senha"
+                  }
                 />
-                {errors.newPassword && (
-                  <p className="text-red-500 text-sm">
-                    {errors.newPassword.message}
-                  </p>
-                )}
-                <PasswordField
-                  {...register("confirmPassword")}
-                  placeholder="Confirme a nova senha"
-                  className="bg-white text-black"
-                />
-                {errors.confirmPassword && (
-                  <p className="text-red-500 text-sm">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
+                <div className="flex flex-col gap-1">
+                  <PasswordField
+                    {...register("confirmPassword")}
+                    placeholder="Confirme a nova senha"
+                    className="bg-white text-black"
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-red-500 font-semibold text-sm">
+                      {errors.confirmPassword.message}
+                    </p>
+                  )}
+                </div>
               </div>
               <Button
                 type="submit"
