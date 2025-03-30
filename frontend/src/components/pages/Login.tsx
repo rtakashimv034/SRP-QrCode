@@ -13,7 +13,7 @@ import { PasswordField } from "../ui/passwordfield";
 
 const loginSchema = z.object({
   email: z.string().email("E-mail inválido"),
-  password: z.string().min(8, "A senha deve ter pelo menos 6 caracteres"),
+  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -44,8 +44,8 @@ export function Login() {
 
   return (
     <>
-      <div className="flex overflow-hidden items-center justify-center h-screen bg-img bg-transparent bg-[100%] bg-cover bg-no-repeat">
-        <Card className="flex p-32 flex-col justify-center items-center w-2/3 md:w-[40%] h-[90%] bg-white/25 bg-no-repeat backdrop-blur-[11px] border-none">
+      <div className="flex overflow-hidden items-center justify-start h-screen bg-img-calliu bg-transparent bg-[100%] bg-cover bg-no-repeat">
+        <Card className="flex p-32 flex-col ml-32 justify-center items-center w-2/3 md:w-[40%] h-[90%] bg-white/25 bg-no-repeat backdrop-blur-[11px] border-none">
           <CardHeader className="flex w-full">
             <img
               src={logo}
@@ -61,22 +61,26 @@ export function Login() {
                 <Input
                   type="email"
                   {...register("email", { required: "E-mail é obrigatório" })}
-                  placeholder="Digite seu e-mail"
-                  className="bg-white text-black"
+                  className={`bg-white text-black ${
+                    errors.email &&
+                    "placeholder:text-sm placeholder:text-red-500"
+                  }`}
+                  placeholder={
+                    errors.email ? errors.email.message : "Digite seu e-mail"
+                  }
                 />
-                {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email.message}</p>
-                )}
                 <PasswordField
                   {...register("password", { required: "Senha é obrigatória" })}
-                  placeholder="Digite sua senha"
-                  className="bg-white text-black"
+                  className={`bg-white text-black ${
+                    errors.password &&
+                    "placeholder:text-sm placeholder:text-red-500"
+                  }`}
+                  placeholder={
+                    errors.password
+                      ? errors.password.message
+                      : "Digite a sua senha"
+                  }
                 />
-                {errors.password && (
-                  <p className="text-red-500 text-sm">
-                    {errors.password.message}
-                  </p>
-                )}
               </div>
               <div className="flex items-center w-full justify-end">
                 <span

@@ -230,7 +230,7 @@ export function Users() {
               {isErrorDeletion
                 ? "Não foi possível excluir o usuário (verifique a sua conexão ou tente mais tarde)."
                 : `Você tem certeza que deseja deletar excluir o usuário
-              ${user?.name}" do sistema?`}
+              "${user?.name}" do sistema?`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -245,7 +245,13 @@ export function Users() {
                 ? "Tentar novamente"
                 : "Sim"}
             </Button>
-            <Button variant={"default"} onClick={() => setIsModalOpen(false)}>
+            <Button
+              variant={"default"}
+              onClick={() => {
+                setIsModalOpen(false);
+                setIsErrorDeletion(false);
+              }}
+            >
               Cancelar
             </Button>
           </DialogFooter>
