@@ -182,7 +182,7 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
   return (
     <>
       <Dialog open={modal.isOpen} onOpenChange={modal.setIsOpen}>
-        <DialogContent className="w-1/4 flex flex-col items-center gap-0 overflow-hidden py-0 px-4 border-0">
+        <DialogContent className="w-1/4 flex flex-col items-center max-h-[90vh] gap-0 overflow-hidden py-0 px-4 border-0">
           <div className="relative w-full h-0" />
           <div className="bg-green-light w-full absolute h-14 flex items-center justify-between px-4 text-white font-bold text-lg">
             <span className="mx-auto">
@@ -221,7 +221,10 @@ export function UserModal({ fetchUsers, modal, user }: Props) {
               </Button>
             )}
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="px-6 w-full">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="px-6 w-full overflow-y-auto"
+          >
             <div className="flex mt-4 gap-2">
               <div className="flex flex-col w-1/2">
                 <Label className="text-base font-normal">Nome *</Label>

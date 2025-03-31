@@ -125,11 +125,11 @@ export function CreateSector() {
             Cadastrar Setor
           </h1>
         </div>
-        <div className="flex-1 grid grid-rows-[80%_20%]">
+        <div className="flex-1 grid grid-rows-[90%_10%]">
           <div className="flex-1 grid grid-cols-[60%_40%] items-center justify-start">
             <div className="flex flex-col justify-between gap-4 items-center pr-4">
               {/* sector card */}
-              <div className="rounded-xl child:px-4 w-full max-h-96 overflow-hidden border-2 flex flex-col border-green-light">
+              <div className="rounded-xl child:px-4 w-full min-h-80 overflow-hidden border-2 flex flex-col border-green-light">
                 <div className="bg-green-light shrink-0 flex items-center w-full h-10">
                   <h1 className="text-white font-semibold text-lg">
                     Dados do setor
@@ -245,7 +245,7 @@ export function CreateSector() {
               </div>
             </div>
             {/* Sector Card Section */}
-            <div className="h-full max-h-[372px] flex justify-center items-center pl-4">
+            <div className="h-[372px] flex justify-center items-center pl-4">
               <div className="w-full h-full flex flex-col justify-center items-center">
                 <div className="flex flex-col h-full w-full border-2 rounded-lg border-green-light py-2 px-4">
                   <h1 className="flex font-bold text-xl">Visualização:</h1>
@@ -259,7 +259,7 @@ export function CreateSector() {
               </div>
             </div>
           </div>
-          <div className="flex flex-1 justify-center items-center">
+          <div className="flex flex-col flex-1 justify-end items-center">
             <Button
               disabled={isDisabled || isLoading}
               variant={"submit"}

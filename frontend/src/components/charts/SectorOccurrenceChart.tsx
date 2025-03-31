@@ -106,7 +106,7 @@ export function SectorOccurrenceChart({ sectors }: Props) {
 
   return (
     <Chart
-      height={177}
+      height={170}
       options={options}
       series={initialSeries}
       type="line"

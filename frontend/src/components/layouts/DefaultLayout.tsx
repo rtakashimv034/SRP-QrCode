@@ -2,6 +2,7 @@ import { baseURL } from "@/api";
 import { socket } from "@/api/socket";
 import defaultAvatar from "@/assets/images/default_avatar.png";
 import { useAuth } from "@/hooks/useAuth";
+import { useCache } from "@/hooks/useCache";
 import { UserProps } from "@/types";
 import { useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -14,10 +15,14 @@ type DefaultLayoutProps = {
 
 export function DefaultLayout({ children }: DefaultLayoutProps) {
   const navigator = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const { clearCache } = useCache<UserProps[]>({
+    key: "users-cache",
+  });
 
   useEffect(() => {
     if (!user) {
+      signOut();
       navigator("/login");
     }
     socket.on("update-user", (updatedUser: UserProps) => {
@@ -27,11 +32,15 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
         user!.avatar = updatedUser.avatar;
         user!.email = updatedUser.email;
         user!.isManager = updatedUser.isManager;
+        if (updatedUser.isManager === false) {
+          clearCache();
+        }
       }
     });
 
     socket.on("delete-user", (deletedUser: UserProps) => {
       if (deletedUser.id === user?.id) {
+        signOut();
         navigator("/login");
       }
     });
@@ -40,14 +49,20 @@ export function DefaultLayout({ children }: DefaultLayoutProps) {
       socket.off("update-user");
       socket.off("delete-user");
     };
-  }, [navigator, user]);
+  }, [clearCache, navigator, signOut, user]);
 
   if (!user) {
     return <Navigate to={"/login"} replace />;
   }
 
+  const myHeight = window.innerHeight;
+
   return (
-    <div className="w-screen h-screen overflow-hidden grid grid-cols-[20%_80%] space-x-8 bg-default p-20 child:rounded-lg">
+    <div
+      className={`w-screen h-screen overflow-hidden grid grid-cols-[20%_80%] space-x-8 bg-default ${
+        myHeight >= 700 ? "p-20" : "p-12"
+      } child:rounded-lg`}
+    >
       <aside className="grid grid-rows-[20%_80%] space-y-8 child:rounded-lg">
         <UserAsideCard
           avatar={
