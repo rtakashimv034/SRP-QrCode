@@ -49,6 +49,8 @@ export function Reports() {
     expirationTime: 1,
   });
 
+  const myHeight = window.innerHeight;
+
   const handleDeleteInfractions = async () => {
     try {
       setIsDeletionLoading(true);
@@ -190,7 +192,11 @@ export function Reports() {
       <DefaultLayout>
         <div className="flex flex-row h-full gap-7">
           {/* Seção de Ocorrências */}
-          <div className="flex flex-col flex-grow h-full w-[60%] gap-3">
+          <div
+            className={`flex flex-col flex-grow h-full w-[60%] ${
+              myHeight < 700 && "overflow-y-auto"
+            } gap-3`}
+          >
             <OccurrenceCard
               data={{ defectivePaths, paths, sectors }}
               type="sector"

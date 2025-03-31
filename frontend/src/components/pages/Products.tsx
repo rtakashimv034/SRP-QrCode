@@ -207,7 +207,7 @@ export function Products() {
     <>
       <DefaultLayout>
         <header className="grid grid-cols-[38%_62%] pb-3 items-center justify-between">
-          <div className="flex flex-row items-center gap-6">
+          <div className="flex flex-row items-center gap-4">
             <div className="flex flex-row items-center gap-2">
               <Box className="size-8 fill-black text-white" />
               <h1 className="text-lg font-bold whitespace-nowrap">
@@ -226,14 +226,14 @@ export function Products() {
             <div className="flex w-full flex-row items-center gap-2 justify-end">
               {schedule === "Diário" && (
                 <>
-                  <div className="relative w-full max-w-36">
+                  <div className="relative w-full max-w-24">
                     <Search
                       className="absolute left-2.5 top-1.5 text-gray-400"
                       size={16}
                     />
                     <Input
                       type="number"
-                      placeholder="Buscar por dia"
+                      placeholder="Do dia..."
                       className="pl-8 rounded-xl h-7 no-spinner border border-gray-500"
                       value={day}
                       onChange={(e) => setDay(e.target.value)}
@@ -295,7 +295,7 @@ export function Products() {
                 </div>
               </div>
             </div>
-            <div className="relative w-full max-w-40">
+            <div className="relative w-full max-w-36">
               <Search
                 className="absolute left-3 top-2 text-gray-400"
                 size={20}

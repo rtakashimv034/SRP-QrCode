@@ -424,7 +424,7 @@ export function TimeOccurrenceChart({
 
       {/* Gráfico */}
       <Chart
-        height={177}
+        height={170}
         options={options}
         series={initialSeries}
         type="line"
